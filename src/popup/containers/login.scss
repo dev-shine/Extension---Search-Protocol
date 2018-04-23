@@ -4,7 +4,6 @@
   padding: 0 15px;
 
   .login-tabs {
-
     .tab-title {
       flex: 1;
       margin-right: 2px;
@@ -20,6 +19,28 @@
         color: #fff;
         background: $primary-color;
       }
+    }
+
+    .tab-pane {
+      padding-top: 30px;
+    }
+  }
+
+  .login-wrapper {
+    .login-form {
+
+    }
+  }
+
+  .register-wrapper {
+    .hint {
+      margin-bottom: 10px;
+      color: #3a87ad;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
     }
   }
 }
