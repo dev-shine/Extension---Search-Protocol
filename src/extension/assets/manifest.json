@@ -1,0 +1,43 @@
+{
+  "manifest_version": 2,
+
+  "name": "Bridgit",
+  "description": "Bridgit enables the user to link content within a web page to content with another web page.",
+  "version": "1.3.1",
+
+  "icons": {
+    "128": "logo.png"
+  },
+
+  "browser_action": {
+    "default_title": "Bridgit",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "38": "logo.png"
+    }
+  },
+
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+
+  "web_accessible_resources": [
+    "inject.js"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_script.js"],
+      "run_at": "document_end"
+    }
+  ],
+
+  "permissions": [
+    "storage",
+    "tabs",
+    "notifications",
+    "<all_urls>"
+  ]
+}
