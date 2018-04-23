@@ -2,6 +2,6 @@
   "presets": [["env", {"modules": false}], "stage-0", "react"],
   "plugins": [
     "transform-object-assign",
-    ["import", { "libraryName": "antd" }]
+    ["import", { "libraryName": "antd", "style": false }]
   ]
 }

@@ -2,6 +2,10 @@ var webpack = require('webpack');
 var path = require('path');
 var CopyWebpackPlugin = require('copy-webpack-plugin')
 var CleanWebpackPlugin = require('clean-webpack-plugin')
+var ExtractTextPlugin = require('extract-text-webpack-plugin')
+var getTheme = require('./tools/customize_theme')
+
+var theme = getTheme(__dirname)
 
 module.exports = {
   entry: {
@@ -34,10 +38,29 @@ module.exports = {
         test: /\.svg$/,
         loader: 'svg-react-loader',
         exclude: /(node_modules|bower_components)/
+      },
+      {
+        test: /\.less$/,
+        use: ExtractTextPlugin.extract([
+          {
+            loader: 'css-loader'
+          },
+          {
+            loader: 'postcss-loader'
+          },
+          {
+            loader: 'less-loader',
+            options: {
+              modifyVars: theme,
+              javascriptEnabled: true
+            }
+          }
+        ])
       }
     ]
   },
   plugins: [
+    new ExtractTextPlugin('antd.css'),
     new CleanWebpackPlugin(path.resolve(__dirname, 'dist')),
     new CopyWebpackPlugin([
       {
