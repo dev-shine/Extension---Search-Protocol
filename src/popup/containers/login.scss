@@ -1,0 +1,25 @@
+@import '../../styles/basic.scss';
+
+.login-register {
+  padding: 0 15px;
+
+  .login-tabs {
+
+    .tab-title {
+      flex: 1;
+      margin-right: 2px;
+      padding: 10px 15px;
+      border-radius: 4px;
+      color: #3b5999;
+      background: #efefef;
+      text-align: center;
+      font-weight: bold;
+      font-size: 13px;
+
+      &.active {
+        color: #fff;
+        background: $primary-color;
+      }
+    }
+  }
+}
