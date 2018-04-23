@@ -99,3 +99,62 @@ export const onMessage = (win, fn) => {
   win.addEventListener('message', onMsg)
   return () => win.removeEventListener('message', onMsg)
 }
+
+export const ipcForIframe = ({ targetWindow = window.top, timeout = 10000 } = {}) => {
+  let onAsk         = () => {}
+  const listener    = ({ cmd, args }) => onAsk(cmd, args)
+  const removeOnMsg = onMessage(window, listener)
+
+  return {
+    ask: (cmd, args) => {
+      return postMessage(targetWindow, window, { cmd, args }, '*', timeout)
+    },
+    onAsk: (fn) => {
+      onAsk = fn
+    },
+    destroy: () => {
+      removeOnMsg()
+    }
+  }
+}
+
+export const createIframe = ({ url, width, height, onLoad, onAsk, onMessage, ipcTimeout = 10000 }) => {
+  const $iframe = document.createElement('iframe')
+  const pLoad   = new Promise((resolve, reject) => {
+    if (width)  $iframe.width   = width
+    if (height) $iframe.height  = height
+
+    $iframe.addEventListener('load', () => {
+      if (typeof onLoad === 'function') {
+        try { onLoad() } catch (e) {}
+      }
+      resolve()
+    })
+    $iframe.src = url
+    document.body.appendChild($iframe)
+  })
+  const removeOnMsg = onMessage(window, ({ cmd, args }) => {
+    if (onAsk) {
+      return onAsk(cmd, args)
+    }
+  })
+  const removeListener = (function () {
+    if (!onMessage) return () => {}
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  })()
+
+  return {
+    $iframe,
+    destroy: () => {
+      if ($iframe)  $iframe.remove()
+      removeOnMsg()
+      removeListener()
+    },
+    ask: (cmd, args) => {
+      return pLoad.then(() => {
+        return postMessage($iframe.contentWindow, window, { cmd, args }, '*', ipcTimeout)
+      })
+    }
+  }
+}
