@@ -63,6 +63,20 @@ export const register = wrap(({ name, email, password }) => {
   post: storeUserInfo
 })
 
+export const signInWithGoogle = ({ name, email }) => {
+  return request.post(apiUrl)
+  .type('form')
+  .send({ name, email, googleSignin: true })
+  .then(onApiReturn)
+  .catch(onApiError)
+  .then((data) => {
+    return storeUserInfo({
+      ...data,
+      user_password: ''
+    })
+  })
+}
+
 export const checkUser = wrap(() => {
   return fetchUserInfo()
   .then(userInfo => {

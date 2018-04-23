@@ -8,7 +8,8 @@ module.exports = {
     popup:            './src/popup/index.js',
     content_script:   './src/extension/scripts/content_script.js',
     inject:           './src/extension/scripts/inject.js',
-    background:       './src/extension/scripts/bg.js'
+    background:       './src/extension/scripts/bg.js',
+    sign_in_google:   './src/extension/scripts/sign_in_google.js'
   },
   output: {
     path: path.join(__dirname, 'dist'),
