@@ -4,7 +4,8 @@ import {HashRouter} from 'react-router-dom'
 
 import App from './app'
 import { Provider, createStore, reducer } from './redux'
-import { setStorageData } from './actions'
+import { setUserInfo, setLoaded } from './actions'
+import * as API from '../common/api/http_api'
 
 const store = createStore(
   reducer,
@@ -29,4 +30,15 @@ setTimeout(() => {
   render(App)
 }, 100)
 
-if (module.hot) module.hot.accept('./app', () => render(App));
+API.checkUser()
+.then(
+  data => {
+    store.dispatch(setUserInfo(data))
+  },
+  e => {
+    store.dispatch(setUserInfo(null))
+  }
+)
+.then(() => {
+  store.dispatch(setLoaded(true))
+})

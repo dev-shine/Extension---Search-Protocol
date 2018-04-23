@@ -1,17 +1,55 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators }  from 'redux'
+import { withRouter } from 'react-router-dom'
 import { Button, Input, Form, Icon, Alert } from 'antd'
 
 import * as actions from '../actions'
 import { compose } from '../../common/utils'
 import Tab from '../components/tab'
+import { notifySuccess } from '../../components/notification'
+import * as API from '../../common/api/http_api'
 import './login.scss'
 
 class __LoginForm extends React.Component {
   state = {
     errMsg: null,
     isSubmitting: false
+  }
+
+  handleSubmit = (e) => {
+    if (e) e.preventDefault()
+
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (err)  return;
+
+      this.setState({
+        errMsg: null,
+        isSubmitting: true
+      })
+
+      return API.login({
+        email: values.email,
+        password: values.password
+      })
+      .then(
+        (data) => {
+          this.setState({ isSubmitting: false })
+          this.props.setUserInfo(data)
+
+          notifySuccess(`Successfully signed in. Welcome back`)
+          setTimeout(() => {
+            this.props.history.push('/')
+          }, 1000)
+        },
+        (e) => {
+          this.setState({
+            errMsg: e.message,
+            isSubmitting: false
+          })
+        }
+      )
+    })
   }
 
   render () {
@@ -49,6 +87,7 @@ class __LoginForm extends React.Component {
             <Button
               type="primary"
               size="large"
+              htmlType="submit"
               className="login-form-button"
               loading={this.state.isSubmitting}
             >
@@ -65,6 +104,43 @@ class __RegisterForm extends React.Component {
   state = {
     errMsg: null,
     isSubmitting: false
+  }
+
+  handleSubmit = (e) => {
+    if (e) e.preventDefault()
+
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      console.log('handleRegister', err, values)
+      if (err)  return;
+
+      this.setState({
+        errMsg: null,
+        isSubmitting: true
+      })
+
+      return API.register({
+        name: values.name,
+        email: values.email,
+        password: values.password
+      })
+      .then(
+        (data) => {
+          this.setState({ isSubmitting: false })
+          this.props.setUserInfo(data)
+
+          notifySuccess(`Successfully registered`)
+          setTimeout(() => {
+            this.props.history.push('/')
+          }, 1000)
+        },
+        (e) => {
+          this.setState({
+            errMsg: e.message,
+            isSubmitting: false
+          })
+        }
+      )
+    })
   }
 
   render () {
@@ -114,6 +190,7 @@ class __RegisterForm extends React.Component {
               <Button
                 type="primary"
                 size="large"
+                htmlType="submit"
                 className="register-form-button"
                 loading={this.state.isSubmitting}
               >
@@ -135,12 +212,33 @@ class __RegisterForm extends React.Component {
   }
 }
 
-const LoginForm     = Form.create()(__LoginForm)
-const RegisterForm  = Form.create()(__RegisterForm)
+const decorate = klass => compose(
+  connect(
+    state => ({ userInfo: state.userInfo }),
+    dispatch => bindActionCreators({...actions}, dispatch)
+  ),
+  withRouter,
+  Form.create()
+)(klass)
+
+const LoginForm     = decorate(__LoginForm)
+const RegisterForm  = decorate(__RegisterForm)
 
 class Login extends React.Component {
   state = {
     tabName: 'register'
+  }
+
+  componentDidMount () {
+    if (this.props.userInfo) {
+      this.props.history.push('/')
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.userInfo) {
+      this.props.history.push('/')
+    }
   }
 
   renderLoginForm () {
@@ -179,7 +277,8 @@ class Login extends React.Component {
 
 export default compose(
   connect(
-    state => ({}),
+    state => ({ userInfo: state.userInfo }),
     dispatch => bindActionCreators({...actions}, dispatch)
-  )
+  ),
+  withRouter
 )(Login)

@@ -1,0 +1,23 @@
+@import '../../styles/basic.scss';
+
+.user-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+
+  .user-name-box {
+    color: #808080;
+
+    .user-name {
+      font-weight: bold;
+    }
+  }
+
+  .logout-button {
+    color: $link-color;
+    cursor: pointer;
+  }
+}
+
