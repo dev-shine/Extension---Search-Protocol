@@ -7,9 +7,18 @@ export function setRoute (data) {
   }
 }
 
-export function simpleAction (data) {
+export function setUserInfo (data) {
   return {
-    type: T.WHATEVER,
+    type: T.SET_USER_INFO,
+    data
+  }
+}
+
+export function setLoaded (data) {
+  document.getElementById('root').classList.toggle('ready', !!data)
+
+  return {
+    type: T.SET_LOADED,
     data
   }
 }
