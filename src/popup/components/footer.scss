@@ -1,0 +1,19 @@
+@import '../../styles/basic.scss';
+
+.footer {
+  padding: 7px;
+  width: 100%;
+  border-top: 1px solid #9999;
+  background-color: #efefef;
+  text-align: center;
+  font-size: 12px;
+
+  a {
+    color: $primary-color;
+    margin-right: 10px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
