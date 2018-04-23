@@ -5,7 +5,6 @@ import { withRouter, Link } from 'react-router-dom'
 
 import './header.scss'
 import * as actions from '../actions'
-import Msg from './msg'
 
 class Header extends React.Component {
   componentDidMount () {
@@ -18,30 +17,15 @@ class Header extends React.Component {
   }
 
   render () {
-    const { route, st, urls } = this.props
-    const routes = [
-      { url: '/dashboard',  name: 'Dashboard' },
-      { url: '/add',        name: 'Add' },
-      { url: '/settings',   name: 'Settings' }
-    ]
-
     return (
-      <div>
-        <ul className="tab-menus">
-          {routes.map(r => (
-            <li className={r.url === route ? 'active' : ''} key={r.url}>
-              <Link to={r.url}>{r.name}</Link>
-            </li>
-          ))}
-        </ul>
-
-        <Msg {...this.props.msg} onClose={this.props.closeMsg} />
+      <div className="header">
+        Bridgit
       </div>
     )
   }
 }
 
 export default connect(
-  state => ({ route: state.route, msg: state.msg }),
+  state => ({ route: state.route }),
   dispatch  => bindActionCreators({...actions}, dispatch)
 )(withRouter(Header))

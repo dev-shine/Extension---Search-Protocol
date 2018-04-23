@@ -1,0 +1,14 @@
+@import '../../styles/basic.scss';
+
+.header {
+  margin: 0;
+  margin-bottom: 18px;
+  padding: 7px 0;
+  border-radius: 4px;
+  box-shadow: 5px 5px 5px #ddd;
+  color: #fff;
+  background: $bg-color;
+  font-weight: bold;
+  font-size: 20px;
+  text-align: center;
+}
