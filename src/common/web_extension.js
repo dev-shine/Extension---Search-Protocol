@@ -61,6 +61,7 @@
       'storage.local': ['get', 'set']
     },
     toCopy: {
+      extension: ['getURL'],
       runtime: ['onMessage'],
       storage: ['onChanged'],
       browserAction: ['setBadgeText', 'setBadgeBackgroundColor']

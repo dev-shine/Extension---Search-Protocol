@@ -8,6 +8,7 @@ import './home.scss'
 import * as actions from '../actions'
 import { compose } from '../../common/utils'
 import UserInfo from '../components/user_info'
+import API from '../../common/api/popup_api'
 
 class Home extends React.Component {
   componentDidMount () {
