@@ -8,7 +8,8 @@ import * as actions from '../actions'
 import { compose } from '../../common/utils'
 import Tab from '../components/tab'
 import { notifySuccess } from '../../components/notification'
-import * as API from '../../common/api/http_api'
+import Ext from '../../common/web_extension'
+import API from '../../common/api/popup_api'
 import './login.scss'
 
 class __LoginForm extends React.Component {
@@ -200,7 +201,7 @@ class __RegisterForm extends React.Component {
                 type="primary"
                 size="large"
                 className="sign-in-with-google"
-                loading={this.state.isSubmitting}
+                onClick={() => API.createTab({ url: Ext.extension.getURL('sign_in_google.html') })}
               >
                 Sign in with Google
               </Button>

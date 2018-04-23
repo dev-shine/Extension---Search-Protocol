@@ -2,6 +2,7 @@ import { bgInit as popupBgInit } from '../ipc/ipc_bg_popup'
 import { bgInit as csBgInit } from '../ipc/ipc_bg_cs'
 import Ext from '../web_extension'
 import { getTabIpcstore } from '../tab_ipc_store'
+import * as httpAPI from './http_api'
 import log from '../log'
 
 const tabIpcStore = getTabIpcstore()
@@ -46,6 +47,10 @@ const getCurrentTabIpc = () => {
 }
 
 const API = {
+  ...httpAPI,
+  createTab: (data) => {
+    return Ext.tabs.create(data)
+  }
 }
 
 export default API
