@@ -1,0 +1,31 @@
+
+.tab {
+  .tab-titles {
+    display: flex;
+    flex-direction: row;
+
+    .tab-title {
+      margin-right: 5px;
+      color: #999;
+      cursor: pointer;
+
+      &.active {
+        color: #333;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .tab-panes {
+    .tab-pane {
+      display: none;
+
+      &.active {
+        display: block;
+      }
+    }
+  }
+}

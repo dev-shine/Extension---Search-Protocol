@@ -130,3 +130,18 @@ export const uid = () => {
 export const flatten = (list) => {
   return [].concat.apply([], list);
 }
+
+export const cn = (...list) => {
+  return list.reduce((prev, cur) => {
+    if (!cur) return prev
+    if (typeof cur === 'string') {
+      prev.push(cur)
+    } else {
+      Object.keys(cur).forEach(key => {
+        if (cur[key]) prev.push(key)
+      })
+    }
+
+    return prev
+  }, []).join(' ')
+}
