@@ -10,10 +10,13 @@ const bindEvents = () => {
 }
 
 const onBgRequest = (cmd, args) => {
+  let rectAPI
+
   switch (cmd) {
     case 'START_ANNOTATION': {
       console.log('got start annotation')
-      createAnnotation()
+      if (rectAPI) rectAPI.destroy()
+      rectAPI = createAnnotation()
       return true
     }
   }
@@ -127,7 +130,6 @@ const createAnnotation = () => {
       let startPos      = { x: 0, y: 0 }
 
       const onMouseDown = (e) => {
-        console.log('onMouseDown')
         isDragging = true
         box.moveAnchorStart({ anchorPos })
       }
@@ -138,8 +140,9 @@ const createAnnotation = () => {
       }
       const onMouseMove = (e) => {
         if (!isDragging)  return
-        console.log('onMouseMove')
         box.moveAnchor({ x: e.pageX, y: e.pageY })
+        e.preventDefault()
+        e.stopPropagation()
       }
 
       const $dom = createEl({
@@ -168,6 +171,39 @@ const createAnnotation = () => {
       }
     })
 
+    let isDragging    = false
+    let pos           = { x: 0, y: 0 }
+    const onMouseDown = (e) => {
+      isDragging = true
+      pos = { x: e.pageX, y: e.pageY }
+      box.moveBoxStart()
+    }
+    const onMouseUp   = (e) => {
+      if (!isDragging)  return
+      isDragging = false
+      box.moveBoxEnd()
+    }
+    const onMouseMove = (e) => {
+      if (!isDragging)  return
+      box.moveBox({
+        dx: e.pageX - pos.x,
+        dy: e.pageY - pos.y
+      })
+      e.preventDefault()
+      e.stopPropagation()
+    }
+
+    $rectangle.addEventListener('mousedown', onMouseDown)
+    document.addEventListener('mouseup', onMouseUp)
+    document.addEventListener('mousemove', onMouseMove)
+
+    const destroyRectangle = () => {
+      $rectangle.removeEventListener('mousedown', onMouseDown)
+      document.removeEventListener('mouseup', onMouseUp)
+      document.removeEventListener('mousemove', onMouseMove)
+      $rectangle.remove()
+    }
+
     document.body.appendChild($container)
     $container.appendChild($rectangle)
     $anchors.forEach(item => $container.appendChild(item.$dom))
@@ -193,11 +229,15 @@ const createAnnotation = () => {
         })
       },
       destroy: () => {
-
+        destroyRectangle()
+        $anchors.forEach(item => item.destroy())
+        $container.remove()
       }
     }
   }
+
   const rectAPI = createSelection()
+  return rectAPI
 }
 
 bindEvents()
