@@ -9,12 +9,12 @@ const bindEvents = () => {
   ipc.onAsk(onBgRequest)
 }
 
-const onBgRequest = (cmd, args) => {
-  let rectAPI
+let rectAPI
 
+const onBgRequest = (cmd, args) => {
   switch (cmd) {
     case 'START_ANNOTATION': {
-      console.log('got start annotation')
+      console.log('got start annotation', rectAPI)
       if (rectAPI) rectAPI.destroy()
       rectAPI = createAnnotation()
       return true
@@ -22,12 +22,16 @@ const onBgRequest = (cmd, args) => {
   }
 }
 
-const createEl = ({ tag = 'div', attrs = {}, style = {} }) => {
+const createEl = ({ tag = 'div', attrs = {}, style = {}, text }) => {
   const $el = document.createElement(tag)
 
   Object.keys(attrs).forEach(key => {
     $el.setAttribute(key, attrs[key])
   })
+
+  if (text && text.length) {
+    $el.innerText = text
+  }
 
   setStyle($el, style)
   return $el
@@ -38,8 +42,8 @@ const createAnnotation = () => {
     const rectBorderWidth   = 3
     const anchorBorderWidth = 2
     const anchorWidth       = 14
-    const width   = options.width || 500
-    const height  = options.height || 400
+    const width   = options.width || 300
+    const height  = options.height || 300
     const opts = {
       top:  scrollTop(document) + (clientHeight(document) - height) / 2,
       left: scrollLeft(document) + (clientWidth(document) - width) / 2,
@@ -50,6 +54,8 @@ const createAnnotation = () => {
     const commonStyle = {
       boxSizing: 'border-box'
     }
+
+    // Note: render selection box
     const containerStyle = {
       ...commonStyle,
       position: 'absolute',
@@ -208,6 +214,54 @@ const createAnnotation = () => {
     $container.appendChild($rectangle)
     $anchors.forEach(item => $container.appendChild(item.$dom))
 
+    // Note: render buttons
+    const actionsStyle = {
+      ...commonStyle,
+      position: 'absolute',
+      left:     '50%',
+      bottom:   '-55px',
+      minWidth: '170px',
+      height:   '50px',
+      transform: 'translateX(-50%)'
+    }
+    const buttonStyle = {
+      ...commonStyle,
+      margin:   '0 10px 0 0',
+      padding:  '6px',
+      width:    '80px',
+      border:   '1px solid #EF5D8F',
+      borderRadius: '2px',
+      fontSize: '12px',
+      color:    '#fff',
+      backgroundColor: '#EF5D8F',
+      cursor:   'pointer'
+    }
+    const $actions    = createEl({ style: actionsStyle })
+    const $selectBtn  = createEl({ tag: 'button', text: 'Select', style: buttonStyle })
+    const $closeBtn   = createEl({ tag: 'button', text: 'Close',  style: Object.assign({}, buttonStyle, { backgroundColor: 'red', borderColor: 'red', marginRight: 0 }) })
+
+    $actions.appendChild($selectBtn)
+    $actions.appendChild($closeBtn)
+    $container.appendChild($actions)
+
+    const onClickSelect = () => {
+      console.log('TODO: select')
+    }
+
+    const onClickClose = () => {
+      rectAPI.destroy()
+    }
+
+    $selectBtn.addEventListener('click', onClickSelect)
+    $closeBtn.addEventListener('click', onClickClose)
+
+    const destroyActions = () => {
+      $selectBtn.removeEventListener('click', onClickSelect)
+      $closeBtn.removeEventListener('click', onClickClose)
+      $actions.remove()
+    }
+
+    // Note: initialize box instance
     const box = new Box({
       x:      opts.left,
       y:      opts.top,
@@ -229,6 +283,7 @@ const createAnnotation = () => {
         })
       },
       destroy: () => {
+        destroyActions()
         destroyRectangle()
         $anchors.forEach(item => item.destroy())
         $container.remove()
