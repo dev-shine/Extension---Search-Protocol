@@ -2,7 +2,7 @@ import ipc from '../../common/ipc/ipc_cs'
 import log from '../../common/log'
 import Ext from '../../common/web_extension'
 import API from '../../common/api/cs_api'
-import { Box, getAnchorRects } from '../../common/shapes/box'
+import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../../common/shapes/box'
 import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel } from '../../common/dom_utils'
 
 const bindEvents = () => {
@@ -31,11 +31,6 @@ const createEl = ({ tag = 'div', attrs = {}, style = {} }) => {
 }
 
 const createAnnotation = () => {
-  const box = new Box({
-    onStateChange: ({ rect }) => {
-      rectAPI.updatePos(rect)
-    }
-  })
   const createSelection = (options = {}) => {
     const rectBorderWidth   = 3
     const anchorBorderWidth = 2
@@ -57,13 +52,16 @@ const createAnnotation = () => {
       position: 'absolute',
       zIndex:   100000,
       top:      pixel(opts.top),
-      left:     pixel(opts.left)
+      left:     pixel(opts.left),
+      width:    pixel(opts.width),
+      height:   pixel(opts.height)
     }
     const rectStyle = {
       ...commonStyle,
-      width:    pixel(opts.width),
-      height:   pixel(opts.height),
+      width:    '100%',
+      height:   '100%',
       border:   `${rectBorderWidth}px solid rgb(239, 93, 143)`,
+      cursor:   'move',
       background: 'transparent'
     }
     const anchorStyle = {
@@ -86,18 +84,87 @@ const createAnnotation = () => {
         height: opts.height
       }
     })
-    .map(anchor => {
+    .map(({ rect, anchorPos }) => {
+      const cursor = (function () {
+        switch (anchorPos) {
+          case BOX_ANCHOR_POS.TOP_LEFT:
+          case BOX_ANCHOR_POS.BOTTOM_RIGHT:
+            return 'nwse-resize'
+
+          case BOX_ANCHOR_POS.TOP_RIGHT:
+          case BOX_ANCHOR_POS.BOTTOM_LEFT:
+            return 'nesw-resize'
+        }
+      })()
+      const eachStyle = (function () {
+        switch (anchorPos) {
+          case BOX_ANCHOR_POS.TOP_LEFT:
+            return {
+              top:    pixel(-1 * anchorWidth / 2),
+              left:   pixel(-1 * anchorWidth / 2)
+            }
+          case BOX_ANCHOR_POS.BOTTOM_RIGHT:
+            return {
+              bottom: pixel(-1 * anchorWidth / 2),
+              right:  pixel(-1 * anchorWidth / 2)
+            }
+
+          case BOX_ANCHOR_POS.TOP_RIGHT:
+            return {
+              top:    pixel(-1 * anchorWidth / 2),
+              right:  pixel(-1 * anchorWidth / 2)
+            }
+
+          case BOX_ANCHOR_POS.BOTTOM_LEFT:
+            return {
+              bottom: pixel(-1 * anchorWidth / 2),
+              left:   pixel(-1 * anchorWidth / 2)
+            }
+        }
+      })()
+
+      let isDragging    = false
+      let startPos      = { x: 0, y: 0 }
+
+      const onMouseDown = (e) => {
+        console.log('onMouseDown')
+        isDragging = true
+        box.moveAnchorStart({ anchorPos })
+      }
+      const onMouseUp = (e) => {
+        if (!isDragging)  return
+        isDragging = false
+        box.moveAnchorEnd()
+      }
+      const onMouseMove = (e) => {
+        if (!isDragging)  return
+        console.log('onMouseMove')
+        box.moveAnchor({ x: e.pageX, y: e.pageY })
+      }
+
+      const $dom = createEl({
+        style: {
+          ...anchorStyle,
+          ...eachStyle,
+          cursor,
+          width:    pixel(anchorWidth),
+          height:   pixel(anchorWidth)
+        }
+      })
+
+      document.addEventListener('mousemove', onMouseMove)
+      document.addEventListener('mouseup', onMouseUp)
+      $dom.addEventListener('mousedown', onMouseDown)
+
       return {
-        anchorPos:  anchor.anchorPos,
-        $dom:       createEl({
-                      style: {
-                        ...anchorStyle,
-                        top:      pixel(anchor.rect.y),
-                        left:     pixel(anchor.rect.x),
-                        width:    pixel(anchorWidth),
-                        height:   pixel(anchorWidth)
-                      }
-                    })
+        $dom,
+        anchorPos,
+        destroy: () => {
+          document.removeEventListener('mousemove', onMouseMove)
+          document.removeEventListener('mouseup', onMouseUp)
+          $dom.removeEventListener('mousedown', onMouseDown)
+          $dom.remove()
+        }
       }
     })
 
@@ -105,8 +172,27 @@ const createAnnotation = () => {
     $container.appendChild($rectangle)
     $anchors.forEach(item => $container.appendChild(item.$dom))
 
+    const box = new Box({
+      x:      opts.left,
+      y:      opts.top,
+      width:  opts.width,
+      height: opts.height,
+      onStateChange: ({ rect }) => {
+        console.log('onStateChange', rect)
+        rectAPI.updatePos(rect)
+      }
+    })
+
     return {
       updatePos: (rect) => {
+        setStyle($container, {
+          top:    pixel(rect.y),
+          left:   pixel(rect.x),
+          width:  pixel(rect.width),
+          height: pixel(rect.height)
+        })
+      },
+      destroy: () => {
 
       }
     }
