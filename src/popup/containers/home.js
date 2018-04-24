@@ -2,7 +2,7 @@ import React from 'react'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { bindActionCreators }  from 'redux'
-import { Alert } from 'antd'
+import { Alert, Button } from 'antd'
 
 import './home.scss'
 import * as actions from '../actions'
@@ -39,7 +39,33 @@ class Home extends React.Component {
 
   renderNormal () {
     return (
-      <div>Normal</div>
+      <div className="annotate-0">
+        <div className="one-line-button">
+          <Button
+            type="primary"
+            size="large"
+            className="build-link-button"
+            onClick={() => {
+              API.startAnnotationOnCurrentTab()
+              .then(() => {
+                window.close()
+              })
+            }}
+          >
+            Build A Link
+          </Button>
+        </div>
+        <div className="one-line-button">
+          <Button
+            type="primary"
+            size="large"
+            className="show-links-button"
+            onClick={() => {}}
+          >
+            Bridgit Specs
+          </Button>
+        </div>
+      </div>
     )
   }
 

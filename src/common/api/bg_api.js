@@ -50,6 +50,13 @@ const API = {
   ...httpAPI,
   createTab: (data) => {
     return Ext.tabs.create(data)
+  },
+  askCurrentTab: (cmd, args) => {
+    return getCurrentTabIpc()
+    .then(ipc => ipc.ask(cmd, args))
+  },
+  startAnnotationOnCurrentTab: () => {
+    return API.askCurrentTab('START_ANNOTATION', {})
   }
 }
 

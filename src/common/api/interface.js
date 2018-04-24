@@ -11,7 +11,9 @@ export const methods = [
   'register',
   'signInWithGoogle',
   'checkUser',
-  'createTab'
+  'createTab',
+  'askCurrentTab',
+  'startAnnotationOnCurrentTab'
 ]
 
 export const mockAPIWithIPC = (ipc) => {

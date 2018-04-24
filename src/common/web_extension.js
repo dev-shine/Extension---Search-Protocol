@@ -54,7 +54,7 @@
 
   var UsedAPI = {
     toPromisify: {
-      tabs: ['create'],
+      tabs: ['create', 'query', 'sendMessage'],
       windows: ['getCurrent'],
       runtime: ['sendMessage'],
       notifications: ['create'],
@@ -62,7 +62,7 @@
     },
     toCopy: {
       extension: ['getURL'],
-      runtime: ['onMessage'],
+      runtime: ['onMessage', 'sendMessage'],
       storage: ['onChanged'],
       browserAction: ['setBadgeText', 'setBadgeBackgroundColor']
     }
