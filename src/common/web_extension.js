@@ -54,7 +54,7 @@
 
   var UsedAPI = {
     toPromisify: {
-      tabs: ['create', 'query', 'sendMessage'],
+      tabs: ['create', 'query', 'sendMessage', 'captureVisibleTab'],
       windows: ['getCurrent'],
       runtime: ['sendMessage'],
       notifications: ['create'],

@@ -4,6 +4,7 @@ import Ext from '../../common/web_extension'
 import API from '../../common/api/cs_api'
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../../common/shapes/box'
 import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel } from '../../common/dom_utils'
+import { captureClientAPI } from '../../common/capture_screenshot'
 
 const bindEvents = () => {
   ipc.onAsk(onBgRequest)
@@ -18,6 +19,18 @@ const onBgRequest = (cmd, args) => {
       if (rectAPI) rectAPI.destroy()
       rectAPI = createAnnotation()
       return true
+    }
+
+    case 'START_CAPTURE_SCREENSHOT': {
+      return captureClientAPI.startCapture()
+    }
+
+    case 'END_CAPTURE_SCREENSHOT': {
+      return captureClientAPI.endCapture(args.pageInfo)
+    }
+
+    case 'SCROLL_PAGE': {
+      return captureClientAPI.scrollPage(args.offset)
     }
   }
 }
@@ -245,7 +258,19 @@ const createAnnotation = () => {
     $container.appendChild($actions)
 
     const onClickSelect = () => {
-      console.log('TODO: select')
+      rectAPI.hide()
+
+      API.captureScreenInSelection({
+        rect: boxRect,
+        devicePixelRatio: window.devicePixelRatio
+      })
+      .then(image => {
+        console.log('got image', image)
+        rectAPI.destroy()
+      })
+      .catch(e => {
+        console.error(e)
+      })
     }
 
     const onClickClose = () => {
@@ -262,13 +287,18 @@ const createAnnotation = () => {
     }
 
     // Note: initialize box instance
-    const box = new Box({
+    let boxRect = {
       x:      opts.left,
       y:      opts.top,
       width:  opts.width,
-      height: opts.height,
+      height: opts.height
+    }
+
+    const box = new Box({
+      ...boxRect,
       onStateChange: ({ rect }) => {
         console.log('onStateChange', rect)
+        boxRect = rect
         rectAPI.updatePos(rect)
       }
     })
@@ -287,6 +317,9 @@ const createAnnotation = () => {
         destroyRectangle()
         $anchors.forEach(item => item.destroy())
         $container.remove()
+      },
+      hide: () => {
+        $container.style.display = 'none'
       }
     }
   }

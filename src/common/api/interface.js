@@ -13,7 +13,8 @@ export const methods = [
   'checkUser',
   'createTab',
   'askCurrentTab',
-  'startAnnotationOnCurrentTab'
+  'startAnnotationOnCurrentTab',
+  'captureScreenInSelection'
 ]
 
 export const mockAPIWithIPC = (ipc) => {
