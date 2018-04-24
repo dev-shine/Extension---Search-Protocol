@@ -2,6 +2,7 @@ import { bgInit as popupBgInit } from '../ipc/ipc_bg_popup'
 import { bgInit as csBgInit } from '../ipc/ipc_bg_cs'
 import Ext from '../web_extension'
 import { getTabIpcstore } from '../tab_ipc_store'
+import { captureScreenInSelection } from '../capture_screenshot'
 import * as httpAPI from './http_api'
 import log from '../log'
 
@@ -57,6 +58,25 @@ const API = {
   },
   startAnnotationOnCurrentTab: () => {
     return API.askCurrentTab('START_ANNOTATION', {})
+  },
+  captureScreenInSelection: ({ rect, devicePixelRatio }) => {
+    return getCurrentTabIpc()
+    .then(ipc => {
+      return captureScreenInSelection({
+        rect,
+        devicePixelRatio
+      }, {
+        startCapture: () => {
+          return ipc.ask('START_CAPTURE_SCREENSHOT', {})
+        },
+        endCapture: (pageInfo) => {
+          return ipc.ask('END_CAPTURE_SCREENSHOT', { pageInfo })
+        },
+        scrollPage: (offset, { index, total }) => {
+          return ipc.ask('SCROLL_PAGE', { offset })
+        }
+      })
+    })
   }
 }
 
