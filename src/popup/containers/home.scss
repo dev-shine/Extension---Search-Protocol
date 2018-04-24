@@ -1,4 +1,17 @@
 
 .home {
   padding: 0 15px;
+
+  .annotate-0 {
+    padding-top: 30px;
+
+    .one-line-button {
+      display: block;
+      margin: 0 20px 20px;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
 }
