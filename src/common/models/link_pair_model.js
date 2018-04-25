@@ -33,7 +33,9 @@ export function decodeLink (prefix, data) {
     desc:    data[p('des')],
     tags:    data[p('tags')],
     image:   data[p('image')],
-    rect:    offset2rect(JSON.parse(data[p('offset')]))
+    rect:    offset2rect(
+      typeof data[p('offset')] === 'string' ? JSON.parse(data[p('offset')]) : data[p('offset')]
+    )
   }
 }
 

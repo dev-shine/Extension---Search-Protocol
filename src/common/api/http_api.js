@@ -1,6 +1,6 @@
 import request from 'superagent'
 import storage from '../storage'
-import { encodePair } from '../models/link_pair_model'
+import { encodePair, decodePair } from '../models/link_pair_model'
 
 const apiUrl = 'https://bridgit.io/bridgit/master.php'
 
@@ -113,6 +113,8 @@ export const loadLinks = wrap(({ url }) => {
   return request.post(apiUrl)
   .type('form')
   .send({ url, getContent: true })
+}, {
+  post: (pairs) => pairs.map(decodePair)
 })
 
 export const postLinks = wrap(ensureLoggedIn(
