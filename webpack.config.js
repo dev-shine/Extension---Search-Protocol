@@ -19,6 +19,19 @@ module.exports = {
     path: path.join(__dirname, 'dist'),
     filename: '[name].js'
   },
+  optimization: {
+    minimizer: [],
+    splitChunks: {
+      chunks: chunk => chunk.name === 'popup',
+      cacheGroups: {
+        vendor: {
+          name: 'vendor',
+          test: /node_modules/,
+          priority: -10
+        }
+      }
+    }
+  },
   module: {
     rules: [
       {
@@ -61,16 +74,16 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin('antd.css'),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      minChunks: function (module) {
-        return module.context && module.context.includes('node_modules')
-      }
-    }),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'manifest',
-      minChunks: Infinity
-    }),
+    // new webpack.optimize.CommonsChunkPlugin({
+    //   name: 'vendor',
+    //   minChunks: function (module) {
+    //     return module.context && module.context.includes('node_modules')
+    //   }
+    // }),
+    // new webpack.optimize.CommonsChunkPlugin({
+    //   name: 'manifest',
+    //   minChunks: Infinity
+    // }),
     new CleanWebpackPlugin(path.resolve(__dirname, 'dist')),
     new CopyWebpackPlugin([
       {
@@ -87,14 +100,6 @@ if (process.env.NODE_ENV === 'production') {
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: '"production"'
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false,
-        screw_ie8: true,
-        drop_console: true,
-        drop_debugger: true
       }
     }),
     new webpack.LoaderOptionsPlugin({
