@@ -28,7 +28,12 @@ class AnnotateStepOne extends React.Component {
           <div className="annotate-item">
             <ImageForm
               {...links[0]}
-              onUpdateField={() => {}}
+              onUpdateField={(val, key) => {
+                console.log('val, key', val, key)
+                this.props.setLinkPair(
+                  setIn(['data', 'links', 0, key], val, this.props.linkPair)
+                )
+              }}
             />
           </div>
           <div className="annotate-item">
@@ -56,10 +61,7 @@ class AnnotateStepOne extends React.Component {
             onClick={() => {
               API.clearLinks()
               .then(() => {
-                this.props.setLinkPair({
-                  status: LINK_PAIR_STATUS.EMPTY,
-                  data: { links: [] }
-                })
+                this.props.resetLinkPair()
               })
             }}
           >

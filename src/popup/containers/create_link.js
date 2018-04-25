@@ -27,6 +27,7 @@ class CreateLink extends React.Component {
       API.postLinks({...pair, ...values})
       .then(() => {
         notifySuccess('Successfully posted')
+        setTimeout(() => this.props.resetLinkPair(), 1500)
       })
       .catch(e => {
         notifyError(e.message)
@@ -34,11 +35,19 @@ class CreateLink extends React.Component {
     })
   }
 
+  onUpdateField = (val, field) => {
+    this.props.setLinkPair(
+      setIn(['data', field], val, this.props.linkPair)
+    )
+  }
+
   render () {
     if (!this.props.linkPair) return null
 
     const { getFieldDecorator } = this.props.form
     const pair = this.props.linkPair.data
+
+    if (!pair.links || !pair.links.length)  return null
 
     return (
       <div className="to-create-link">
@@ -57,7 +66,10 @@ class CreateLink extends React.Component {
                     { required: true, message: 'Please select relation' }
                   ]
                 })(
-                  <Select placeholder="Choose a relationship">
+                  <Select
+                    placeholder="Choose a relationship"
+                    onChange={val => this.onUpdateField(val, 'relationship')}
+                  >
                     {relationships.map(r => (
                       <Select.Option key={r} value={r}>{r}</Select.Option>
                     ))}
@@ -79,7 +91,10 @@ class CreateLink extends React.Component {
                 { required: true, message: 'Please input description' }
               ]
             })(
-              <Input.TextArea placeholder="Enter Description For This Link" />
+              <Input.TextArea
+                placeholder="Enter Description For This Link"
+                onChange={e => this.onUpdateField(e.target.value, 'desc')}
+              />
             )}
           </Form.Item>
           <Form.Item label="Tags">
@@ -90,7 +105,10 @@ class CreateLink extends React.Component {
                 { required: true, message: 'Please input tags' }
               ]
             })(
-              <Input placeholder="Supporting information, opposing information, data, another perspective, etc." />
+              <Input
+                placeholder="Supporting information, opposing information, data, another perspective, etc."
+                onChange={e => this.onUpdateField(e.target.value, 'tags')}
+              />
             )}
           </Form.Item>
         </Form>
@@ -109,13 +127,7 @@ class CreateLink extends React.Component {
             size="large"
             className="cancel-button"
             onClick={() => {
-              API.clearLinks()
-              .then(() => {
-                this.props.setLinkPair({
-                  status: LINK_PAIR_STATUS.EMPTY,
-                  data: { links: [] }
-                })
-              })
+              this.props.resetLinkPair()
             }}
           >
             Cancel

@@ -86,6 +86,10 @@ const API = {
       data:   lp.get()
     })
   },
+  setLinkPair: (data) => {
+    getLinkPair().set(data)
+    return Promise.resolve(true)
+  },
   addLink: (link) => {
     getLinkPair().addLink(link)
     return Promise.resolve(true)
