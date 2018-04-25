@@ -44,7 +44,7 @@ export function encodeLink (prefix, data) {
     [p('url')]:     data.url,
     [p('des')]:     data.desc,
     [p('tags')]:    data.tags,
-    [p('image')]:   data.image,
+    [p('image')]:   '', // Note: return empty for now // data.image,
     [p('offset')]:  JSON.stringify(rect2offset(data.rect))
   }
 }
