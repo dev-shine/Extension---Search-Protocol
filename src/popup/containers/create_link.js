@@ -9,6 +9,7 @@ import * as actions from '../actions'
 import { compose, setIn, updateIn } from '../../common/utils'
 import UserInfo from '../components/user_info'
 import ImageForm from '../components/image_form'
+import { notifyError, notifySuccess } from '../../components/notification'
 import API from '../../common/api/popup_api'
 import { LINK_PAIR_STATUS } from '../../common/models/link_pair_model'
 
@@ -18,6 +19,21 @@ const relationships = [
 ]
 
 class CreateLink extends React.Component {
+  onClickSubmit = () => {
+    this.props.form.validateFields((err, values) => {
+      if (err)  return
+      const pair = this.props.linkPair.data
+
+      API.postLinks({...pair, ...values})
+      .then(() => {
+        notifySuccess('Successfully posted')
+      })
+      .catch(e => {
+        notifyError(e.message)
+      })
+    })
+  }
+
   render () {
     if (!this.props.linkPair) return null
 
@@ -31,11 +47,12 @@ class CreateLink extends React.Component {
           <Form.Item label="How are these links related?">
             <div className="relationship-row">
               <div className="image-box">
-                <img src="http://h.hiphotos.baidu.com/image/h%3D300/sign=d9d2e0ddb5014a909e3e40bd99763971/21a4462309f790525fe7185100f3d7ca7acbd5e1.jpg" />
+                <img src={pair.links[0].image} />
               </div>
 
               <div>
                 {getFieldDecorator('relationship', {
+                  ...(pair.relationship ? { initialValue: pair.relationship } : {}),
                   rules: [
                     { required: true, message: 'Please select relation' }
                   ]
@@ -49,13 +66,14 @@ class CreateLink extends React.Component {
               </div>
 
               <div className="image-box">
-                <img src="http://h.hiphotos.baidu.com/image/h%3D300/sign=d9d2e0ddb5014a909e3e40bd99763971/21a4462309f790525fe7185100f3d7ca7acbd5e1.jpg" />
+                <img src={pair.links[1].image} />
               </div>
             </div>
           </Form.Item>
 
           <Form.Item label="What do you want to say about this link?">
             {getFieldDecorator('desc', {
+              initialValue: pair.desc,
               validateTrigger: ['onBlur'],
               rules: [
                 { required: true, message: 'Please input description' }
@@ -66,6 +84,7 @@ class CreateLink extends React.Component {
           </Form.Item>
           <Form.Item label="Tags">
             {getFieldDecorator('tags', {
+              initialValue: pair.tags,
               validateTrigger: ['onBlur'],
               rules: [
                 { required: true, message: 'Please input tags' }
@@ -81,9 +100,7 @@ class CreateLink extends React.Component {
             type="primary"
             size="large"
             className="post-button"
-            onClick={() => {
-              console.log('todo: post')
-            }}
+            onClick={this.onClickSubmit}
           >
             POST IT!
           </Button>
@@ -92,7 +109,13 @@ class CreateLink extends React.Component {
             size="large"
             className="cancel-button"
             onClick={() => {
-              console.log('todo: cancel')
+              API.clearLinks()
+              .then(() => {
+                this.props.setLinkPair({
+                  status: LINK_PAIR_STATUS.EMPTY,
+                  data: { links: [] }
+                })
+              })
             }}
           >
             Cancel
