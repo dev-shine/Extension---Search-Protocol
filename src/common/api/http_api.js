@@ -43,8 +43,18 @@ const storeUserInfo = (data) => {
   .then(() => data)
 }
 
-const fetchUserInfo = (data) => {
+const fetchUserInfo = () => {
   return storage.get('userInfo')
+}
+
+const ensureLoggedIn = (fn) => {
+  return (...args) => {
+    return fetchUserInfo()
+    .then(user => {
+      if (!user)  throw new Error('user not logged in yet')
+      return fn(...args, user)
+    })
+  }
 }
 
 export const login = wrap(({ email, password }) => {
@@ -97,3 +107,42 @@ export const checkUser = wrap(() => {
 export const logout = () => {
   return storeUserInfo(null)
 }
+
+export const getLinks = wrap(({ url }) => {
+  return request.post(apiUrl)
+  .type('form')
+  .send({ url, getContent: true })
+})
+
+export const postLinks = wrap(ensureLoggedIn(
+  ({ link1, link2, relationship, tags, desc }, user) => {
+    const rect2offset = (rect) => ({
+      top:    rect.y,
+      left:   rect.x,
+      width:  rect.width,
+      height: rect.height
+    })
+
+    return request.post(apiUrl)
+    .type('form')
+    .send({
+      addContent:           true,
+      user:                 user.user_id,
+      c_relation:           relationship,
+      c_tags:               tags,
+      c_des:                desc,
+
+      link1_url:            link1.url,
+      link1_des:            link1.desc,
+      link1_tags:           link1.tags,
+      link1_image:          '',
+      link1_offset:         JSON.stringify(rect2offset(link1.rect)),
+
+      link2_url:            link2.url,
+      link2_des:            link2.desc,
+      link2_tags:           link2.tags,
+      link2_image:          '',
+      link2_offset:         JSON.stringify(rect2offset(link2.rect))
+    })
+  }
+))
