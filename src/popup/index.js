@@ -4,8 +4,8 @@ import {HashRouter} from 'react-router-dom'
 
 import App from './app'
 import { Provider, createStore, reducer } from './redux'
-import { setUserInfo, setLoaded } from './actions'
-import * as API from '../common/api/http_api'
+import { setUserInfo, setLoaded, setLinkPair } from './actions'
+import API from '../common/api/popup_api'
 
 const store = createStore(
   reducer,
@@ -30,12 +30,20 @@ setTimeout(() => {
   render(App)
 }, 100)
 
-API.checkUser()
+Promise.all([
+  API.checkUser(),
+  API.getLinkPairStatus().catch(e => console.error('getLinkPairStatus error', e))
+])
 .then(
   data => {
-    store.dispatch(setUserInfo(data))
+    const [userInfo, linkPair] = data
+
+    console.log('got linkPair', linkPair)
+    store.dispatch(setUserInfo(userInfo))
+    store.dispatch(setLinkPair(linkPair))
   },
   e => {
+    console.error(e)
     store.dispatch(setUserInfo(null))
   }
 )

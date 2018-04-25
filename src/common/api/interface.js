@@ -14,7 +14,12 @@ export const methods = [
   'createTab',
   'askCurrentTab',
   'startAnnotationOnCurrentTab',
-  'captureScreenInSelection'
+  'captureScreenInSelection',
+  'loadLinks',
+  'postLinks',
+  'getLinkPairStatus',
+  'addLink',
+  'clearLinks'
 ]
 
 export const mockAPIWithIPC = (ipc) => {

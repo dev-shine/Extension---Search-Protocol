@@ -1,4 +1,5 @@
 import React from 'react'
+import 'prop-types'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { bindActionCreators }  from 'redux'
@@ -9,8 +10,11 @@ import { compose } from '../../common/utils'
 import './image_form.scss'
 
 class ImageForm extends React.Component {
-  getValues () {
-
+  componentDidMount () {
+    this.props.form.setFieldsValue({
+      desc: this.props.desc,
+      tags: this.props.tags
+    })
   }
 
   render () {
@@ -32,7 +36,10 @@ class ImageForm extends React.Component {
                 { required: true, message: 'Please input description' }
               ]
             })(
-              <Input.TextArea placeholder="Enter Description For This Content" />
+              <Input.TextArea
+                placeholder="Enter Description For This Content"
+                onChange={e => this.props.onUpdateField(e.target.value, 'desc')}
+              />
             )}
           </Form.Item>
           <Form.Item label="Tags">
@@ -42,7 +49,10 @@ class ImageForm extends React.Component {
                 { required: true, message: 'Please input tags' }
               ]
             })(
-              <Input placeholder="Separate Tags By Commas" />
+              <Input
+                placeholder="Separate Tags By Commas"
+                onChange={e => this.props.onUpdateField(e.target.value, 'tags')}
+              />
             )}
           </Form.Item>
         </Form>
@@ -52,10 +62,5 @@ class ImageForm extends React.Component {
 }
 
 export default compose(
-  connect(
-    state => ({ userInfo: state.userInfo }),
-    dispatch => bindActionCreators({...actions}, dispatch)
-  ),
-  withRouter,
   Form.create()
 )(ImageForm)

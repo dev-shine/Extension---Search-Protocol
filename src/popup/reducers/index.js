@@ -4,7 +4,8 @@ import { setIn, updateIn } from '../../common/utils'
 const initialState = {
   userInfo: null,
   loaded: false,
-  route: null
+  route: null,
+  linkPair: null
 }
 
 export default function reducer (state = initialState, action) {
@@ -25,6 +26,12 @@ export default function reducer (state = initialState, action) {
       return {
         ...state,
         loaded: action.data
+      }
+
+    case T.SET_LINK_PAIR:
+      return {
+        ...state,
+        linkPair: action.data
       }
 
     default:

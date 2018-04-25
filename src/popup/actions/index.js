@@ -22,3 +22,10 @@ export function setLoaded (data) {
     data
   }
 }
+
+export function setLinkPair (data) {
+  return {
+    type: T.SET_LINK_PAIR,
+    data
+  }
+}
