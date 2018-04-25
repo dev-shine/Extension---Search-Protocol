@@ -106,6 +106,10 @@ export class LinkPairModel {
     return this.pair
   }
 
+  set (data) {
+    this.pair = data
+  }
+
   getStatus () {
     switch (this.pair.links.length) {
       case 0:   return LINK_PAIR_STATUS.EMPTY

@@ -102,13 +102,7 @@ class AnnotateStepTwo extends React.Component {
             size="large"
             className="cancel-button"
             onClick={() => {
-              API.clearLinks()
-              .then(() => {
-                this.props.setLinkPair({
-                  status: LINK_PAIR_STATUS.EMPTY,
-                  data: { links: [] }
-                })
-              })
+              this.props.resetLinkPair()
             }}
           >
             Cancel

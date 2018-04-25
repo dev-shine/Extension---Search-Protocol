@@ -18,6 +18,7 @@ export const methods = [
   'loadLinks',
   'postLinks',
   'getLinkPairStatus',
+  'setLinkPair',
   'addLink',
   'clearLinks'
 ]
