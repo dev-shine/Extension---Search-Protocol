@@ -14,7 +14,7 @@ class Home extends React.Component {
   onClickLoadLinks = () => {
     API.loadLinksForCurrentPage()
     .then(links => {
-      notifySuccess('Found Bridgit links. Please wait', 'Success', { duration: 1500 })
+      notifySuccess('Found Bridgit links.', 'Success', { duration: 1500 })
       API.askCurrentTab('SHOW_LINKS', { links })
     })
     .catch(e => {
