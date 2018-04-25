@@ -52,7 +52,7 @@ const onBgRequest = (cmd, args) => {
   }
 }
 
-const linksFromPairs = (pairs) => {
+const linksFromPairs = (pairs, url) => {
   const rectEqual = (r1, r2) => {
     return r1.x === r2.x && r1.y === r2.y &&
             r1.width === r2.width &&
@@ -60,13 +60,14 @@ const linksFromPairs = (pairs) => {
   }
   const linkEqual = (l1, l2) => {
     return l1.url === l2.url &&
-          l1.desc === l2.desc &&
-          l1.tags === l2.tags &&
+          // l1.desc === l2.desc &&
+          // l1.tags === l2.tags &&
           rectEqual(l1.rect, l2.rect)
   }
 
   return pairs.reduce((prev, pair) => {
     pair.links.forEach(link => {
+      if (link.url !== url) return
       const found = prev.find(l => linkEqual(l, link))
 
       if (found) {
@@ -87,7 +88,7 @@ const linksFromPairs = (pairs) => {
 }
 
 const showLinks = (pairs, url) => {
-  const links = linksFromPairs(pairs)
+  const links = linksFromPairs(pairs, url)
 
   const showOneLink = (link) => {
     const pairCount = Object.keys(link.pairDict).length
@@ -95,7 +96,8 @@ const showLinks = (pairs, url) => {
       ...rect2offset(link.rect),
       rectBorderWidth: 3,
       rectStyle: {
-        borderStyle: 'dashed'
+        borderStyle: 'dashed',
+        pointerEvents: 'none'
       }
     })
     const actionsObj = createButtons([
@@ -105,7 +107,28 @@ const showLinks = (pairs, url) => {
           width: 'auto'
         },
         onClick: () => {
-          console.log('TODO link another')
+          linksAPI.hide()
+
+          API.captureScreenInSelection({
+            rect: link.rect,
+            devicePixelRatio: window.devicePixelRatio
+          })
+          .then(image => {
+            return API.addLink({
+              url:    window.location.href,
+              tags:   link.tags,
+              desc:   link.desc,
+              image:  image,
+              rect:   link.rect
+            })
+          })
+          .then(() => {
+            linksAPI.destroy()
+            return true
+          })
+          .catch(e => {
+            console.error(e)
+          })
         }
       },
       {
@@ -131,6 +154,9 @@ const showLinks = (pairs, url) => {
     return {
       rectObj,
       actionsObj,
+      hide: () => {
+        rectObj.hide()
+      },
       destroy: () => {
         rectObj.destroy()
         actionsObj.destroy()
@@ -140,12 +166,17 @@ const showLinks = (pairs, url) => {
 
   const allLinks = links.map(showOneLink)
 
-  return {
+  const linksAPI = {
     links: allLinks,
+    hide: () => {
+      allLinks.forEach(item => item.hide())
+    },
     destroy: () => {
       allLinks.forEach(item => item.destroy())
     }
   }
+
+  return linksAPI
 }
 
 bindEvents()
