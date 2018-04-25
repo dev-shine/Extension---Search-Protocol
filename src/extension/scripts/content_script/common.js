@@ -105,6 +105,54 @@ export const getAnchorStyle = ({ anchorPos, anchorWidth }) => {
   }
 }
 
+export const createButtons = (btns, { groupStyle = {} } = {}) => {
+  const buttonStyle = {
+    ...commonStyle,
+    margin:   '0 10px 0 0',
+    padding:  '6px',
+    width:    '80px',
+    border:   '1px solid #EF5D8F',
+    borderRadius: '2px',
+    fontSize: '12px',
+    color:    '#fff',
+    backgroundColor: '#EF5D8F',
+    cursor:   'pointer'
+  }
+  const $buttons = btns.map((btn, i) => {
+    const $dom = createEl({
+      tag:    'button',
+      text:   btn.text,
+      style:  {
+        ...buttonStyle,
+        ...(btn.style || {}),
+        ...(i === btns.length - 1 ? { marginRight: 0 } : {})
+      }
+    })
+
+    $dom.addEventListener('click', btn.onClick)
+
+    return {
+      $dom,
+      destroy: () => {
+        $dom.removeEventListener('click', btn.onClick)
+        $dom.remove()
+      }
+    }
+  })
+  const $group = createEl({ style: groupStyle })
+
+  $buttons.forEach(item => $group.appendChild(item.$dom))
+
+  return {
+    $buttons,
+    $group,
+    destroy: () => {
+      $buttons.forEach(item => item.destroy())
+      $group.remove()
+    }
+  }
+}
+
 export const createSelectionBox = (options = {}) => {
   // Note: options
   const rectBorderWidth   = 3
@@ -212,72 +260,57 @@ export const createSelectionBox = (options = {}) => {
   $anchors.forEach(item => rectObj.$container.appendChild(item.$dom))
 
   // Note: render buttons
-  const actionsStyle = {
-    ...commonStyle,
-    position: 'absolute',
-    left:     '50%',
-    bottom:   '-55px',
-    minWidth: '170px',
-    height:   '50px',
-    transform: 'translateX(-50%)'
-  }
-  const buttonStyle = {
-    ...commonStyle,
-    margin:   '0 10px 0 0',
-    padding:  '6px',
-    width:    '80px',
-    border:   '1px solid #EF5D8F',
-    borderRadius: '2px',
-    fontSize: '12px',
-    color:    '#fff',
-    backgroundColor: '#EF5D8F',
-    cursor:   'pointer'
-  }
-  const $actions    = createEl({ style: actionsStyle })
-  const $selectBtn  = createEl({ tag: 'button', text: 'Select', style: buttonStyle })
-  const $closeBtn   = createEl({ tag: 'button', text: 'Close',  style: Object.assign({}, buttonStyle, { backgroundColor: 'red', borderColor: 'red', marginRight: 0 }) })
+  const actionsObj = createButtons([
+    {
+      text: 'Select',
+      onClick: (e) => {
+        rectAPI.hide()
 
-  $actions.appendChild($selectBtn)
-  $actions.appendChild($closeBtn)
-  rectObj.$container.appendChild($actions)
+        API.captureScreenInSelection({
+          rect: boxRect,
+          devicePixelRatio: window.devicePixelRatio
+        })
+        .then(image => {
+          return API.addLink({
+            url:    window.location.href,
+            tags:   null,
+            desc:   null,
+            image:  image,
+            rect:   boxRect
+          })
+        })
+        .then(() => {
+          rectAPI.destroy()
+          return true
+        })
+        .catch(e => {
+          console.error(e)
+        })
+      }
+    },
+    {
+      text: 'Cancel',
+      style: {
+        backgroundColor: 'red',
+        borderColor: 'red'
+      },
+      onClick: (e) => {
+        rectAPI.destroy()
+      }
+    }
+  ], {
+    groupStyle: {
+      ...commonStyle,
+      position: 'absolute',
+      left:     '50%',
+      bottom:   '-55px',
+      minWidth: '170px',
+      height:   '50px',
+      transform: 'translateX(-50%)'
+    }
+  })
 
-  const onClickSelect = () => {
-    rectAPI.hide()
-
-    API.captureScreenInSelection({
-      rect: boxRect,
-      devicePixelRatio: window.devicePixelRatio
-    })
-    .then(image => {
-      return API.addLink({
-        url:    window.location.href,
-        tags:   null,
-        desc:   null,
-        image:  image,
-        rect:   boxRect
-      })
-    })
-    .then(() => {
-      rectAPI.destroy()
-      return true
-    })
-    .catch(e => {
-      console.error(e)
-    })
-  }
-
-  const onClickClose = () => {
-    rectAPI.destroy()
-  }
-
-  $selectBtn.addEventListener('click', onClickSelect)
-  $closeBtn.addEventListener('click', onClickClose)
-
-  const destroyActions = () => {
-    $selectBtn.removeEventListener('click', onClickSelect)
-    $closeBtn.removeEventListener('click', onClickClose)
-    $actions.remove()
-  }
+  rectObj.$container.appendChild(actionsObj.$group)
 
   // Note: final API
   const rectAPI = {
@@ -290,8 +323,8 @@ export const createSelectionBox = (options = {}) => {
       })
     },
     destroy: () => {
-      destroyActions()
       unbindDragRect()
+      actionsObj.destroy()
       $anchors.forEach(item => item.destroy())
       rectObj.destroy()
     },
