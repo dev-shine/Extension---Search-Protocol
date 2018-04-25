@@ -118,7 +118,7 @@ export const ipcForIframe = ({ targetWindow = window.top, timeout = 10000 } = {}
   }
 }
 
-export const createIframe = ({ url, width, height, onLoad, onAsk, onMessage, ipcTimeout = 10000 }) => {
+export const createIframe = ({ url, width, height, onLoad, onAsk, onMsg, ipcTimeout = 10000 }) => {
   const $iframe = document.createElement('iframe')
   const pLoad   = new Promise((resolve, reject) => {
     if (width)  $iframe.width   = width
@@ -139,9 +139,9 @@ export const createIframe = ({ url, width, height, onLoad, onAsk, onMessage, ipc
     }
   })
   const removeListener = (function () {
-    if (!onMessage) return () => {}
-    window.addEventListener('message', onMessage)
-    return () => window.removeEventListener('message', onMessage)
+    if (!onMsg) return () => {}
+    window.addEventListener('message', onMsg)
+    return () => window.removeEventListener('message', onMsg)
   })()
 
   return {

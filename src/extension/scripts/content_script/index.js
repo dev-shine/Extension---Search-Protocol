@@ -2,6 +2,7 @@ import ipc from '../../../common/ipc/ipc_cs'
 import log from '../../../common/log'
 import Ext from '../../../common/web_extension'
 import API from '../../../common/api/cs_api'
+import { createIframe } from '../../../common/ipc/cs_postmessage'
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../../../common/shapes/box'
 import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
@@ -134,7 +135,39 @@ const showLinks = (pairs, url) => {
       {
         text: pairCount <= 1 ? `${pairCount} Link` : `${pairCount} Links`,
         onClick: () => {
-          console.log('TODO show popup')
+          const iframeAPI = createIframe({
+            url:    Ext.extension.getURL('links_modal.html'),
+            width:  clientWidth(document),
+            height: clientHeight(document),
+            onAsk: (cmd, args) => {
+              switch (cmd) {
+                case 'INIT':
+                  return Object.keys(link.pairDict).map(pid => link.pairDict[pid])
+
+                case 'CLOSE':
+                  window.removeEventListener('resize', onResize)
+                  iframeAPI.destroy()
+                  return true
+              }
+            }
+          })
+
+          const onResize = () => {
+            setStyle(iframeAPI.$iframe, {
+              width:  pixel(clientWidth(document)),
+              height: pixel(clientHeight(document))
+            })
+          }
+          window.addEventListener('resize', onResize)
+
+          setStyle(iframeAPI.$iframe, {
+            position: 'fixed',
+            zIndex: 110000,
+            left: '0',
+            top: '0',
+            right: '0',
+            bottom: '0'
+          })
         }
       }
     ], {
