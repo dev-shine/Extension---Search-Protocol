@@ -281,6 +281,9 @@ export const createSelectionBox = (options = {}) => {
         })
         .then(() => {
           rectAPI.destroy()
+          setTimeout(() => {
+            alert('Successfully captured. Click on extension icon to take further actions')
+          }, 500)
           return true
         })
         .catch(e => {
