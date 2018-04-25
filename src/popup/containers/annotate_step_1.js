@@ -20,12 +20,15 @@ class AnnotateStepOne extends React.Component {
   render () {
     if (!this.props.linkPair) return null
 
+    const { links } = this.props.linkPair.data
+
     return (
       <div className="annotate-1 with-annotation">
         <div className="two-annotation">
           <div className="annotate-item">
             <ImageForm
-              image="http://h.hiphotos.baidu.com/image/h%3D300/sign=d9d2e0ddb5014a909e3e40bd99763971/21a4462309f790525fe7185100f3d7ca7acbd5e1.jpg"
+              {...links[0]}
+              onUpdateField={() => {}}
             />
           </div>
           <div className="annotate-item">
@@ -51,7 +54,13 @@ class AnnotateStepOne extends React.Component {
             size="large"
             className="cancel-button"
             onClick={() => {
-              console.log('todo: cancel')
+              API.clearLinks()
+              .then(() => {
+                this.props.setLinkPair({
+                  status: LINK_PAIR_STATUS.EMPTY,
+                  data: { links: [] }
+                })
+              })
             }}
           >
             Cancel
