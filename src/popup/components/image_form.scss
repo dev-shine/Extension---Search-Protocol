@@ -1,0 +1,16 @@
+.image-form {
+  .image-box {
+    margin: 0 auto;
+    width: 160px;
+    height: 100px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+
+    img {
+      max-height: 100px;
+      max-width: 160px;
+    }
+  }
+}
