@@ -5,6 +5,9 @@ import { withRouter, Link } from 'react-router-dom'
 
 import './header.scss'
 import * as actions from '../actions'
+import { compose } from '../../common/utils'
+import { LINK_PAIR_STATUS } from '../../common/models/link_pair_model'
+import UserInfo from '../components/user_info'
 
 class Header extends React.Component {
   componentDidMount () {
@@ -16,16 +19,49 @@ class Header extends React.Component {
     })
   }
 
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.userInfo !== this.props.userInfo || nextProps.linkPair !== this.props.linkPair) {
+      const { linkPair, userInfo } = nextProps
+      const nextRoute = (function () {
+        if (!userInfo)  return '/login'
+        if (userInfo.user_activate === '0') return '/user-inactive'
+
+        switch (linkPair && linkPair.status) {
+          case LINK_PAIR_STATUS.EMPTY:      return '/'
+          case LINK_PAIR_STATUS.ONE:        return '/annotate-step-1'
+          case LINK_PAIR_STATUS.TWO:        return '/annotate-step-2'
+          case LINK_PAIR_STATUS.READY:      return '/create-link'
+          default:                          return 'Unknown status'
+        }
+      })()
+
+      this.navigate(nextRoute)
+    }
+  }
+
+  navigate (route) {
+    if (this.props.route === route) return
+    this.props.history.push(route)
+  }
+
   render () {
-    return (
+    return [
       <div className="header">
         Bridgit
-      </div>
-    )
+      </div>,
+      this.props.userInfo ? <UserInfo /> : null
+    ]
   }
 }
 
-export default connect(
-  state => ({ route: state.route }),
-  dispatch  => bindActionCreators({...actions}, dispatch)
-)(withRouter(Header))
+export default compose(
+  connect(
+    state => ({
+      route:      state.route,
+      userInfo:   state.userInfo,
+      linkPair:   state.linkPair
+    }),
+    dispatch  => bindActionCreators({...actions}, dispatch)
+  ),
+  withRouter
+)(Header)
