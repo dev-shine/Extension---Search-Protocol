@@ -1,5 +1,6 @@
 import request from 'superagent'
 import storage from '../storage'
+import { encodePair } from '../models/link_pair_model'
 
 const apiUrl = 'https://bridgit.io/bridgit/master.php'
 
@@ -115,34 +116,13 @@ export const loadLinks = wrap(({ url }) => {
 })
 
 export const postLinks = wrap(ensureLoggedIn(
-  ({ link1, link2, relationship, tags, desc }, user) => {
-    const rect2offset = (rect) => ({
-      top:    rect.y,
-      left:   rect.x,
-      width:  rect.width,
-      height: rect.height
-    })
-
+  (linkPair, user) => {
     return request.post(apiUrl)
     .type('form')
     .send({
+      ...encodePair(linkPair),
       addContent:           true,
-      user:                 user.user_id,
-      c_relation:           relationship,
-      c_tags:               tags,
-      c_des:                desc,
-
-      link1_url:            link1.url,
-      link1_des:            link1.desc,
-      link1_tags:           link1.tags,
-      link1_image:          '',
-      link1_offset:         JSON.stringify(rect2offset(link1.rect)),
-
-      link2_url:            link2.url,
-      link2_des:            link2.desc,
-      link2_tags:           link2.tags,
-      link2_image:          '',
-      link2_offset:         JSON.stringify(rect2offset(link2.rect))
+      user:                 user.user_id
     })
   }
 ))
