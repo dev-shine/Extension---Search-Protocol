@@ -39,9 +39,11 @@ class App extends Component {
   componentDidMount () {
     ipc.ask('INIT')
     .then(pairs => {
+      console.log('init got pairs', pairs)
+
       this.setState({
         pairs,
-        pid: pairs.length > 0 ? pairs[0].pid : null
+        pid: pairs.length > 0 ? pairs[0].id : null
       })
     })
   }

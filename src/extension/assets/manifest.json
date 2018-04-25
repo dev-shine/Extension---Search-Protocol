@@ -23,7 +23,11 @@
   },
 
   "web_accessible_resources": [
-    "inject.js"
+    "inject.js",
+    "links_modal.html",
+    "links_modal.js",
+    "vendor.js",
+    "antd.css"
   ],
 
   "content_scripts": [
