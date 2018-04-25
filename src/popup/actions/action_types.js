@@ -15,7 +15,8 @@ const promiseTypes = [
 const simpleTypes = [
   'SET_ROUTE',
   'SET_USER_INFO',
-  'SET_LOADED'
+  'SET_LOADED',
+  'SET_LINK_PAIR'
 ].reduce((prev, cur) => {
   prev[cur] = cur
   return prev

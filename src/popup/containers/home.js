@@ -6,15 +6,29 @@ import { Alert, Button, Select, Form, Input } from 'antd'
 
 import './home.scss'
 import * as actions from '../actions'
-import { compose } from '../../common/utils'
+import { compose, setIn, updateIn } from '../../common/utils'
 import UserInfo from '../components/user_info'
 import ImageForm from '../components/image_form'
 import API from '../../common/api/popup_api'
+import { LINK_PAIR_STATUS } from '../../common/models/link_pair_model'
 
 const relationships = [
   'Supports', 'Refutes', 'Models', 'Aggregates',
   'is Example of', 'is Metaphor for', 'is Instance of', 'is Member of'
 ]
+
+const getValues = (comp, { validate = true } = {}) => {
+  if (validate) {
+    return new Promise((resolve, reject) => {
+      comp.validateFields((err, values) => {
+        if (err)  return reject(err)
+        resolve(values)
+      })
+    })
+  }
+
+  return Promise.resolve(comp.getFieldsValue())
+}
 
 class Home extends React.Component {
   componentDidMount () {
@@ -118,17 +132,32 @@ class Home extends React.Component {
   }
 
   renderAnnotatedTwo () {
+    const { links } = this.props.linkPair.data
+
     return (
       <div className="annotate-2 with-annotation">
         <div className="two-annotation">
           <div className="annotate-item">
             <ImageForm
-              image="http://h.hiphotos.baidu.com/image/h%3D300/sign=d9d2e0ddb5014a909e3e40bd99763971/21a4462309f790525fe7185100f3d7ca7acbd5e1.jpg"
+              ref={ref => { this.linkForm1 = ref }}
+              {...links[0]}
+              onUpdateField={(val, key) => {
+                console.log('val, key', val, key)
+                this.props.setLinkPair(
+                  setIn(['data', 'links', 0, key], val, this.props.linkPair)
+                )
+              }}
             />
           </div>
           <div className="annotate-item">
             <ImageForm
-              image="http://h.hiphotos.baidu.com/image/h%3D300/sign=d9d2e0ddb5014a909e3e40bd99763971/21a4462309f790525fe7185100f3d7ca7acbd5e1.jpg"
+              ref={ref => { this.linkForm2 = ref }}
+              {...links[1]}
+              onUpdateField={(val, key) => {
+                this.props.setLinkPair(
+                  setIn(['data', 'links', 1, key], val, this.props.linkPair)
+                )
+              }}
             />
           </div>
         </div>
@@ -138,7 +167,31 @@ class Home extends React.Component {
             size="large"
             className="create-link-button"
             onClick={() => {
-              console.log('todo: create link')
+              const self = this
+
+              return Promise.all([
+                getValues(this.linkForm1),
+                getValues(this.linkForm2)
+              ])
+              .then(tuple => {
+                this.props.setLinkPair(
+                  compose(
+                    updateIn(
+                      ['data', 'links'],
+                      links => [
+                        { ...links[0], ...tuple[0] },
+                        { ...links[1], ...tuple[1] }
+                      ]
+                    ),
+                    setIn(['status'], LINK_PAIR_STATUS.READY)
+                  )(this.props.linkPair)
+                )
+
+                this.props.history.push('/create-link')
+              })
+              .catch(e => {
+                console.log(e.error)
+              })
             }}
           >
             Build Link
@@ -159,7 +212,8 @@ class Home extends React.Component {
   }
 
   renderCreateLink () {
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator } = this.props.form
+    const pair = this.props.linkPair.data
 
     return (
       <div className="to-create-link">
@@ -240,19 +294,21 @@ class Home extends React.Component {
   }
 
   renderContent () {
-    const { userInfo } = this.props
+    const { userInfo, linkPair } = this.props
 
     if (!userInfo)  return null
-
-    return this.renderCreateLink()
-
-    return this.renderAnnotatedTwo()
 
     if (userInfo.user_activate === '0') {
       return this.renderUserNotActivated()
     }
 
-    return this.renderNormal()
+    switch (linkPair && linkPair.status) {
+      case LINK_PAIR_STATUS.EMPTY:      return this.renderNormal()
+      case LINK_PAIR_STATUS.ONE:        return this.renderAnnotatedOne()
+      case LINK_PAIR_STATUS.TWO:        return this.renderAnnotatedTwo()
+      case LINK_PAIR_STATUS.READY:      return this.renderCreateLink()
+      default:                          return 'Unknown status'
+    }
   }
 
   render () {
@@ -269,7 +325,10 @@ class Home extends React.Component {
 
 export default compose(
   connect(
-    state => ({ userInfo: state.userInfo }),
+    state => ({
+      userInfo: state.userInfo,
+      linkPair: state.linkPair
+    }),
     dispatch => bindActionCreators({...actions}, dispatch)
   ),
   withRouter,

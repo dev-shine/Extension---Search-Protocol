@@ -1,7 +1,8 @@
 
-const LINK_PAIR_STATUS = {
+export const LINK_PAIR_STATUS = {
   EMPTY:    'EMPTY',
   ONE:      'ONE',
+  TWO:      'TWO',
   READY:    'READY',
   TOO_MANY: 'TOO_MANY'
 }
@@ -72,6 +73,12 @@ export function encodePair (data) {
   }
 }
 
+export function isLinkReady (link) {
+  const readyResult = !!(link.desc && link.tags && link.image && link.rect && link.url)
+  console.log('isLinkReady', link, readyResult)
+  return readyResult
+}
+
 export class LinkPairModel {
   constructor () {
     this.__resetPair()
@@ -88,6 +95,7 @@ export class LinkPairModel {
 
   addLink (link) {
     this.pair.links.push(link)
+    console.log('addLink', this.pair)
   }
 
   clear () {
@@ -102,7 +110,13 @@ export class LinkPairModel {
     switch (this.pair.links.length) {
       case 0:   return LINK_PAIR_STATUS.EMPTY
       case 1:   return LINK_PAIR_STATUS.ONE
-      case 2:   return LINK_PAIR_STATUS.READY
+      case 2:   {
+        if (isLinkReady(this.pair.links[0]) && isLinkReady(this.pair.links[1])) {
+          return LINK_PAIR_STATUS.READY
+        } else {
+          return LINK_PAIR_STATUS.TWO
+        }
+      }
       default:  return LINK_PAIR_STATUS.TOO_MANY
     }
   }

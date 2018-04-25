@@ -3,6 +3,7 @@ import { bgInit as csBgInit } from '../ipc/ipc_bg_cs'
 import Ext from '../web_extension'
 import { getTabIpcstore } from '../tab_ipc_store'
 import { captureScreenInSelection } from '../capture_screenshot'
+import { getLinkPair } from '../models/link_pair_model'
 import * as httpAPI from './http_api'
 import log from '../log'
 
@@ -77,6 +78,21 @@ const API = {
         }
       })
     })
+  },
+  getLinkPairStatus: () => {
+    const lp = getLinkPair()
+    return Promise.resolve({
+      status: lp.getStatus(),
+      data:   lp.get()
+    })
+  },
+  addLink: (link) => {
+    getLinkPair().addLink(link)
+    return Promise.resolve(true)
+  },
+  clearLinks: () => {
+    getLinkPair().clear()
+    return Promise.resolve(true)
   }
 }
 

@@ -265,8 +265,17 @@ const createAnnotation = () => {
         devicePixelRatio: window.devicePixelRatio
       })
       .then(image => {
-        console.log('got image', image)
+        return API.addLink({
+          url:    window.location.href,
+          tags:   null,
+          desc:   null,
+          image:  image,
+          rect:   boxRect
+        })
+      })
+      .then(() => {
         rectAPI.destroy()
+        return true
       })
       .catch(e => {
         console.error(e)

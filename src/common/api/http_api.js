@@ -108,7 +108,7 @@ export const logout = () => {
   return storeUserInfo(null)
 }
 
-export const getLinks = wrap(({ url }) => {
+export const loadLinks = wrap(({ url }) => {
   return request.post(apiUrl)
   .type('form')
   .send({ url, getContent: true })
