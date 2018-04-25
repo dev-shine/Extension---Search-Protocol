@@ -10,20 +10,6 @@ import { compose, setIn, updateIn } from '../../common/utils'
 import API from '../../common/api/popup_api'
 
 class Home extends React.Component {
-  renderUserNotActivated () {
-    return (
-      <Alert
-        type="info"
-        message={(
-          <div>
-            You're Almost Done! <br/>
-            We just sent you a confirmation Email. Please verify your email to get started.
-          </div>
-        )}
-      />
-    )
-  }
-
   renderNormal () {
     return (
       <div className="annotate-0">
