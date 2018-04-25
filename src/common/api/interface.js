@@ -6,6 +6,7 @@
 // So instead of imporing `bg_api.js`, we violate DRY and duplicate each API method name here as an array
 // It means, whatever API you add to `bg_api.js`, you need to copy method names here
 export const methods = [
+  'getCurrentPageInfo',
   'login',
   'logout',
   'register',
@@ -17,6 +18,7 @@ export const methods = [
   'captureScreenInSelection',
   'loadLinks',
   'postLinks',
+  'loadLinksForCurrentPage',
   'getLinkPairStatus',
   'setLinkPair',
   'addLink',

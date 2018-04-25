@@ -43,6 +43,14 @@ const getCurrentTab = () => {
   })
 }
 
+const getCurrentPageInfo = () => {
+  return getCurrentTab()
+  .then(tab => ({
+    url:    tab.url,
+    title:  tab.title
+  }))
+}
+
 const getCurrentTabIpc = () => {
   return getCurrentTab()
   .then(tab => tabIpcStore.get(tab.id))
@@ -50,6 +58,16 @@ const getCurrentTabIpc = () => {
 
 const API = {
   ...httpAPI,
+  loadLinksForCurrentPage: () => {
+    return getCurrentPageInfo()
+    .then(info => {
+      const isUrlValid = /^(https?|file)/.test(info.url)
+
+      if (!isUrlValid) throw new Error('current page not supported')
+      return API.loadLinks({ url: info.url })
+    })
+  },
+  getCurrentPageInfo,
   createTab: (data) => {
     return Ext.tabs.create(data)
   },

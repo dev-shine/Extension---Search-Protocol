@@ -8,8 +8,20 @@ import './home.scss'
 import * as actions from '../actions'
 import { compose, setIn, updateIn } from '../../common/utils'
 import API from '../../common/api/popup_api'
+import { notifyError, notifySuccess } from '../../components/notification'
 
 class Home extends React.Component {
+  onClickLoadLinks = () => {
+    API.loadLinksForCurrentPage()
+    .then(links => {
+      notifySuccess('Found Bridgit links. Please wait', 'Success', { duration: 1500 })
+      API.askCurrentTab('SHOW_LINKS', { links })
+    })
+    .catch(e => {
+      notifyError(e.message)
+    })
+  }
+
   renderNormal () {
     return (
       <div className="annotate-0">
@@ -33,7 +45,7 @@ class Home extends React.Component {
             type="primary"
             size="large"
             className="show-links-button"
-            onClick={() => {}}
+            onClick={this.onClickLoadLinks}
           >
             Bridgit Specs
           </Button>
