@@ -376,3 +376,55 @@ export const bindDrag = ({ onDragStart, onDragEnd, onDrag, $el, doc = document }
     $el.removeEventListener('mousedown', onMouseDown)
   }
 }
+
+export const createOverlayForRange = ({ range, color = '#EF5D8F', opacity = 0.5 }) => {
+  const rects = range.getClientRects()
+  const $root = createEl({})
+
+  const $overlays = rects.map(rect => {
+    const $dom = createEl({
+      style: {
+        opacity,
+        backgroundColor:  color,
+        position:         'absolute',
+        top:              pixel(rect.top),
+        left:             pixel(rect.left),
+        width:            pixel(Math.abs(rect.width)),
+        height:           pixel(Math.abs(rect.height))
+      }
+    })
+
+    return {
+      $dom,
+      destroy: () => $dom.remove()
+    }
+  })
+
+  $overlays.forEach(item => $root.appendChild(item.$dom))
+
+  const api = {
+    $container: $root,
+    destroy: () => {
+      $overlays.forEach(item => item.destroy())
+      $root.remove()
+    },
+    hide: () => {
+      setStyle($root, { display: 'none' })
+      return api
+    },
+    show: () => {
+      setStyle($root, { display: 'block' })
+      return api
+    },
+    setStyle: (style) => {
+      $overlays.forEach(item => setStyle(item.$dom, style))
+      return api
+    },
+    setColor: (color) => {
+      api.setStyle({ backgroundColor: color })
+      return api
+    }
+  }
+
+  return api
+}
