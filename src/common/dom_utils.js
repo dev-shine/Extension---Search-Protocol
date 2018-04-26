@@ -69,3 +69,76 @@ export const offset = function (dom) {
     height: rect.height
   }
 }
+
+export const xpath = (dom, cur, list) => {
+  var getTagIndex = function (dom) {
+    return Array.from(dom.parentNode.childNodes).filter(function (item) {
+      return item.nodeType === dom.nodeType && item.tagName === dom.tagName
+    }).reduce(function (prev, node, i) {
+      if (prev !== null)  return prev
+      return node === dom ? (i + 1) : prev
+    }, null)
+  }
+
+  var name = function (dom) {
+    if (!dom)                 return null
+    if (dom.nodeType === 3)   return '@text'
+
+    var index = getTagIndex(dom)
+    var count = Array.from(dom.parentNode.childNodes).filter(function (item) {
+      return item.nodeType === dom.nodeType && item.tagName === dom.tagName
+    }).length
+    var tag   = dom.tagName.toLowerCase()
+
+    return count > 1 ? (tag + '[' + index + ']') : tag
+  }
+
+  var helper = function (dom, cur, list) {
+    if (!dom)   return null
+
+    if (!cur) {
+      if (dom.nodeType === 3) {
+        return helper(dom.parentNode)
+      } else {
+        return helper(dom, dom, [])
+      }
+    }
+
+    if (!cur.parentNode) {
+      return ['html'].concat(list)
+    }
+
+    if (cur.tagName === 'BODY') {
+      return ['html', 'body'].concat(list)
+    }
+
+    if (cur.id) {
+      return [`*[@id="${cur.id}"]`].concat(list)
+    }
+
+    return helper(dom, cur.parentNode, [name(cur)].concat(list))
+  }
+
+  var parts   = helper(dom, cur, list)
+  var prefix  = parts[0] === 'html' ? '/' : '//'
+  var ret     = prefix + parts.join('/')
+
+  return ret
+}
+
+export const getElementsByXPath = (xpath, $container) => {
+  const snapshot = document.evaluate(
+    xpath,
+    $container || document.body,
+    null,
+    XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+    null
+  )
+  const res = []
+
+  for (let i = 0, len = snapshot.snapshotLength; i < len; i++) {
+    res.push(snapshot.snapshotItem(i))
+  }
+
+  return res
+}
