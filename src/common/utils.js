@@ -145,3 +145,7 @@ export const cn = (...list) => {
     return prev
   }, []).join(' ')
 }
+
+export const and = (...list) => list.reduce((prev, cur) => prev && cur, true)
+
+export const or = (...list) => list.reduce((prev, cur) => prev || cur, false)

@@ -8,10 +8,15 @@ import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel } fro
 import { captureClientAPI } from '../../../common/capture_screenshot'
 import { rect2offset } from '../../../common/models/link_pair_model'
 
-import { createSelectionBox, createButtons, createRect } from './common'
+import { createSelectionBox, createButtons, createRect, createContextMenus } from './common'
 
 const bindEvents = () => {
   ipc.onAsk(onBgRequest)
+}
+
+const init = () => {
+  bindEvents()
+  initContextMenus()
 }
 
 let rectAPI
@@ -215,4 +220,65 @@ const showLinks = (pairs, url) => {
   return linksAPI
 }
 
-bindEvents()
+const initContextMenus = () => {
+  const commonOptions = {
+    hoverStyle: {
+      background: '#f384aa',
+      color:      '#fff'
+    },
+    normalStyle: {
+      background: '#fff',
+      color:      '#333',
+      fontSize:   '13px',
+      lineHeight: '32px',
+      padding:    '0 10px',
+      cursor:     'pointer'
+    },
+    containerStyle: {
+      overflow:     'hidden',
+      borderRadius: '3px',
+      border:       '1px solid #ccc',
+      boxShadow:    'rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px'
+    }
+  }
+  const destroy = createContextMenus({
+    menusOnSelection: {
+      ...commonOptions,
+      id: '__on_selection__',
+      menus: [
+        {
+          text: 'Annotate',
+          onClick: () => {
+            log('todo annotate')
+          }
+        },
+        {
+          text: 'Build Bridge',
+          onClick: () => {
+            log('todo bridge')
+          }
+        }
+      ]
+    },
+    menusOnImage: {
+      ...commonOptions,
+      id: '__on_image__',
+      menus: [
+        {
+          text: 'Select Area',
+          onClick: () => {
+            log('todo select area')
+          }
+        },
+        {
+          text: 'Build Bridge',
+          onClick: () => {
+            log('todo bridge')
+          }
+        }
+      ]
+    }
+  })
+}
+
+init()

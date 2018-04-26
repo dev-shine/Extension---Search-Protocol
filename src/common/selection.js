@@ -1,4 +1,5 @@
-import { xpath, getElementsByXPath } from './dom_utils'
+import { xpath, getElementsByXPath, scrollLeft, scrollTop } from './dom_utils'
+import { or, and } from './utils'
 
 export const createRange = () => new Range()
 
@@ -30,4 +31,31 @@ export const parseRangeJSON = (rangeJson) => {
   r.setEnd($end, rangeJson.end.offset)
 
   return r
+}
+
+export const isPointInRect = (point, rect) => {
+  return (
+    point.x > rect.x &&
+    point.y > rect.y &&
+    point.x < (rect.x + rect.width) &&
+    point.y < (rect.y + rect.height)
+  )
+}
+
+export const isPointInRange = (point, range) => {
+  const rects = Array.from(range.getClientRects())
+  const sx    = scrollLeft(document)
+  const sy    = scrollTop(document)
+  const isIn  = (point, rect) => {
+    return isPointInRect(point, {
+      x:        rect.left + sx,
+      y:        rect.top + sy,
+      width:    rect.width,
+      height:   rect.height
+    })
+  }
+
+  console.log(point, rects)
+
+  return or(...rects.map(rect => isIn(point, rect)))
 }
