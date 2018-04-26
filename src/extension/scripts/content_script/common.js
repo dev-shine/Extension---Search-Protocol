@@ -1,5 +1,6 @@
 import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel } from '../../../common/dom_utils'
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../../../common/shapes/box'
+import { isPointInRange } from '../../../common/selection'
 import API from '../../../common/api/cs_api'
 
 export const commonStyle = {
@@ -377,8 +378,20 @@ export const bindDrag = ({ onDragStart, onDragEnd, onDrag, $el, doc = document }
   }
 }
 
+export const bindHoverAndClick = ({ onMouseOver, onMouseOut, onClick, $el }) => {
+  $el.addEventListener('mouseover', onMouseOver)
+  $el.addEventListener('mouseout', onMouseOut)
+  $el.addEventListener('click', onClick)
+
+  return () => {
+    $el.removeEventListener('mouseover', onMouseOver)
+    $el.removeEventListener('mouseout', onMouseOut)
+    $el.removeEventListener('click', onClick)
+  }
+}
+
 export const createOverlayForRange = ({ range, color = '#EF5D8F', opacity = 0.5 }) => {
-  const rects = range.getClientRects()
+  const rects = Array.from(range.getClientRects())
   const $root = createEl({})
 
   const $overlays = rects.map(rect => {
@@ -427,4 +440,163 @@ export const createOverlayForRange = ({ range, color = '#EF5D8F', opacity = 0.5 
   }
 
   return api
+}
+
+export const renderContentMenus = ({ menus, hoverStyle, normalStyle, containerStyle = {} }) => {
+  const menuStyle = {
+    ...commonStyle,
+    ...containerStyle,
+    position: 'absolute',
+    x: 0,
+    y: 0
+  }
+  const menuItemStyle = {
+    ...commonStyle,
+    ...normalStyle
+  }
+  const $menu = createEl({ style: menuStyle })
+  const $menuList = menus.map(menu => {
+    const $dom = createEl({
+      text:  menu.text,
+      style: menuItemStyle
+    })
+    const unbind = bindHoverAndClick({
+      $el: $dom,
+      onMouseOver: () => {
+        setStyle($dom, hoverStyle)
+      },
+      onMouseOut: () => {
+        setStyle($dom, normalStyle)
+      },
+      onClick: (e) => {
+        if (menu.onClick) {
+          menu.onClick(e)
+        }
+        api.hide()
+      }
+    })
+
+    return {
+      $dom,
+      destroy: () => {
+        unbind()
+        $dom.remove()
+      }
+    }
+  })
+
+  const onClickWholeMenu = (e) => {
+    e.stopPropagation()
+  }
+  const onClickDoc = (e) => {
+    api.hide()
+  }
+
+  $menu.addEventListener('click', onClickWholeMenu)
+  document.addEventListener('click', onClickDoc)
+
+  $menuList.forEach(item => $menu.appendChild(item.$dom))
+  document.body.appendChild($menu)
+
+  const actualStyle = getComputedStyle($menu)
+  const api = {
+    $container: $menu,
+    width:      parseInt(actualStyle.width),
+    height:     parseInt(actualStyle.height),
+    show: () => {
+      setStyle($menu, { display: 'block' })
+    },
+    hide: () => {
+      setStyle($menu, { display: 'none' })
+    },
+    destroy: () => {
+      $menuList.forEach(item => item.destroy())
+      $menu.remove()
+    }
+  }
+
+  return api
+}
+
+export const showContextMenus = (function () {
+  const cache = {}
+
+  return ({ menuOptions, pos, clear = false }) => {
+    const { id, menus, hoverStyle, normalStyle } = menuOptions
+    let menuObj = cache[id]
+
+    if (!menuObj) {
+      menuObj   = renderContentMenus(menuOptions)
+      cache[id] = menuObj
+    }
+
+    const { width, height } = menuOptions
+    const positionStyle     = rightPosition({
+      size:   { width, height },
+      cursor: pos
+    })
+
+    setStyle(menuObj.$container, positionStyle)
+    menuObj.show()
+  }
+})()
+
+export const rightPosition = ({ size, cursor }) => {
+  const rw  = size.width
+  const rh  = size.height
+  const sx  = scrollLeft(document)
+  const sy  = scrollTop(document)
+  const w   = clientWidth(document)
+  const h   = clientHeight(document)
+  const x   = cursor.x - sx
+  const y   = cursor.y - sy
+
+  const left = x + rw > w ? (x - rw) : x
+  const top  = y + rh > h ? (y - rh) : y
+
+  return {
+    left: pixel(left + sx),
+    top:  pixel(top + sy)
+  }
+}
+
+export const createContextMenus = ({ menusOnSelection, menusOnImage }) => {
+  const isOnSelection = (e) => {
+    const s = window.getSelection()
+    if (s.isCollapsed)  return false
+
+    const r = s.getRangeAt(0)
+    const p = { x: e.pageX, y: e.pageY }
+
+    return isPointInRange(p, r)
+  }
+  const isOnImage = (e) => {
+    const dom = e.target
+    return dom.tagName && dom.tagName.toLowerCase() === 'img'
+  }
+  const onContextMenu = (e) => {
+    const pos = {
+      x: e.pageX,
+      y: e.pageY
+    }
+
+    if (isOnImage(e)) {
+      e.preventDefault()
+      return showContextMenus({ pos, menuOptions: menusOnImage })
+    }
+
+    if (isOnSelection(e)) {
+      e.preventDefault()
+      return showContextMenus({ pos, menuOptions: menusOnSelection })
+    }
+  }
+
+  document.addEventListener('contextmenu', onContextMenu)
+
+  return {
+    destroy: () => {
+      document.removeEventListener('contextmenu', onContextMenu)
+      showContextMenus({ clear: false })
+    }
+  }
 }
