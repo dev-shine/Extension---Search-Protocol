@@ -88,11 +88,20 @@ module.exports = {
     new CleanWebpackPlugin(path.resolve(__dirname, 'dist')),
     new CopyWebpackPlugin([
       {
-        from: 'src/extension/assets'
+        from: 'src/extension/assets',
+        transform: function (content, filepath) {
+          if (process.env.NODE_ENV !== 'production')    return content
+          if (filepath.indexOf('manifest.json') === -1) return content
+
+          const manifest = JSON.parse('' + content)
+          delete manifest.content_security_policy
+
+          return JSON.stringify(manifest, null, 2)
+        }
       }
     ])
-  ],
-  devtool: 'inline-source-map'
+]
+  // devtool: 'inline-source-map'
 };
 
 if (process.env.NODE_ENV === 'production') {
