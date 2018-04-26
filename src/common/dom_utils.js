@@ -80,6 +80,19 @@ export const xpath = (dom, cur, list) => {
     }, null)
   }
 
+  var getTextNodeIndex = function (textNode) {
+    let count = -1
+    let found = false
+
+    textNode.parentNode.childNodes.forEach(node => {
+      if (found)  return
+      if (node.nodeType === 3)  count++
+      if (node === textNode)    found = true
+    })
+
+    return count
+  }
+
   var name = function (dom) {
     if (!dom)                 return null
     if (dom.nodeType === 3)   return '@text'
@@ -98,7 +111,9 @@ export const xpath = (dom, cur, list) => {
 
     if (!cur) {
       if (dom.nodeType === 3) {
-        return helper(dom.parentNode)
+        const textIndex = getTextNodeIndex(dom)
+        const str       = 'text()' + (textIndex === 0 ? '' : `[${textIndex + 1}]`)
+        return helper(dom, dom.parentNode, [str])
       } else {
         return helper(dom, dom, [])
       }
