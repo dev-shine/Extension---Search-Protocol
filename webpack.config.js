@@ -14,7 +14,8 @@ module.exports = {
     inject:           './src/extension/scripts/inject.js',
     background:       './src/extension/scripts/bg.js',
     sign_in_google:   './src/extension/scripts/sign_in_google.js',
-    links_modal:      './src/links_modal/index.js'
+    links_modal:      './src/links_modal/index.js',
+    annotate:         './src/annotate/index.js'
   },
   output: {
     path: path.join(__dirname, 'dist'),
@@ -75,16 +76,6 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin('antd.css'),
-    // new webpack.optimize.CommonsChunkPlugin({
-    //   name: 'vendor',
-    //   minChunks: function (module) {
-    //     return module.context && module.context.includes('node_modules')
-    //   }
-    // }),
-    // new webpack.optimize.CommonsChunkPlugin({
-    //   name: 'manifest',
-    //   minChunks: Infinity
-    // }),
     new CleanWebpackPlugin(path.resolve(__dirname, 'dist')),
     new CopyWebpackPlugin([
       {
@@ -100,8 +91,8 @@ module.exports = {
         }
       }
     ])
-]
-  // devtool: 'inline-source-map'
+  ],
+  devtool: 'inline-source-map'
 };
 
 if (process.env.NODE_ENV === 'production') {

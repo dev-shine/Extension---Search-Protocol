@@ -8,7 +8,7 @@ import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel } fro
 import { captureClientAPI } from '../../../common/capture_screenshot'
 import { rect2offset } from '../../../common/models/link_pair_model'
 
-import { createSelectionBox, createButtons, createRect, createContextMenus } from './common'
+import { createSelectionBox, createButtons, createRect, createContextMenus, createIframeWithMask } from './common'
 
 const bindEvents = () => {
   ipc.onAsk(onBgRequest)
@@ -250,6 +250,7 @@ const initContextMenus = () => {
           text: 'Annotate',
           onClick: () => {
             log('todo annotate')
+            annotate()
           }
         },
         {
@@ -278,6 +279,37 @@ const initContextMenus = () => {
         }
       ]
     }
+  })
+}
+
+const annotate = ({ type, meta } = {}) => {
+  const iframeAPI = createIframeWithMask({
+    url:    Ext.extension.getURL('annotate.html'),
+    width:  600,
+    height: 400,
+    onAsk: (cmd, args) => {
+      switch (cmd) {
+        case 'INIT':
+          return {
+            title: '',
+            desc: '',
+            tags: ''
+          }
+
+        case 'CLOSE':
+          iframeAPI.destroy()
+          return true
+      }
+    }
+  })
+
+  setStyle(iframeAPI.$iframe, {
+    position: 'fixed',
+    zIndex: 110000,
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    border: '1px solid #ccc'
   })
 }
 

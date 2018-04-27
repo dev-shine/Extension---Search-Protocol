@@ -1,0 +1,15 @@
+body {
+  padding: 20px;
+}
+
+.annotation-wrapper {
+  .actions {
+    button {
+      margin-right: 15px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

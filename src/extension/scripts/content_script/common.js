@@ -1,6 +1,7 @@
 import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel } from '../../../common/dom_utils'
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../../../common/shapes/box'
 import { isPointInRange } from '../../../common/selection'
+import { createIframe } from '../../../common/ipc/cs_postmessage'
 import API from '../../../common/api/cs_api'
 
 export const commonStyle = {
@@ -599,4 +600,31 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage }) => {
       showContextMenus({ clear: false })
     }
   }
+}
+
+export const createIframeWithMask = (...args) => {
+  const iframeAPI = createIframe(...args)
+  const $mask = createEl({
+    style: {
+      position: 'fixed',
+      zIndex: 100000,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0
+    }
+  })
+
+  document.body.appendChild($mask)
+
+  const newAPI = {
+    ...iframeAPI,
+    destroy: () => {
+      $mask.remove()
+      iframeAPI.destroy()
+    }
+  }
+
+  return newAPI
 }
