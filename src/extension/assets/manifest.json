@@ -26,6 +26,8 @@
     "inject.js",
     "links_modal.html",
     "links_modal.js",
+    "annotate.html",
+    "annotate.js",
     "vendor.js",
     "antd.css"
   ],

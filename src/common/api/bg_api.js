@@ -115,6 +115,10 @@ const API = {
   clearLinks: () => {
     getLinkPair().clear()
     return Promise.resolve(true)
+  },
+  saveAnnotation: () => {
+    // TODO
+    return Promise.resolve(true)
   }
 }
 
