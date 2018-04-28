@@ -15,7 +15,8 @@ module.exports = {
     background:       './src/extension/scripts/bg.js',
     sign_in_google:   './src/extension/scripts/sign_in_google.js',
     links_modal:      './src/links_modal/index.js',
-    annotate:         './src/annotate/index.js'
+    annotate:         './src/annotate/index.js',
+    build_bridge:     './src/build_bridge/index.js'
   },
   output: {
     path: path.join(__dirname, 'dist'),
