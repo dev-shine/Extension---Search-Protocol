@@ -28,6 +28,8 @@
     "links_modal.js",
     "annotate.html",
     "annotate.js",
+    "image_area.html",
+    "image_area.js",
     "vendor.js",
     "antd.css"
   ],
