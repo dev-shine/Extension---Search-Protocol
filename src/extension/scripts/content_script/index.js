@@ -350,6 +350,8 @@ const annotate = ({ type, meta } = {}) => {
     width:  600,
     height: 400,
     onAsk: (cmd, args) => {
+      log('annotate onAsk', cmd, args)
+
       switch (cmd) {
         case 'INIT':
           return {
@@ -361,6 +363,60 @@ const annotate = ({ type, meta } = {}) => {
         case 'CLOSE':
           iframeAPI.destroy()
           return true
+
+        case 'DID_SAVE':
+          API.getLinkPairStatus()
+          .then(linkPair => {
+            if (true || linkPair.status === LINK_PAIR_STATUS.READY) {
+              builBridgeWithData(linkPair)
+            }
+          })
+          return true
+      }
+    }
+  })
+
+  setStyle(iframeAPI.$iframe, {
+    position: 'fixed',
+    zIndex: 110000,
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    border: '1px solid #ccc'
+  })
+}
+
+const builBridgeWithData = (linkPair) => {
+  const p = linkPair ? Promise.resolve(linkPair) : API.getLinkPairStatus()
+  return p.then(buildBridge)
+}
+
+const buildBridge = (linkPair) => {
+  const iframeAPI = createIframeWithMask({
+    url:    Ext.extension.getURL('build_bridge.html'),
+    width:  600,
+    height: 400,
+    onAsk: (cmd, args) => {
+      switch (cmd) {
+        case 'INIT':
+          return {
+            title: '',
+            desc: '',
+            tags: ''
+          }
+
+        case 'CLOSE':
+          iframeAPI.destroy()
+          return true
+
+        case 'DID_SAVE':
+          API.getLinkPairStatus()
+          .then(({ status }) => {
+            if (status === LINK_PAIR_STATUS.READY) {
+              buildBridge()
+            }
+          })
+          return undefined
       }
     }
   })
