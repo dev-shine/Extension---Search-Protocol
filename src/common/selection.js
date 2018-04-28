@@ -43,7 +43,8 @@ export const isPointInRect = (point, rect) => {
 }
 
 export const isPointInRange = (point, range) => {
-  const rects = Array.from(range.getClientRects())
+  // const rects = Array.from(range.getClientRects())
+  const rects = [range.getBoundingClientRect()]
   const sx    = scrollLeft(document)
   const sy    = scrollTop(document)
   const isIn  = (point, rect) => {
