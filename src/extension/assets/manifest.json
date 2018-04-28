@@ -30,6 +30,8 @@
     "annotate.js",
     "image_area.html",
     "image_area.js",
+    "build_bridge.html",
+    "build_bridge.js",
     "vendor.js",
     "antd.css"
   ],
