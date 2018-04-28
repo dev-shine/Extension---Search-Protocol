@@ -1,13 +1,11 @@
 import React, { Component } from 'react'
 import { Modal, Select, Form, Input, Button } from 'antd'
 import { notifyError, notifySuccess } from '../components/notification'
-import { ipcForIframe } from '../common/ipc/cs_postmessage'
-import API from '../common/api/cs_iframe_api'
-import { compose, setIn, updateIn } from '../../common/utils'
+import ipc from '../common/ipc/ipc_dynamic'
+import API from '../common/api/cs_api'
+import { compose, setIn, updateIn } from '../common/utils'
 import CreateLinkComp from '../components/create_link'
 import './app.scss'
-
-const ipc = ipcForIframe()
 
 class App extends Component {
   state = {
@@ -28,7 +26,10 @@ class App extends Component {
     API.postLinks(data)
     .then(() => {
       notifySuccess('Successfully posted')
-      setTimeout(() => this.onClickCancel(), 1500)
+      setTimeout(() => {
+        ipc.ask('DID_SAVE')
+        this.onClickCancel()
+      }, 1500)
     })
     .catch(e => {
       notifyError(e.message)
@@ -37,11 +38,13 @@ class App extends Component {
 
   onClickCancel = () => {
     API.setLinkPair({ links: [], desc: null, tags: null })
+    this.onClose()
   }
 
   componentDidMount () {
     API.getLinkPairStatus()
     .then(linkPair => {
+      console.log('got linkPair', linkPair)
       this.setState({ linkPair })
     })
   }
