@@ -25,7 +25,7 @@ class App extends Component {
       })
       .then(() => {
         notifySuccess('Successfully saved')
-        setTimeout(() => ipc.ask('CLOSE'), 1500)
+        setTimeout(() => this.onClickCancel(), 1500)
       })
       .catch(e => {
         notifyError(e.message)
@@ -34,6 +34,7 @@ class App extends Component {
   }
 
   onClickCancel = () => {
+    ipc.ask('DID_SAVE')
     ipc.ask('CLOSE')
   }
 
