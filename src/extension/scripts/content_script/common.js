@@ -473,7 +473,7 @@ export const renderContentMenus = ({ menus, hoverStyle, normalStyle, containerSt
         if (menu.onClick) {
           menu.onClick(e)
         }
-        api.hide()
+        api.destroy()
       }
     })
 
@@ -524,7 +524,8 @@ export const showContextMenus = (function () {
 
   return ({ menuOptions, pos, clear = false }) => {
     const { id, menus, hoverStyle, normalStyle } = menuOptions
-    let menuObj = cache[id]
+    // let menuObj = cache[id]
+    let menuObj = null
 
     if (!menuObj) {
       menuObj   = renderContentMenus(menuOptions)
