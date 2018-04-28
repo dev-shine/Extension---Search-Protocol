@@ -70,6 +70,18 @@
 
   var Ext = typeof chrome !== 'undefined' ? adaptChrome(UsedAPI, chrome) : browser
 
+  Ext.getPageType = () => {
+    if (chrome && chrome.extension && chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() === window) {
+        return 'BACKGROUND';
+    } else if (chrome && chrome.extension && chrome.extension.getBackgroundPage && chrome.extension.getBackgroundPage() !== window) {
+        return 'POPUP';
+    } else if (!chrome || !chrome.runtime || !chrome.runtime.onMessage) {
+        return 'WEB';
+    } else {
+        return 'CONTENT';
+    }
+  }
+
   if (typeof module !== 'undefined') {
     module.exports = Ext
   } else if (typeof window !== 'undefined') {
