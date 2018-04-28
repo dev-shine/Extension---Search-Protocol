@@ -9,7 +9,7 @@ const relationships = [
 
 class CreateLinkComp extends React.Component {
   static propTypes = {
-    linkPair:       PropTypes.object.isRequired,
+    linkPair:       PropTypes.object,
     onUpdateField:  PropTypes.func.isRequired,
     onSubmit:       PropTypes.func.isRequired,
     onCancel:       PropTypes.func.isRequired
