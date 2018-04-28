@@ -17,19 +17,14 @@ const relationships = [
 ]
 
 class CreateLink extends React.Component {
-  onClickSubmit = () => {
-    this.props.form.validateFields((err, values) => {
-      if (err)  return
-      const pair = this.props.linkPair.data
-
-      API.postLinks({...pair, ...values})
-      .then(() => {
-        notifySuccess('Successfully posted')
-        setTimeout(() => this.props.resetLinkPair(), 1500)
-      })
-      .catch(e => {
-        notifyError(e.message)
-      })
+  onClickSubmit = (data) => {
+    API.postLinks(data)
+    .then(() => {
+      notifySuccess('Successfully posted')
+      setTimeout(() => this.props.resetLinkPair(), 1500)
+    })
+    .catch(e => {
+      notifyError(e.message)
     })
   }
 

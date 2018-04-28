@@ -15,6 +15,14 @@ class CreateLinkComp extends React.Component {
     onCancel:       PropTypes.func.isRequired
   }
 
+  onSubmit = () => {
+    this.props.form.validateFields((err, values) => {
+      if (err)  return
+      const pair = this.props.linkPair.data
+      this.props.onSubmit({...pair, ...values})
+    })
+  }
+
   render () {
     if (!this.props.linkPair) return null
 
@@ -92,7 +100,7 @@ class CreateLinkComp extends React.Component {
             type="primary"
             size="large"
             className="post-button"
-            onClick={this.props.onSubmit}
+            onClick={this.onSubmit}
           >
             POST IT!
           </Button>
@@ -101,9 +109,6 @@ class CreateLinkComp extends React.Component {
             size="large"
             className="cancel-button"
             onClick={this.props.onCancel}
-            onOldClick={() => {
-              this.props.resetLinkPair()
-            }}
           >
             Cancel
           </Button>
