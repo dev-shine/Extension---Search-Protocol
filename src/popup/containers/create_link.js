@@ -7,11 +7,9 @@ import { Alert, Button, Select, Form, Input } from 'antd'
 import './annotate.scss'
 import * as actions from '../actions'
 import { compose, setIn, updateIn } from '../../common/utils'
-import UserInfo from '../components/user_info'
-import ImageForm from '../components/image_form'
 import { notifyError, notifySuccess } from '../../components/notification'
+import CreateLinkComp from '../../components/create_link'
 import API from '../../common/api/popup_api'
-import { LINK_PAIR_STATUS } from '../../common/models/link_pair_model'
 
 const relationships = [
   'Supports', 'Refutes', 'Models', 'Aggregates',
@@ -42,98 +40,13 @@ class CreateLink extends React.Component {
   }
 
   render () {
-    if (!this.props.linkPair) return null
-
-    const { getFieldDecorator } = this.props.form
-    const pair = this.props.linkPair.data
-
-    if (!pair.links || !pair.links.length)  return null
-
     return (
-      <div className="to-create-link">
-        <h2>Create Link</h2>
-        <Form onSubmit={this.handleSubmit} className="create-link-form">
-          <Form.Item label="How are these links related?">
-            <div className="relationship-row">
-              <div className="image-box">
-                <img src={pair.links[0].image} />
-              </div>
-
-              <div>
-                {getFieldDecorator('relationship', {
-                  ...(pair.relationship ? { initialValue: pair.relationship } : {}),
-                  rules: [
-                    { required: true, message: 'Please select relation' }
-                  ]
-                })(
-                  <Select
-                    placeholder="Choose a relationship"
-                    onChange={val => this.onUpdateField(val, 'relationship')}
-                  >
-                    {relationships.map(r => (
-                      <Select.Option key={r} value={r}>{r}</Select.Option>
-                    ))}
-                  </Select>
-                )}
-              </div>
-
-              <div className="image-box">
-                <img src={pair.links[1].image} />
-              </div>
-            </div>
-          </Form.Item>
-
-          <Form.Item label="What do you want to say about this link?">
-            {getFieldDecorator('desc', {
-              initialValue: pair.desc,
-              validateTrigger: ['onBlur'],
-              rules: [
-                { required: true, message: 'Please input description' }
-              ]
-            })(
-              <Input.TextArea
-                placeholder="Enter Description For This Link"
-                onChange={e => this.onUpdateField(e.target.value, 'desc')}
-              />
-            )}
-          </Form.Item>
-          <Form.Item label="Tags">
-            {getFieldDecorator('tags', {
-              initialValue: pair.tags,
-              validateTrigger: ['onBlur'],
-              rules: [
-                { required: true, message: 'Please input tags' }
-              ]
-            })(
-              <Input
-                placeholder="Supporting information, opposing information, data, another perspective, etc."
-                onChange={e => this.onUpdateField(e.target.value, 'tags')}
-              />
-            )}
-          </Form.Item>
-        </Form>
-
-        <div className="actions">
-          <Button
-            type="primary"
-            size="large"
-            className="post-button"
-            onClick={this.onClickSubmit}
-          >
-            POST IT!
-          </Button>
-          <Button
-            type="danger"
-            size="large"
-            className="cancel-button"
-            onClick={() => {
-              this.props.resetLinkPair()
-            }}
-          >
-            Cancel
-          </Button>
-        </div>
-      </div>
+      <CreateLinkComp
+        linkPair={this.props.linkPair}
+        onUpdateField={this.onUpdateField}
+        onSubmit={this.onClickSubmit}
+        onCancel={() => this.props.resetLinkPair()}
+      />
     )
   }
 }
@@ -141,7 +54,6 @@ class CreateLink extends React.Component {
 export default compose(
   connect(
     state => ({
-      userInfo: state.userInfo,
       linkPair: state.linkPair
     }),
     dispatch => bindActionCreators({...actions}, dispatch)
