@@ -6,7 +6,7 @@ import { createIframe } from '../../../common/ipc/cs_postmessage'
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../../../common/shapes/box'
 import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
-import { rect2offset } from '../../../common/models/link_pair_model'
+import { rect2offset, LINK_PAIR_STATUS } from '../../../common/models/link_pair_model'
 
 import { createSelectionBox, createButtons, createRect, createContextMenus, createIframeWithMask } from './common'
 
@@ -221,6 +221,8 @@ const showLinks = (pairs, url) => {
 }
 
 const initContextMenus = () => {
+  let linkPairStatus = LINK_PAIR_STATUS.EMPTY
+
   const commonOptions = {
     hoverStyle: {
       background: '#f384aa',
@@ -245,41 +247,101 @@ const initContextMenus = () => {
     menusOnSelection: {
       ...commonOptions,
       id: '__on_selection__',
-      menus: [
-        {
-          text: 'Annotate',
-          onClick: () => {
-            log('todo annotate')
-            annotate()
-          }
-        },
-        {
-          text: 'Build Bridge',
-          onClick: () => {
-            log('todo bridge')
-          }
+      menus: () => {
+        switch (linkPairStatus) {
+          case LINK_PAIR_STATUS.EMPTY:
+            return [
+              {
+                text: 'Create Bridge',
+                onClick: () => {
+                  log('todo annotate')
+                  annotate()
+                }
+              }
+            ]
+          case LINK_PAIR_STATUS.ONE:
+            return [
+              {
+                text: 'Build Bridge',
+                onClick: () => {
+                  log('todo annotate')
+                  annotate()
+                }
+              }
+            ]
+          case LINK_PAIR_STATUS.TWO:
+          case LINK_PAIR_STATUS.READY:
+          case LINK_PAIR_STATUS.TOO_MANY:
+            return [
+              {
+                text: 'Clear the temporary bridge data',
+                onClick: () => {
+                  log('todo clear')
+                }
+              }
+            ]
         }
-      ]
+      }
     },
     menusOnImage: {
       ...commonOptions,
       id: '__on_image__',
-      menus: [
-        {
+      menus: () => {
+        const selectAreaItem = {
           text: 'Select Area',
           onClick: () => {
             log('todo select area')
           }
-        },
-        {
-          text: 'Build Bridge',
-          onClick: () => {
-            log('todo bridge')
-          }
         }
-      ]
+
+        switch (linkPairStatus) {
+          case LINK_PAIR_STATUS.EMPTY:
+            return [
+              selectAreaItem,
+              {
+                text: 'Create Bridge',
+                onClick: () => {
+                  log('todo annotate')
+                  annotate()
+                }
+              }
+            ]
+          case LINK_PAIR_STATUS.ONE:
+            return [
+              selectAreaItem,
+              {
+                text: 'Build Bridge',
+                onClick: () => {
+                  log('todo annotate')
+                  annotate()
+                }
+              }
+            ]
+          case LINK_PAIR_STATUS.TWO:
+          case LINK_PAIR_STATUS.READY:
+          case LINK_PAIR_STATUS.TOO_MANY:
+            return [
+              {
+                text: 'Clear the temporary bridge data',
+                onClick: () => {
+                  log('todo clear')
+                }
+              }
+            ]
+        }
+      }
     }
   })
+
+  const pullStatus = () => {
+    API.getLinkPairStatus()
+    .then(({ status }) => {
+      linkPairStatus = status
+    })
+  }
+
+  const timer = setInterval(pullStatus, 2000)
+  return () => clearInterval(timer)
 }
 
 const annotate = ({ type, meta } = {}) => {

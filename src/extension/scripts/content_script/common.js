@@ -456,7 +456,7 @@ export const renderContentMenus = ({ menus, hoverStyle, normalStyle, containerSt
     ...normalStyle
   }
   const $menu = createEl({ style: menuStyle })
-  const $menuList = menus.map(menu => {
+  const $menuList = menus().map(menu => {
     const $dom = createEl({
       text:  menu.text,
       style: menuItemStyle
