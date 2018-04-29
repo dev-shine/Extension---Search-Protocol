@@ -1,3 +1,4 @@
+import { and } from '../utils'
 
 export const LINK_PAIR_STATUS = {
   EMPTY:    'EMPTY',
@@ -144,17 +145,33 @@ export function isLinkReady (link) {
 
   switch (link.type) {
     case TARGET_TYPE.IMAGE:
-      return !!(common && link.image && link.rect && link.locator)
+      return !!(common /* && link.image  */ && link.rect && link.locator)
 
     case TARGET_TYPE.SELECTION:
       return !!(common && link.start && link.end && link.text)
 
     case TARGET_TYPE.SCREENSHOT:
-      return !!(common && link.image && link.rect)
+      return !!(common /* && link.image  */  && link.rect)
 
     default:
       throw new Error(`invalid type: '${link.type}'`)
   }
+}
+
+export function isLinkEqual (a, b) {
+  if (a.type !== b.type)  return false
+
+  const isEqual       = (x, y) => JSON.stringify(x) === JSON.stringify(y)
+  const commonKeys    = ['url', 'title', 'desc', 'tags']
+  const keysToCompare = {
+    [TARGET_TYPE.SCREENSHOT]: [...commonKeys, 'image', 'offset'],
+    [TARGET_TYPE.IMAGE]:      [...commonKeys, 'image', 'offset', 'locator'],
+    [TARGET_TYPE.SELECTION]:  [...commonKeys, 'start', 'end', 'text']
+  }
+
+  return and(
+    ...keysToCompare[a.type].map(key => isEqual(a[key], b[key]))
+  )
 }
 
 export class LinkPairModel {
