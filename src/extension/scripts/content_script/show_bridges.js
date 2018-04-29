@@ -191,6 +191,7 @@ export const showBridgeCount = ({ position, text, onClick }) => {
       height:     `${size}px`,
       lineHeight: `${size}px`,
       borderRadius: `${size / 2}px`,
+      border:     '1px solid #666',
       fontSize:   '18px',
       fontWeight: 'bold',
       background: '#fff',
