@@ -7,6 +7,12 @@ export const LINK_PAIR_STATUS = {
   TOO_MANY: 'TOO_MANY'
 }
 
+export const TARGET_TYPE = {
+  SCREENSHOT: 'SCREENSHOT',
+  IMAGE:      'IMAGE',
+  SELECTION:  'SELECTION'
+}
+
 export function offset2rect (offset) {
   return {
     x:      offset.left,
@@ -27,15 +33,46 @@ export function rect2offset (rect) {
 
 export function decodeLink (prefix, data) {
   const p = str => prefix + str
+  const ensureObj = (s) => typeof s === 'string' ? JSON.parse(s) : s
+  const type = data[p('url')]
 
   return {
-    url:     data[p('url')],
-    desc:    data[p('des')],
-    tags:    data[p('tags')],
-    image:   data[p('image')],
-    rect:    offset2rect(
-      typeof data[p('offset')] === 'string' ? JSON.parse(data[p('offset')]) : data[p('offset')]
-    )
+    // Basic Info
+    type:     type,
+    url:      data[p('url')],
+    // Annotation Info
+    title:    data[p('title')],
+    desc:     data[p('des')],
+    tags:     data[p('tags')],
+    // Type Specific Info
+    ...(function () {
+      switch (type) {
+        case 'SCREENSHOT':
+          return {
+            image:  data[p('image')],
+            rect:   offset2rect(ensureObj(data[p('offset')]))
+          }
+        case 'IMAGE':
+          return {
+            locator:  data[p('locator')],
+            image:    data[p('image')],
+            rect:     offset2rect(ensureObj(data[p('offset')]))
+          }
+        case 'SELECTION':
+          return {
+            start: {
+              locator:  data[p('start_locator')],
+              offset:   data[p('start_offset')]
+            },
+            end: {
+              locator:  data[p('end_locator')],
+              offset:   data[p('end_offset')]
+            },
+            text:  data[p('tex')]
+          }
+      }
+    })()
+    ,
   }
 }
 
@@ -43,11 +80,38 @@ export function encodeLink (prefix, data) {
   const p = str => prefix + str
 
   return {
+    // Basic Info
+    [p('type')]:    data.type,
     [p('url')]:     data.url,
+    // Annotation Info
+    [p('title')]:   data.title,
     [p('des')]:     data.desc,
     [p('tags')]:    data.tags,
-    [p('image')]:   '', // Note: return empty for now // data.image,
-    [p('offset')]:  JSON.stringify(rect2offset(data.rect))
+    // Type Specific Info
+    ...(function () {
+      switch (data.type) {
+        case 'SCREENSHOT':
+          return {
+            [p('image')]:   '', // Note: return empty for now // data.image,
+            [p('offset')]:  JSON.stringify(rect2offset(data.rect))
+          }
+        case 'IMAGE':
+          return {
+            [p('locator')]: data.locator,
+            [p('image')]:   '', // Note: return empty for now // data.image,
+            [p('offset')]:  JSON.stringify(rect2offset(data.rect))
+          }
+        case 'SELECTION':
+          return {
+            [p('start_locator')]: data.start.locator,
+            [p('start_offset')]:  data.start.offset,
+            [p('end_locator')]:   data.end.locator,
+            [p('end_offset')]:    data.end.offset,
+            [p('text')]:          data.text
+          }
+      }
+    })()
+
   }
 }
 
