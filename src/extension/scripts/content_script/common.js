@@ -437,6 +437,7 @@ export const renderContentMenus = ({ menus, hoverStyle, normalStyle, containerSt
     ...commonStyle,
     ...containerStyle,
     position: 'absolute',
+    zIndex: 100000,
     x: 0,
     y: 0
   }
