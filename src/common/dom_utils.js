@@ -164,7 +164,6 @@ export const getElementsByXPath = (xpath, $container) => {
 
 export const getElementByXPath = (xpath, $container) => {
   const list = getElementsByXPath(xpath, $container)
-  console.log('getElementByXPath', xpath, list)
   return list && list.length ? list[0] : null
 }
 
