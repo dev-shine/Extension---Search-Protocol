@@ -176,3 +176,11 @@ export const imageSize = ($img) => {
     height: parseInt(style.height)
   }
 }
+
+export const pageX = (clientX, doc = document) => {
+  return clientX + scrollLeft(doc)
+}
+
+export const pageY = (clientY, doc = document) => {
+  return clientY + scrollTop(doc)
+}
