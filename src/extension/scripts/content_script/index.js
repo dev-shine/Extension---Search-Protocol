@@ -146,7 +146,7 @@ const initContextMenus = () => {
         switch (linkPairStatus) {
           case LINK_PAIR_STATUS.EMPTY:
             return [
-              selectAreaItem,
+              // selectAreaItem,
               {
                 text: 'Create Bridge',
                 onClick: (e, { linkData }) => {
@@ -157,7 +157,7 @@ const initContextMenus = () => {
             ]
           case LINK_PAIR_STATUS.ONE:
             return [
-              selectAreaItem,
+              // selectAreaItem,
               {
                 text: 'Build Bridge',
                 onClick: (e, { linkData }) => {
