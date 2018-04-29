@@ -269,32 +269,7 @@ export const createSelectionBox = (options = {}) => {
     {
       text: 'Select',
       onClick: (e) => {
-        rectAPI.hide()
-
-        API.captureScreenInSelection({
-          rect: boxRect,
-          devicePixelRatio: window.devicePixelRatio
-        })
-        .then(image => {
-          return API.addLink({
-            type:   TARGET_TYPE.SCREENSHOT,
-            url:    window.location.href,
-            tags:   null,
-            desc:   null,
-            image:  image,
-            rect:   boxRect
-          })
-        })
-        .then(() => {
-          rectAPI.destroy()
-          setTimeout(() => {
-            alert('Successfully captured. Click on extension icon to take further actions')
-          }, 500)
-          return true
-        })
-        .catch(e => {
-          log.error(e)
-        })
+        options.onFinish({ rectAPI, boxRect })
       }
     },
     {
@@ -405,7 +380,7 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.5 
   const sx    = scrollLeft(document)
   const sy    = scrollTop(document)
 
-  log('createOverlayForRange rects', rects, sx, sy)
+  // log('createOverlayForRange rects', rects, sx, sy)
 
   const $overlays = rects.map(rect => {
     const $dom = createEl({

@@ -100,12 +100,8 @@ export const showScreenshot = (link, getLinksAPI) => {
         })
         .then(image => {
           return API.addLink({
-            type:   TARGET_TYPE.SCREENSHOT,
-            url:    window.location.href,
-            tags:   link.tags,
-            desc:   link.desc,
-            image:  image,
-            rect:   link.rect
+            ...link,
+            image
           })
         })
         .then(() => {
@@ -135,8 +131,8 @@ export const showScreenshot = (link, getLinksAPI) => {
     }
   })
 
-  log('rectObj', rectObj)
-  log('actionsObj', actionsObj)
+  // log('rectObj', rectObj)
+  // log('actionsObj', actionsObj)
 
   rectObj.$container.appendChild(actionsObj.$group)
   document.body.appendChild(rectObj.$container)
