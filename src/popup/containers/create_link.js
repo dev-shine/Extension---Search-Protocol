@@ -11,11 +11,6 @@ import { notifyError, notifySuccess } from '../../components/notification'
 import CreateLinkComp from '../../components/create_link'
 import API from '../../common/api/popup_api'
 
-const relationships = [
-  'Supports', 'Refutes', 'Models', 'Aggregates',
-  'is Example of', 'is Metaphor for', 'is Instance of', 'is Member of'
-]
-
 class CreateLink extends React.Component {
   onClickSubmit = (data) => {
     API.postLinks(data)
