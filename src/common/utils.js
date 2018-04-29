@@ -1,3 +1,4 @@
+import throttle from 'lodash.throttle'
 
 export const delay = (fn, timeout) => {
   return new Promise((resolve, reject) => {
@@ -149,3 +150,25 @@ export const cn = (...list) => {
 export const and = (...list) => list.reduce((prev, cur) => prev && cur, true)
 
 export const or = (...list) => list.reduce((prev, cur) => prev || cur, false)
+
+export const liveBuild = ({ bindEvent, unbindEvent, getFuse, isEqual, onFuseChange, initial = true }) => {
+  let fuse = initial ? getFuse() : null
+  let api  = initial ? onFuseChange(fuse) : null
+
+  const listener = throttle(e => {
+    const newFuse = getFuse()
+    if (isEqual(newFuse, fuse)) return
+
+    fuse  = newFuse
+    api   = onFuseChange(fuse, api)
+  }, 200)
+
+  bindEvent(listener)
+
+  return {
+    getAPI:   () => api,
+    destroy:  () => {
+      unbindEvent(listener)
+    }
+  }
+}
