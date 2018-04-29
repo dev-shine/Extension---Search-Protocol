@@ -4,6 +4,7 @@ import { isPointInRange, selectionToJSON } from '../../../common/selection'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
 import { TARGET_TYPE } from '../../../common/models/link_pair_model'
 import API from '../../../common/api/cs_api'
+import log from '../../../common/log'
 
 export const commonStyle = {
   boxSizing: 'border-box'
@@ -181,7 +182,7 @@ export const createSelectionBox = (options = {}) => {
   const box = new Box({
     ...boxRect,
     onStateChange: ({ rect }) => {
-      console.log('onStateChange', rect)
+      log('onStateChange', rect)
       boxRect = rect
       rectAPI.updatePos(rect)
     }
@@ -290,7 +291,7 @@ export const createSelectionBox = (options = {}) => {
           return true
         })
         .catch(e => {
-          console.error(e)
+          log.error(e)
         })
       }
     },
@@ -395,6 +396,10 @@ export const bindHoverAndClick = ({ onMouseOver, onMouseOut, onClick, $el }) => 
 export const createOverlayForRange = ({ range, color = '#EF5D8F', opacity = 0.5 }) => {
   const rects = Array.from(range.getClientRects())
   const $root = createEl({})
+  const sx    = scrollLeft(document)
+  const sy    = scrollTop(document)
+
+  log('createOverlayForRange rects', rects, sx, sy)
 
   const $overlays = rects.map(rect => {
     const $dom = createEl({
@@ -402,8 +407,8 @@ export const createOverlayForRange = ({ range, color = '#EF5D8F', opacity = 0.5 
         opacity,
         backgroundColor:  color,
         position:         'absolute',
-        top:              pixel(rect.top),
-        left:             pixel(rect.left),
+        top:              pixel(rect.top + sy),
+        left:             pixel(rect.left + sx),
         width:            pixel(Math.abs(rect.width)),
         height:           pixel(Math.abs(rect.height))
       }
@@ -416,6 +421,7 @@ export const createOverlayForRange = ({ range, color = '#EF5D8F', opacity = 0.5 
   })
 
   $overlays.forEach(item => $root.appendChild(item.$dom))
+  document.body.appendChild($root)
 
   const api = {
     $container: $root,

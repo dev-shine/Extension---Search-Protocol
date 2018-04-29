@@ -162,6 +162,12 @@ export const getElementsByXPath = (xpath, $container) => {
   return res
 }
 
+export const getElementByXPath = (xpath, $container) => {
+  const list = getElementsByXPath(xpath, $container)
+  console.log('getElementByXPath', xpath, list)
+  return list && list.length ? list[0] : null
+}
+
 export const imageSize = ($img) => {
   const style = getStyle($img)
 
