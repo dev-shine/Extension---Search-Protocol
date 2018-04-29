@@ -253,9 +253,9 @@ const initContextMenus = () => {
             return [
               {
                 text: 'Create Bridge',
-                onClick: () => {
+                onClick: (e, { linkData }) => {
                   log('todo annotate')
-                  annotate()
+                  annotate({ linkData })
                 }
               }
             ]
@@ -263,9 +263,9 @@ const initContextMenus = () => {
             return [
               {
                 text: 'Build Bridge',
-                onClick: () => {
+                onClick: (e, { linkData }) => {
                   log('todo annotate')
-                  annotate()
+                  annotate({ linkData })
                 }
               }
             ]
@@ -300,9 +300,9 @@ const initContextMenus = () => {
               selectAreaItem,
               {
                 text: 'Create Bridge',
-                onClick: () => {
+                onClick: (e, { linkData }) => {
                   log('todo annotate')
-                  annotate()
+                  annotate({ linkData })
                 }
               }
             ]
@@ -311,9 +311,9 @@ const initContextMenus = () => {
               selectAreaItem,
               {
                 text: 'Build Bridge',
-                onClick: () => {
+                onClick: (e, { linkData }) => {
                   log('todo annotate')
-                  annotate()
+                  annotate({ linkData })
                 }
               }
             ]
@@ -344,7 +344,7 @@ const initContextMenus = () => {
   return () => clearInterval(timer)
 }
 
-const annotate = ({ type, meta } = {}) => {
+const annotate = ({ linkData = {} } = {}) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('annotate.html'),
     width:  600,
@@ -357,7 +357,8 @@ const annotate = ({ type, meta } = {}) => {
           return {
             title: '',
             desc: '',
-            tags: ''
+            tags: '',
+            ...linkData
           }
 
         case 'CLOSE':
@@ -367,7 +368,7 @@ const annotate = ({ type, meta } = {}) => {
         case 'DID_SAVE':
           API.getLinkPairStatus()
           .then(linkPair => {
-            if (true || linkPair.status === LINK_PAIR_STATUS.READY) {
+            if (linkPair.status === LINK_PAIR_STATUS.READY) {
               builBridgeWithData(linkPair)
             }
           })
