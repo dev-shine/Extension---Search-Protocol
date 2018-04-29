@@ -4,7 +4,11 @@ import Ext from '../../../common/web_extension'
 import { parseRangeJSON } from '../../../common/selection'
 import { rect2offset, isLinkEqual, TARGET_TYPE } from '../../../common/models/link_pair_model'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
-import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, pageX, pageY, getElementByXPath } from '../../../common/dom_utils'
+import { liveBuild } from '../../../common/utils'
+import {
+  setStyle, scrollLeft, scrollTop, clientWidth, clientHeight,
+  pixel, pageX, pageY, getElementByXPath
+} from '../../../common/dom_utils'
 import {
   commonStyle,
   createSelectionBox, createButtons, createRect, createEl,
@@ -210,33 +214,63 @@ export const showImage = (link, getLinksAPI) => {
 export const showSelection = (link, getLinksAPI) => {
   const bridges     = Object.keys(link.pairDict).map(pid => link.pairDict[pid])
   const pairCount   = Object.keys(link.pairDict).length
-  const range       = parseRangeJSON(link)
-  const rects       = range.getClientRects()
-  const topRight    = {
-    top:  pixel(pageY(rects[0].top)),
-    left: pixel(pageX(rects[0].left + rects[0].width))
-  }
 
-  log('showSelection', range, link, pairCount)
-  const overlayAPI  = createOverlayForRange({ range })
-  const badgeAPI    = showBridgeCount({
-    text:     '' + pairCount,
-    position: topRight,
-    onClick:  () => showBridgesModal(bridges)
+  const liveBuildAPI = liveBuild({
+    bindEvent: (fn) => {
+      window.addEventListener('resize', fn)
+    },
+    unbindEvent: (fn) => {
+      window.removeEventListener('resize', fn)
+    },
+    getFuse: () => {
+      const range   = parseRangeJSON(link)
+      const rects   = range.getClientRects()
+      return Array.from(rects)
+    },
+    isEqual: (rs1, rs2) => {
+      const encode = (rs) => JSON.stringify(rs.map(r => r.toJSON()))
+      return encode(rs1) === encode(rs2)
+    },
+    onFuseChange: (rects, oldAPI) => {
+      if (oldAPI) oldAPI.destroy()
+
+      const topRight    = {
+        top:  pixel(pageY(rects[0].top)),
+        left: pixel(pageX(rects[0].left + rects[0].width))
+      }
+      const overlayAPI  = createOverlayForRects({ rects })
+      const badgeAPI    = showBridgeCount({
+        text:     '' + pairCount,
+        position: topRight,
+        onClick:  () => showBridgesModal(bridges)
+      })
+
+      return {
+        show: () => {
+          overlayAPI.show()
+          badgeAPI.show()
+        },
+        hide: () => {
+          overlayAPI.hide()
+          badgeAPI.hide()
+        },
+        destroy: () => {
+          overlayAPI.destroy()
+          badgeAPI.destroy()
+        }
+      }
+    }
   })
 
   return {
     show: () => {
-      overlayAPI.show()
-      badgeAPI.show()
+      liveBuildAPI.getAPI().show()
     },
     hide: () => {
-      overlayAPI.hide()
-      badgeAPI.hide()
+      liveBuildAPI.getAPI().hide()
     },
     destroy: () => {
-      overlayAPI.destroy()
-      badgeAPI.destroy()
+      liveBuildAPI.getAPI().destroy()
     }
   }
 }
