@@ -591,6 +591,7 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage }) => {
         eventData: {
           linkData: {
             type:     TARGET_TYPE.IMAGE,
+            url:      window.location.href,
             locator:  xpath(e.target),
             rect: {
               x: 0,
@@ -611,6 +612,7 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage }) => {
         eventData: {
           linkData: {
             type: TARGET_TYPE.SELECTION,
+            url:  window.location.href,
             ...selectionToJSON(window.getSelection())
           }
         }
