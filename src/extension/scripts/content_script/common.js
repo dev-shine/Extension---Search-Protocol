@@ -415,7 +415,8 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.5 
         top:              pixel(rect.top + sy),
         left:             pixel(rect.left + sx),
         width:            pixel(Math.abs(rect.width)),
-        height:           pixel(Math.abs(rect.height))
+        height:           pixel(Math.abs(rect.height)),
+        pointerEvents:    'none'
       }
     })
 
