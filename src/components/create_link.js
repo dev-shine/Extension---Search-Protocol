@@ -51,7 +51,7 @@ class CreateLinkComp extends React.Component {
                 })(
                   <Select
                     placeholder="Choose a relationship"
-                    onChange={val => this.props.onUpdateField(val, 'relationship')}
+                    onChange={val => this.props.onUpdateField(val, 'relation')}
                   >
                     {relationships.map(r => (
                       <Select.Option key={r} value={r}>{r}</Select.Option>
