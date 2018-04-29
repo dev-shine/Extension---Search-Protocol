@@ -1,5 +1,5 @@
 import storage from '../storage'
-import { or } from '../utils'
+import { or, uid } from '../utils'
 
 export const loadLinks = ({ url }) => {
   return storage.get('bridgit_links')
@@ -13,6 +13,9 @@ export const loadLinks = ({ url }) => {
 export const postLinks = (linkPair) => {
   return storage.get('bridgit_links')
   .then((pairs = []) => {
-    return storage.set('bridgit_links', [...pairs, linkPair])
+    return storage.set(
+      'bridgit_links',
+      [...pairs, { ...linkPair, id: uid() }]
+    )
   })
 }
