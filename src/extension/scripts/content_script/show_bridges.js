@@ -313,6 +313,7 @@ export const showBridgeCount = ({ position, text, onClick }) => {
       ...position,
       transform:  'translate(-80%, -80%)',
       position:   'absolute',
+      zIndex:     100001,
       width:      `${size}px`,
       height:     `${size}px`,
       lineHeight: `${size}px`,
