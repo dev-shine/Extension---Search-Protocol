@@ -56,7 +56,12 @@ export const isPointInRange = (point, range) => {
     })
   }
 
-  console.log(point, rects)
-
   return or(...rects.map(rect => isIn(point, rect)))
+}
+
+export const selectionToJSON = (selection) => {
+  return {
+    ...rangeToJSON(selection.getRangeAt(0)),
+    text: selection.toString()
+  }
 }

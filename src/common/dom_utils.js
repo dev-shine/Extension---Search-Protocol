@@ -1,3 +1,7 @@
+export const getStyle = function (dom) {
+  if (!dom)   throw new Error('getStyle: dom not exist')
+  return getComputedStyle(dom)
+}
 
 export const setStyle = function (dom, style) {
   if (!dom)   throw new Error('setStyle: dom not exist')
@@ -156,4 +160,13 @@ export const getElementsByXPath = (xpath, $container) => {
   }
 
   return res
+}
+
+export const imageSize = ($img) => {
+  const style = getStyle($img)
+
+  return {
+    width:  parseInt(style.width),
+    height: parseInt(style.height)
+  }
 }

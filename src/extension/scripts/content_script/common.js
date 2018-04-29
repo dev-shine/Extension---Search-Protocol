@@ -1,7 +1,8 @@
-import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel } from '../../../common/dom_utils'
+import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, xpath, imageSize } from '../../../common/dom_utils'
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../../../common/shapes/box'
-import { isPointInRange } from '../../../common/selection'
+import { isPointInRange, selectionToJSON } from '../../../common/selection'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
+import { TARGET_TYPE } from '../../../common/models/link_pair_model'
 import API from '../../../common/api/cs_api'
 
 export const commonStyle = {
@@ -443,7 +444,7 @@ export const createOverlayForRange = ({ range, color = '#EF5D8F', opacity = 0.5 
   return api
 }
 
-export const renderContentMenus = ({ menus, hoverStyle, normalStyle, containerStyle = {} }) => {
+export const renderContentMenus = ({ menus, hoverStyle, normalStyle, containerStyle = {} }, eventData) => {
   const menuStyle = {
     ...commonStyle,
     ...containerStyle,
@@ -471,7 +472,7 @@ export const renderContentMenus = ({ menus, hoverStyle, normalStyle, containerSt
       },
       onClick: (e) => {
         if (menu.onClick) {
-          menu.onClick(e)
+          menu.onClick(e, eventData)
         }
         api.destroy()
       }
@@ -522,13 +523,13 @@ export const renderContentMenus = ({ menus, hoverStyle, normalStyle, containerSt
 export const showContextMenus = (function () {
   const cache = {}
 
-  return ({ menuOptions, pos, clear = false }) => {
+  return ({ menuOptions, eventData, pos, clear = false }) => {
     const { id, menus, hoverStyle, normalStyle } = menuOptions
     // let menuObj = cache[id]
     let menuObj = null
 
     if (!menuObj) {
-      menuObj   = renderContentMenus(menuOptions)
+      menuObj   = renderContentMenus(menuOptions, eventData)
       cache[id] = menuObj
     }
 
@@ -584,12 +585,36 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage }) => {
 
     if (isOnImage(e)) {
       e.preventDefault()
-      return showContextMenus({ pos, menuOptions: menusOnImage })
+      return showContextMenus({
+        pos,
+        menuOptions: menusOnImage,
+        eventData: {
+          linkData: {
+            type:     TARGET_TYPE.IMAGE,
+            locator:  xpath(e.target),
+            rect: {
+              x: 0,
+              y: 0,
+              ...imageSize(e.target)
+            },
+            image: ''   // TODO, leave it as blank for now
+          }
+        }
+      })
     }
 
     if (isOnSelection(e)) {
       e.preventDefault()
-      return showContextMenus({ pos, menuOptions: menusOnSelection })
+      return showContextMenus({
+        pos,
+        menuOptions: menusOnSelection,
+        eventData: {
+          linkData: {
+            type: TARGET_TYPE.SELECTION,
+            ...selectionToJSON(window.getSelection())
+          }
+        }
+      })
     }
   }
 

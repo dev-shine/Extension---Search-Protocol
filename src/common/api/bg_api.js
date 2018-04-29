@@ -120,6 +120,7 @@ const API = {
   },
   saveAnnotation: (data) => {
     // TODO
+    log('saveAnnotation', data)
     return Promise.resolve(true)
   }
 }
