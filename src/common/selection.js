@@ -8,12 +8,12 @@ export const rangeToJSON = (range) => {
 
   return {
     start: {
-      xpath:  xpath(r.startContainer),
-      offset: r.startOffset
+      locator:  xpath(r.startContainer),
+      offset:   r.startOffset
     },
     end: {
-      xpath:  xpath(r.endContainer),
-      offset: r.endOffset
+      locator:  xpath(r.endContainer),
+      offset:   r.endOffset
     }
   }
 }
