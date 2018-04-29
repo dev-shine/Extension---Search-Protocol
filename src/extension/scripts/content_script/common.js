@@ -7,7 +7,8 @@ import API from '../../../common/api/cs_api'
 import log from '../../../common/log'
 
 export const commonStyle = {
-  boxSizing: 'border-box'
+  boxSizing:  'border-box',
+  fontFamily: 'Arial'
 }
 
 export const createEl = ({ tag = 'div', attrs = {}, style = {}, text }) => {
@@ -393,8 +394,12 @@ export const bindHoverAndClick = ({ onMouseOver, onMouseOut, onClick, $el }) => 
   }
 }
 
-export const createOverlayForRange = ({ range, color = '#EF5D8F', opacity = 0.5 }) => {
+export const createOverlayForRange = ({ range, ...rest }) => {
   const rects = Array.from(range.getClientRects())
+  return createOverlayForRects({ rects, ...rest })
+}
+
+export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.5 }) => {
   const $root = createEl({})
   const sx    = scrollLeft(document)
   const sy    = scrollTop(document)
