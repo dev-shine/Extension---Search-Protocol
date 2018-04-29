@@ -28,25 +28,25 @@ const render = Component =>
 // refer to https://bugs.chromium.org/p/chromium/issues/detail?id=428044
 setTimeout(() => {
   render(App)
+
+  Promise.all([
+    API.checkUser().catch(() => null),
+    API.getLinkPairStatus().catch(e => console.error('getLinkPairStatus error', e))
+  ])
+  .then(
+    data => {
+      const [userInfo, linkPair] = data
+
+      console.log('got linkPair', linkPair)
+      store.dispatch(setUserInfo(userInfo))
+      store.dispatch(setLinkPair(linkPair))
+    },
+    e => {
+      console.error(e)
+      store.dispatch(setUserInfo(null))
+    }
+  )
+  .then(() => {
+    store.dispatch(setLoaded(true))
+  })
 }, 100)
-
-Promise.all([
-  API.checkUser(),
-  API.getLinkPairStatus().catch(e => console.error('getLinkPairStatus error', e))
-])
-.then(
-  data => {
-    const [userInfo, linkPair] = data
-
-    console.log('got linkPair', linkPair)
-    store.dispatch(setUserInfo(userInfo))
-    store.dispatch(setLinkPair(linkPair))
-  },
-  e => {
-    console.error(e)
-    store.dispatch(setUserInfo(null))
-  }
-)
-.then(() => {
-  store.dispatch(setLoaded(true))
-})
