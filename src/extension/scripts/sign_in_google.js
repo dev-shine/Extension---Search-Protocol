@@ -12,7 +12,7 @@ const signInWithGoogleInIframe = () => {
     url: 'http://www.bridgit.io/bridgit/google_signin.html',
     width: '400px',
     height: '400px',
-    onMessage: (e) => {
+    onMsg: (e) => {
       const data = e.data
 
       if (data && data.name && data.email) {
