@@ -4,11 +4,12 @@ import Ext from '../../../common/web_extension'
 import { parseRangeJSON } from '../../../common/selection'
 import { rect2offset, isLinkEqual, TARGET_TYPE } from '../../../common/models/link_pair_model'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
-import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, pageX, pageY } from '../../../common/dom_utils'
+import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, pageX, pageY, getElementByXPath } from '../../../common/dom_utils'
 import {
   commonStyle,
   createSelectionBox, createButtons, createRect, createEl,
-  createContextMenus, createIframeWithMask, createOverlayForRange
+  createContextMenus, createIframeWithMask,
+  createOverlayForRange, createOverlayForRects
 } from './common'
 
 export const linksFromPairs = (pairs, url) => {
@@ -149,7 +150,36 @@ export const showScreenshot = (link, linksAPI) => {
 }
 
 export const showImage = (link) => {
+  const bridges     = Object.keys(link.pairDict).map(pid => link.pairDict[pid])
+  const pairCount   = Object.keys(link.pairDict).length
+  const $img        = getElementByXPath(link.locator)
+  const boundRect   = $img.getBoundingClientRect()
+  const rect        = {
+    top:      link.rect.x + boundRect.top,
+    left:     link.rect.y + boundRect.left,
+    width:    link.rect.width,
+    height:   link.rect.height
+  }
+  const topRight    = {
+    top:  pixel(pageY(rect.top)),
+    left: pixel(pageX(rect.left + rect.width))
+  }
 
+  log('boundRect', boundRect)
+
+  const overlayAPI  = createOverlayForRects({ rects: [rect] })
+  const badgeAPI    = showBridgeCount({
+    text:     '' + pairCount,
+    position: topRight,
+    onClick:  () => showBridgesModal(bridges)
+  })
+
+  return {
+    destroy: () => {
+      overlayAPI.destroy()
+      badgeAPI.destroy()
+    }
+  }
 }
 
 export const showSelection = (link) => {
