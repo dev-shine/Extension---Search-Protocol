@@ -140,9 +140,21 @@ export function encodePair (data) {
 }
 
 export function isLinkReady (link) {
-  const readyResult = !!(link.desc && link.tags && link.image && link.rect && link.url)
-  console.log('isLinkReady', link, readyResult)
-  return readyResult
+  const common = link.url && link.title && link.desc && link.tags
+
+  switch (link.type) {
+    case TARGET_TYPE.IMAGE:
+      return !!(common && link.image && link.rect && link.locator)
+
+    case TARGET_TYPE.SELECTION:
+      return !!(common && link.start && link.end && link.text)
+
+    case TARGET_TYPE.SCREENSHOT:
+      return !!(common && link.image && link.rect)
+
+    default:
+      throw new Error(`invalid type: '${link.type}'`)
+  }
 }
 
 export class LinkPairModel {
