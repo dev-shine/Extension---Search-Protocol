@@ -91,7 +91,7 @@ export class LinkPairModel {
       links: [],
       desc: null,
       tags: null,
-      relationship: null
+      relation: null
     }
   }
 

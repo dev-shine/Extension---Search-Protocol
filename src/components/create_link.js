@@ -42,8 +42,8 @@ class CreateLinkComp extends React.Component {
               </div>
 
               <div>
-                {getFieldDecorator('relationship', {
-                  ...(pair.relationship ? { initialValue: pair.relationship } : {}),
+                {getFieldDecorator('relation', {
+                  ...(pair.relation ? { initialValue: pair.relation } : {}),
                   rules: [
                     { required: true, message: 'Please select relation' }
                   ]
