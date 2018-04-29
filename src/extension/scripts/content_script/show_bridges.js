@@ -116,39 +116,8 @@ export const showScreenshot = (link, linksAPI) => {
     {
       text: pairCount <= 1 ? `${pairCount} Link` : `${pairCount} Links`,
       onClick: () => {
-        const iframeAPI = createIframe({
-          url:    Ext.extension.getURL('links_modal.html'),
-          width:  clientWidth(document),
-          height: clientHeight(document),
-          onAsk: (cmd, args) => {
-            switch (cmd) {
-              case 'INIT':
-                return Object.keys(link.pairDict).map(pid => link.pairDict[pid])
-
-              case 'CLOSE':
-                window.removeEventListener('resize', onResize)
-                iframeAPI.destroy()
-                return true
-            }
-          }
-        })
-
-        const onResize = () => {
-          setStyle(iframeAPI.$iframe, {
-            width:  pixel(clientWidth(document)),
-            height: pixel(clientHeight(document))
-          })
-        }
-        window.addEventListener('resize', onResize)
-
-        setStyle(iframeAPI.$iframe, {
-          position: 'fixed',
-          zIndex: 110000,
-          left: '0',
-          top: '0',
-          right: '0',
-          bottom: '0'
-        })
+        const bridges = Object.keys(link.pairDict).map(pid => link.pairDict[pid])
+        showBridgesModal(bridges)
       }
     }
   ], {
@@ -186,4 +155,47 @@ export const showSelection = (link) => {
   const range = parseRangeJSON(link)
   log('showSelection', range, link)
   const overlayAPI = createOverlayForRange({ range })
+}
+export const showBridgesModal = (bridges) => {
+  const iframeAPI = createIframe({
+    url:    Ext.extension.getURL('links_modal.html'),
+    width:  clientWidth(document),
+    height: clientHeight(document),
+    onAsk: (cmd, args) => {
+      switch (cmd) {
+        case 'INIT':
+          return bridges
+
+        case 'CLOSE':
+          modalAPI.destroy()
+          return true
+      }
+    }
+  })
+
+  const onResize = () => {
+    setStyle(iframeAPI.$iframe, {
+      width:  pixel(clientWidth(document)),
+      height: pixel(clientHeight(document))
+    })
+  }
+  window.addEventListener('resize', onResize)
+
+  setStyle(iframeAPI.$iframe, {
+    position: 'fixed',
+    zIndex: 110000,
+    left: '0',
+    top: '0',
+    right: '0',
+    bottom: '0'
+  })
+
+  const modalAPI = {
+    destroy: () => {
+      window.removeEventListener('resize', onResize)
+      iframeAPI.destroy()
+    }
+  }
+
+  return modalAPI
 }
