@@ -4,9 +4,10 @@ import Ext from '../../../common/web_extension'
 import { parseRangeJSON } from '../../../common/selection'
 import { rect2offset, isLinkEqual, TARGET_TYPE } from '../../../common/models/link_pair_model'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
-import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel } from '../../../common/dom_utils'
+import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, pageX, pageY } from '../../../common/dom_utils'
 import {
-  createSelectionBox, createButtons, createRect,
+  commonStyle,
+  createSelectionBox, createButtons, createRect, createEl,
   createContextMenus, createIframeWithMask, createOverlayForRange
 } from './common'
 
@@ -152,10 +153,66 @@ export const showImage = (link) => {
 }
 
 export const showSelection = (link) => {
-  const range = parseRangeJSON(link)
-  log('showSelection', range, link)
-  const overlayAPI = createOverlayForRange({ range })
+  const bridges     = Object.keys(link.pairDict).map(pid => link.pairDict[pid])
+  const pairCount   = Object.keys(link.pairDict).length
+  const range       = parseRangeJSON(link)
+  const rects       = range.getClientRects()
+  const topRight    = {
+    top:  pixel(pageY(rects[0].top)),
+    left: pixel(pageX(rects[0].left + rects[0].width))
+  }
+
+  log('showSelection', range, link, pairCount)
+  const overlayAPI  = createOverlayForRange({ range })
+  const badgeAPI    = showBridgeCount({
+    text:     '' + pairCount,
+    position: topRight,
+    onClick:  () => showBridgesModal(bridges)
+  })
+
+  return {
+    destroy: () => {
+      overlayAPI.destroy()
+      badgeAPI.destroy()
+    }
+  }
 }
+
+export const showBridgeCount = ({ position, text, onClick }) => {
+  const size  = 40
+  const $el   = createEl({
+    text,
+    style: {
+      ...commonStyle,
+      ...position,
+      transform:  'translate(-80%, -80%)',
+      position:   'absolute',
+      width:      `${size}px`,
+      height:     `${size}px`,
+      lineHeight: `${size}px`,
+      borderRadius: `${size / 2}px`,
+      fontSize:   '18px',
+      fontWeight: 'bold',
+      background: '#fff',
+      color:      '#ef5d8f',
+      cursor:     'pointer',
+      textAlign:  'center',
+      boxShadow:  'rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px'
+    }
+  })
+
+  $el.addEventListener('click', onClick)
+  document.body.appendChild($el)
+
+  return {
+    $dom: $el,
+    destroy: () => {
+      $el.removeEventListener('click', onClick)
+      $el.remove()
+    }
+  }
+}
+
 export const showBridgesModal = (bridges) => {
   const iframeAPI = createIframe({
     url:    Ext.extension.getURL('links_modal.html'),
