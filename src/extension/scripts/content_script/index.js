@@ -5,7 +5,7 @@ import API from '../../../common/api/cs_api'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
 import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
-import { rect2offset, LINK_PAIR_STATUS } from '../../../common/models/link_pair_model'
+import { rect2offset, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/link_pair_model'
 import { createSelectionBox, createButtons, createRect, createContextMenus, createIframeWithMask } from './common'
 import { showLinks } from './show_bridges'
 
@@ -38,7 +38,7 @@ const onBgRequest = (cmd, args) => {
     case 'START_ANNOTATION': {
       log('got start annotation', rectAPI)
       if (rectAPI) rectAPI.destroy()
-      rectAPI = createSelectionBox()
+      rectAPI = selectScreenshotArea()
       return true
     }
 
@@ -234,6 +234,33 @@ const annotate = ({ linkData = {} } = {}) => {
     top: '50%',
     transform: 'translate(-50%, -50%)',
     border: '1px solid #ccc'
+  })
+}
+
+const selectScreenshotArea = () => {
+  return createSelectionBox({
+    onFinish: ({ rectAPI, boxRect }) => {
+      rectAPI.hide()
+
+      API.captureScreenInSelection({
+        rect: boxRect,
+        devicePixelRatio: window.devicePixelRatio
+      })
+      .then(image => {
+        rectAPI.destroy()
+        annotate({
+          linkData: {
+            type:   TARGET_TYPE.SCREENSHOT,
+            url:    window.location.href,
+            image:  image,
+            rect:   boxRect
+          }
+        })
+      })
+      .catch(e => {
+        log.error(e)
+      })
+    }
   })
 }
 
