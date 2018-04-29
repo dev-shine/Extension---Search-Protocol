@@ -27,7 +27,6 @@ class App extends Component {
     .then(() => {
       notifySuccess('Successfully posted')
       setTimeout(() => {
-        ipc.ask('DID_SAVE')
         this.onClickCancel()
       }, 1500)
     })

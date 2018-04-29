@@ -1,4 +1,4 @@
-import { xpath, getElementsByXPath, scrollLeft, scrollTop } from './dom_utils'
+import { xpath, getElementByXPath, scrollLeft, scrollTop } from './dom_utils'
 import { or, and } from './utils'
 
 export const createRange = () => new Range()
@@ -21,10 +21,10 @@ export const rangeToJSON = (range) => {
 export const parseRangeJSON = (rangeJson) => {
   const r = createRange()
 
-  const $start  = getElementsByXPath(rangeJson.start.xpath)
+  const $start  = getElementByXPath(rangeJson.start.locator)
   if (!$start) throw new Error('Not able to find start element for range')
 
-  const $end    = getElementsByXPath(rangeJson.end.xpath)
+  const $end    = getElementByXPath(rangeJson.end.locator)
   if (!$start) throw new Error('Not able to find end element for range')
 
   r.setStart($start, rangeJson.start.offset)
