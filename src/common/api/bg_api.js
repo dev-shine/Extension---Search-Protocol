@@ -5,6 +5,7 @@ import { getTabIpcstore } from '../tab_ipc_store'
 import { captureScreenInSelection } from '../capture_screenshot'
 import { getLinkPair } from '../models/link_pair_model'
 import * as httpAPI from './http_api'
+import * as mockHttpAPI from './mock_http_api'
 import log from '../log'
 
 const tabIpcStore = getTabIpcstore()
@@ -58,6 +59,7 @@ const getCurrentTabIpc = () => {
 
 const API = {
   ...httpAPI,
+  ...mockHttpAPI,
   loadLinksForCurrentPage: () => {
     return getCurrentPageInfo()
     .then(info => {
@@ -116,7 +118,7 @@ const API = {
     getLinkPair().clear()
     return Promise.resolve(true)
   },
-  saveAnnotation: () => {
+  saveAnnotation: (data) => {
     // TODO
     return Promise.resolve(true)
   }
