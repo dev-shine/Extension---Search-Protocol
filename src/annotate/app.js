@@ -9,20 +9,14 @@ const ipc = ipcForIframe()
 
 class App extends Component {
   state = {
-    title:  '',
-    desc:   '',
-    tags:   ''
+    linkData: null
   }
 
   onClickSubmit = () => {
     this.props.form.validateFields((err, values) => {
       if (err)  return
 
-      API.saveAnnotation({
-        title: this.state.title,
-        desc:  this.state.desc,
-        tags:  this.state.tags
-      })
+      API.saveAnnotation({...this.state.linkData, ...values})
       .then(() => {
         notifySuccess('Successfully saved')
         setTimeout(() => this.onClickCancel(), 1500)
@@ -44,13 +38,14 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT')
-    .then(annotation => {
-      console.log('init got annotation', annotation)
+    .then(linkData => {
+      console.log('init got annotation', linkData)
+      this.setState({ linkData })
 
       this.props.form.setFieldsValue({
-        title:  annotation.title || '',
-        desc:   annotation.desc || '',
-        tags:   annotation.desc || ''
+        title:  linkData.title || '',
+        desc:   linkData.desc || '',
+        tags:   linkData.desc || ''
       })
     })
   }

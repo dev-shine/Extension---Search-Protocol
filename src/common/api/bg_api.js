@@ -121,6 +121,7 @@ const API = {
   saveAnnotation: (data) => {
     // TODO
     log('saveAnnotation', data)
+    API.addLink(data)
     return Promise.resolve(true)
   }
 }
