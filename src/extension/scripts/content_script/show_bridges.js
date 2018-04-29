@@ -173,40 +173,69 @@ export const showScreenshot = (link, getLinksAPI) => {
 export const showImage = (link, getLinksAPI) => {
   const bridges     = Object.keys(link.pairDict).map(pid => link.pairDict[pid])
   const pairCount   = Object.keys(link.pairDict).length
-  const $img        = getElementByXPath(link.locator)
-  const boundRect   = $img.getBoundingClientRect()
-  const rect        = {
-    top:      link.rect.x + boundRect.top,
-    left:     link.rect.y + boundRect.left,
-    width:    link.rect.width,
-    height:   link.rect.height
-  }
-  const topRight    = {
-    top:  pixel(pageY(rect.top)),
-    left: pixel(pageX(rect.left + rect.width))
-  }
 
-  log('boundRect', boundRect)
+  const liveBuildAPI = liveBuild({
+    bindEvent: (fn) => {
+      window.addEventListener('resize', fn)
+    },
+    unbindEvent: (fn) => {
+      window.removeEventListener('resize', fn)
+    },
+    getFuse: () => {
+      const $img        = getElementByXPath(link.locator)
+      const boundRect   = $img.getBoundingClientRect()
+      const rect        = {
+        top:      link.rect.x + boundRect.top,
+        left:     link.rect.y + boundRect.left,
+        width:    link.rect.width,
+        height:   link.rect.height
+      }
+      return rect
+    },
+    isEqual: (r1, r2) => {
+      const encode = (r) => JSON.stringify(r)
+      return encode(r1) === encode(r2)
+    },
+    onFuseChange: (rect, oldAPI) => {
+      if (oldAPI) oldAPI.destroy()
 
-  const overlayAPI  = createOverlayForRects({ rects: [rect] })
-  const badgeAPI    = showBridgeCount({
-    text:     '' + pairCount,
-    position: topRight,
-    onClick:  () => showBridgesModal(bridges)
+      const topRight    = {
+        top:  pixel(pageY(rect.top)),
+        left: pixel(pageX(rect.left + rect.width))
+      }
+      const overlayAPI  = createOverlayForRects({ rects: [rect] })
+      const badgeAPI    = showBridgeCount({
+        text:     '' + pairCount,
+        position: topRight,
+        onClick:  () => showBridgesModal(bridges)
+      })
+
+      return {
+        show: () => {
+          overlayAPI.show()
+          badgeAPI.show()
+        },
+        hide: () => {
+          overlayAPI.hide()
+          badgeAPI.hide()
+        },
+        destroy: () => {
+          overlayAPI.destroy()
+          badgeAPI.destroy()
+        }
+      }
+    }
   })
 
   return {
     show: () => {
-      overlayAPI.show()
-      badgeAPI.show()
+      liveBuildAPI.getAPI().show()
     },
     hide: () => {
-      overlayAPI.hide()
-      badgeAPI.hide()
+      liveBuildAPI.getAPI().hide()
     },
     destroy: () => {
-      overlayAPI.destroy()
-      badgeAPI.destroy()
+      liveBuildAPI.getAPI().destroy()
     }
   }
 }
