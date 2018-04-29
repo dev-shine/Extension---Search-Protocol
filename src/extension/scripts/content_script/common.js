@@ -510,9 +510,15 @@ export const renderContentMenus = ({ menus, hoverStyle, normalStyle, containerSt
 }
 
 export const showContextMenus = (function () {
-  const cache = {}
+  let cache = {}
 
   return ({ menuOptions, eventData, pos, clear = false }) => {
+    if (clear) {
+      Object.keys(cache).forEach(key => cache[key].destroy())
+      cache = {}
+      return
+    }
+
     const { id, menus, hoverStyle, normalStyle } = menuOptions
     // let menuObj = cache[id]
     let menuObj = null
@@ -567,6 +573,8 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage }) => {
     return dom.tagName && dom.tagName.toLowerCase() === 'img'
   }
   const onContextMenu = (e) => {
+    showContextMenus({ clear: true })
+
     const pos = {
       x: e.pageX,
       y: e.pageY
