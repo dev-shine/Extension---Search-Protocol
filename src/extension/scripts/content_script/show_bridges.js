@@ -38,7 +38,7 @@ export const linksFromPairs = (pairs, url) => {
 export const showLinks = (pairs, url) => {
   const links     = linksFromPairs(pairs, url)
   log('showLinks pairts => links', links, pairs, url)
-  const allLinks  = links.map(link => showOneLink(link, linksAPI))
+  const allLinks  = links.map(link => showOneLink(link, () => linksAPI))
 
   const linksAPI = {
     links: allLinks,
@@ -53,32 +53,36 @@ export const showLinks = (pairs, url) => {
   return linksAPI
 }
 
-export const showOneLink = (link) => {
+export const showOneLink = (link, getLinksAPI) => {
   log('showOneLink', link.type, link)
 
   switch (link.type) {
     case TARGET_TYPE.SCREENSHOT:
-      return showScreenshot(link)
+      return showScreenshot(link, getLinksAPI)
 
     case TARGET_TYPE.IMAGE:
-      return showImage(link)
+      return showImage(link, getLinksAPI)
 
     case TARGET_TYPE.SELECTION:
-      return showSelection(link)
+      return showSelection(link, getLinksAPI)
 
     default:
       throw new Error(`Unsupported type '${link.type}'`)
   }
 }
 
-export const showScreenshot = (link, linksAPI) => {
-  const pairCount = Object.keys(link.pairDict).length
-  const rectObj   = createRect({
+export const showScreenshot = (link, getLinksAPI) => {
+  const bridges     = Object.keys(link.pairDict).map(pid => link.pairDict[pid])
+  const pairCount   = Object.keys(link.pairDict).length
+  const rectObj     = createRect({
     ...rect2offset(link.rect),
     rectBorderWidth: 3,
     rectStyle: {
       borderStyle: 'dashed',
       pointerEvents: 'none'
+    },
+    containerStyle: {
+      zIndex: 'auto'
     }
   })
   const actionsObj = createButtons([
@@ -88,7 +92,7 @@ export const showScreenshot = (link, linksAPI) => {
         width: 'auto'
       },
       onClick: () => {
-        linksAPI.hide()
+        getLinksAPI().hide()
 
         API.captureScreenInSelection({
           rect: link.rect,
@@ -96,6 +100,7 @@ export const showScreenshot = (link, linksAPI) => {
         })
         .then(image => {
           return API.addLink({
+            type:   TARGET_TYPE.SCREENSHOT,
             url:    window.location.href,
             tags:   link.tags,
             desc:   link.desc,
@@ -104,7 +109,7 @@ export const showScreenshot = (link, linksAPI) => {
           })
         })
         .then(() => {
-          linksAPI.destroy()
+          getLinksAPI().destroy()
           setTimeout(() => {
             alert('Successfully captured. Click on extension icon to take further actions')
           }, 500)
@@ -114,14 +119,14 @@ export const showScreenshot = (link, linksAPI) => {
           log.error(e)
         })
       }
-    },
-    {
-      text: pairCount <= 1 ? `${pairCount} Link` : `${pairCount} Links`,
-      onClick: () => {
-        const bridges = Object.keys(link.pairDict).map(pid => link.pairDict[pid])
-        showBridgesModal(bridges)
-      }
     }
+    // {
+    //   text: pairCount <= 1 ? `${pairCount} Link` : `${pairCount} Links`,
+    //   onClick: () => {
+    //     const bridges = Object.keys(link.pairDict).map(pid => link.pairDict[pid])
+    //     showBridgesModal(bridges)
+    //   }
+    // }
   ], {
     groupStyle: {
       position: 'absolute',
@@ -136,20 +141,36 @@ export const showScreenshot = (link, linksAPI) => {
   rectObj.$container.appendChild(actionsObj.$group)
   document.body.appendChild(rectObj.$container)
 
+  const topRight    = {
+    top:  pixel(link.rect.y),
+    left: pixel(link.rect.x + link.rect.width)
+  }
+  const badgeAPI    = showBridgeCount({
+    text:     '' + pairCount,
+    position: topRight,
+    onClick:  () => showBridgesModal(bridges)
+  })
+
   return {
     rectObj,
     actionsObj,
+    show: () => {
+      rectObj.show()
+      badgeAPI.show()
+    },
     hide: () => {
       rectObj.hide()
+      badgeAPI.hide()
     },
     destroy: () => {
       rectObj.destroy()
       actionsObj.destroy()
+      badgeAPI.destroy()
     }
   }
 }
 
-export const showImage = (link) => {
+export const showImage = (link, getLinksAPI) => {
   const bridges     = Object.keys(link.pairDict).map(pid => link.pairDict[pid])
   const pairCount   = Object.keys(link.pairDict).length
   const $img        = getElementByXPath(link.locator)
@@ -175,6 +196,14 @@ export const showImage = (link) => {
   })
 
   return {
+    show: () => {
+      overlayAPI.show()
+      badgeAPI.show()
+    },
+    hide: () => {
+      overlayAPI.hide()
+      badgeAPI.hide()
+    },
     destroy: () => {
       overlayAPI.destroy()
       badgeAPI.destroy()
@@ -182,7 +211,7 @@ export const showImage = (link) => {
   }
 }
 
-export const showSelection = (link) => {
+export const showSelection = (link, getLinksAPI) => {
   const bridges     = Object.keys(link.pairDict).map(pid => link.pairDict[pid])
   const pairCount   = Object.keys(link.pairDict).length
   const range       = parseRangeJSON(link)
@@ -201,6 +230,14 @@ export const showSelection = (link) => {
   })
 
   return {
+    show: () => {
+      overlayAPI.show()
+      badgeAPI.show()
+    },
+    hide: () => {
+      overlayAPI.hide()
+      badgeAPI.hide()
+    },
     destroy: () => {
       overlayAPI.destroy()
       badgeAPI.destroy()
@@ -237,6 +274,12 @@ export const showBridgeCount = ({ position, text, onClick }) => {
 
   return {
     $dom: $el,
+    hide: () => {
+      setStyle($el, { display: 'none' })
+    },
+    show: () => {
+      setStyle($el, { display: 'block' })
+    },
     destroy: () => {
       $el.removeEventListener('click', onClick)
       $el.remove()

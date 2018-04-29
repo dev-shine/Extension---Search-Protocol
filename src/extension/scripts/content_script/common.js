@@ -277,6 +277,7 @@ export const createSelectionBox = (options = {}) => {
         })
         .then(image => {
           return API.addLink({
+            type:   TARGET_TYPE.SCREENSHOT,
             url:    window.location.href,
             tags:   null,
             desc:   null,
