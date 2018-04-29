@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Alert, Button, Select, Form, Input } from 'antd'
+import './create_link.scss'
 
 const relationships = [
   'Supports', 'Refutes', 'Models', 'Aggregates',
