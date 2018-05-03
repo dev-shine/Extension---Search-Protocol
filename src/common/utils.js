@@ -132,6 +132,10 @@ export const flatten = (list) => {
   return [].concat.apply([], list);
 }
 
+export const without = (list1, list2) => {
+  return list2.filter(item => list1.indexOf(item) === -1)
+}
+
 export const cn = (...list) => {
   return list.reduce((prev, cur) => {
     if (!cur) return prev
