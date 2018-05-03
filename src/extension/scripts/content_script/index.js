@@ -285,13 +285,16 @@ const selectImageArea = ({ $img, linkData }) => {
     })
   }
 
-  API.hackHeader({
-    url: $img.src,
-    headers: {
-      'Access-Control-Allow-Origin': '*'
-    }
-  })
-  .then(() => dataUrlFromImageElement($img))
+  const p = /^http/.test($img.src)
+                ? API.hackHeader({
+                    url: $img.src,
+                    headers: {
+                      'Access-Control-Allow-Origin': '*'
+                    }
+                  })
+                : Promise.resolve()
+
+  p.then(() => dataUrlFromImageElement($img))
   .then(showIframe)
   .catch(e => {
     log.error(e.stack)
