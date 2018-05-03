@@ -185,8 +185,8 @@ export const showImage = (link, getLinksAPI) => {
       const $img        = getElementByXPath(link.locator)
       const boundRect   = $img.getBoundingClientRect()
       const rect        = {
-        top:      link.rect.x + boundRect.top,
-        left:     link.rect.y + boundRect.left,
+        top:      link.rect.y + boundRect.top,
+        left:     link.rect.x + boundRect.left,
         width:    link.rect.width,
         height:   link.rect.height
       }
