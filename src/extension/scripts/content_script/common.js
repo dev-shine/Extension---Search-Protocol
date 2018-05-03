@@ -1,3 +1,4 @@
+import { reduceRects } from '../../../common/utils'
 import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, xpath, imageSize } from '../../../common/dom_utils'
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../../../common/shapes/box'
 import { isPointInRange, selectionToJSON } from '../../../common/selection'
@@ -380,9 +381,9 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.5 
   const sx    = scrollLeft(document)
   const sy    = scrollTop(document)
 
-  // log('createOverlayForRange rects', rects, sx, sy)
+// log('createOverlayForRange rects', rects, sx, sy)
 
-  const $overlays = rects.map(rect => {
+  const $overlays = reduceRects(rects).map(rect => {
     const $dom = createEl({
       style: {
         opacity,
