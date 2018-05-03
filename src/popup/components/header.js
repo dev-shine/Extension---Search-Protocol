@@ -46,10 +46,10 @@ class Header extends React.Component {
 
   render () {
     return [
-      <div className="header">
-        Bridgit
+      <div className="header" key="0">
+        <Link to="/">Bridgit</Link>
       </div>,
-      this.props.userInfo ? <UserInfo /> : null
+      this.props.userInfo ? <UserInfo key="1" /> : null
     ]
   }
 }

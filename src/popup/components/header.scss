@@ -11,4 +11,9 @@
   font-weight: bold;
   font-size: 20px;
   text-align: center;
+
+  a, a:hover, a:focus, a:visited {
+    color: #fff;
+    text-decoration: none;
+  }
 }
