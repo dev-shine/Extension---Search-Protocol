@@ -1,3 +1,5 @@
+import { delay } from './utils'
+
 export const getStyle = function (dom) {
   if (!dom)   throw new Error('getStyle: dom not exist')
   return getComputedStyle(dom)
@@ -182,4 +184,35 @@ export const pageX = (clientX, doc = document) => {
 
 export const pageY = (clientY, doc = document) => {
   return clientY + scrollTop(doc)
+}
+
+export const dataUrlFromImageElement = ($img) => {
+  const imgStyle  = getStyle($img)
+  const width     = parseInt(imgStyle.width, 10)
+  const height    = parseInt(imgStyle.height, 10)
+  const canvas    = document.createElement('canvas')
+  const ctx       = canvas.getContext('2d')
+
+  canvas.width  = width
+  canvas.height = height
+
+  return new Promise((resolve, reject) => {
+    const newImg = new Image()
+
+    // Note: have to add this crossorigin attribute, otherwise there will be an error
+    // for exporting data from tainted canvas
+    // Also note that it needs be used with chrome.webRquest hack (add cors header)
+    // refer to: https://stackoverflow.com/questions/20424279/canvas-todataurl-securityerror/27260385#27260385
+    newImg.setAttribute('crossOrigin', '*')
+    newImg.onerror  = reject
+    newImg.onload   = () => {
+      ctx.drawImage(newImg, 0, 0, width, height)
+      resolve({
+        width,
+        height,
+        dataUrl: canvas.toDataURL()
+      })
+    }
+    newImg.src = $img.src
+  })
 }
