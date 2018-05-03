@@ -6,7 +6,10 @@ import { createIframe } from '../../../common/ipc/cs_postmessage'
 import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, dataUrlFromImageElement } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
 import { rect2offset, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/link_pair_model'
-import { createSelectionBox, createButtons, createRect, createContextMenus, createIframeWithMask } from './common'
+import {
+  createSelectionBox, createButtons, createRect,
+  createContextMenus, createIframeWithMask, dataUrlOfImage
+} from './common'
 import { showLinks } from './show_bridges'
 
 const bindEvents = () => {
@@ -289,16 +292,7 @@ const selectImageArea = ({ $img, linkData }) => {
     })
   }
 
-  const p = /^http/.test($img.src)
-                ? API.hackHeader({
-                    url: $img.src,
-                    headers: {
-                      'Access-Control-Allow-Origin': '*'
-                    }
-                  })
-                : Promise.resolve()
-
-  p.then(() => dataUrlFromImageElement($img))
+  dataUrlOfImage($img)
   .then(showIframe)
   .catch(e => {
     log.error(e.stack)

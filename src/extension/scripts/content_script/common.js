@@ -1,5 +1,10 @@
 import { reduceRects } from '../../../common/utils'
-import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, xpath, imageSize } from '../../../common/dom_utils'
+import {
+  setStyle, scrollLeft, scrollTop,
+  clientWidth, clientHeight,
+  pixel, xpath, imageSize,
+  dataUrlFromImageElement
+} from '../../../common/dom_utils'
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../../../common/shapes/box'
 import { isPointInRange, selectionToJSON } from '../../../common/selection'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
@@ -655,4 +660,17 @@ export const createIframeWithMask = (...args) => {
   }
 
   return newAPI
+}
+
+export const dataUrlOfImage = ($img) => {
+  const p = /^http/.test($img.src)
+                ? API.hackHeader({
+                    url: $img.src,
+                    headers: {
+                      'Access-Control-Allow-Origin': '*'
+                    }
+                  })
+                : Promise.resolve()
+
+  return p.then(() => dataUrlFromImageElement($img))
 }
