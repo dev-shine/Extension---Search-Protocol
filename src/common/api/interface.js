@@ -24,7 +24,10 @@ export const methods = [
   'addLink',
   'clearLinks',
   'saveAnnotation',
-  'hackHeader'
+  'hackHeader',
+  'resetUserSettings',
+  'getUserSettings',
+  'updateUserSettings'
 ]
 
 export const mockAPIWithIPC = (ipc) => {

@@ -1,6 +1,7 @@
 import { bgInit as popupBgInit } from '../ipc/ipc_bg_popup'
 import { bgInit as csBgInit } from '../ipc/ipc_bg_cs'
 import Ext from '../web_extension'
+import storage from '../storage'
 import { getTabIpcstore } from '../tab_ipc_store'
 import { captureScreenInSelection } from '../capture_screenshot'
 import { getLinkPair } from '../models/link_pair_model'
@@ -128,6 +129,23 @@ const API = {
   hackHeader: ({ url, headers }) => {
     hackOnce({ url, add: headers })
     return true
+  },
+  resetUserSettings: () => {
+    const initial = {
+      showOnLoad: true
+    }
+
+    return storage.set('user_settings', initial)
+    .then(() => initial)
+  },
+  getUserSettings: () => {
+    return storage.get('user_settings')
+  },
+  updateUserSettings: (obj) => {
+    return API.getUserSettings()
+    .then(settings => {
+      return storage.set('user_settings', {...settings, ...obj})
+    })
   }
 }
 
