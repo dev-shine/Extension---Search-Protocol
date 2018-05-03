@@ -136,12 +136,14 @@ export class Box {
 
   constructor (options) {
     const opts = Object.assign({
+      firstSilence: true,
       transform: x => x,
       onStateChange: () => {}
     }, options)
 
     this.transform = opts.transform
     this.onStateChange = opts.onStateChange
+    this.normalizeRect = opts.normalizeRect || (x => x)
 
     this.__setState({
       id:     opts.id,
@@ -155,7 +157,7 @@ export class Box {
         width:  opts.width || 0,
         height: opts.height || 0
       }
-    }, { silent: true })
+    }, { silent: opts.firstSilence })
   }
 
   getType () {
@@ -215,7 +217,7 @@ export class Box {
     const res     = calcRectAndAnchor(moving, fixed)
 
     this.__setLocal({ anchorPos: res.anchorPos })
-    this.__setState({ rect: res.rect })
+    this.__setState({ rect: this.normalizeRect(res.rect, 'moveAnchor') })
   }
 
   moveAnchorEnd () {
@@ -234,13 +236,13 @@ export class Box {
 
   moveBox ({ dx, dy }) {
     const old = this.local.oldRect
-    this.__setState({
-      rect: {
-        ...old,
-        x: old.x + dx,
-        y: old.y + dy
-      }
-    })
+    const upd = {
+      ...old,
+      x: old.x + dx,
+      y: old.y + dy
+    }
+
+    this.__setState({ rect: this.normalizeRect(upd, 'moveBox') })
   }
 
   moveBoxEnd () {
