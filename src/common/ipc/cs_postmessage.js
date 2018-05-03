@@ -158,3 +158,12 @@ export const createIframe = ({ url, width, height, onLoad, onAsk, onMsg, ipcTime
     }
   }
 }
+
+export const passWheelEvent = (ipc) => {
+  const onWheel = (e) => {
+    ipc.ask('WHEEL', { deltaX: e.deltaX, deltaY: e.deltaY, deltaZ: e.deltaZ })
+  }
+
+  document.addEventListener('wheel', onWheel)
+  return () => document.removeEventListener(onWheel)
+}

@@ -265,6 +265,10 @@ const selectImageArea = ({ $img, linkData }) => {
         case 'CLOSE':
           iframeAPI.destroy()
           return true
+
+        case 'WHEEL':
+          window.scrollBy(args.deltaX, args.deltaY)
+          return true
       }
     }
     const totalWidth  = width + extraWidth
