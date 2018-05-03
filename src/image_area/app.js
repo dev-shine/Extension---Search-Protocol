@@ -6,7 +6,7 @@ import API from '../common/api/cs_api'
 import log from '../common/log'
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../common/shapes/box'
 import './app.scss'
-import { pixel } from '../common/dom_utils';
+import { pixel, dataUrlFromImageElement } from '../common/dom_utils'
 
 const ipc = ipcForIframe()
 
@@ -22,9 +22,21 @@ class App extends Component {
     }
   }
 
+  prepareLinkData = () => {
+    return dataUrlFromImageElement(this.$img, this.state.cropRect)
+    .then(({ dataUrl }) => {
+      return {
+        ...this.state.linkData,
+        rect:   this.state.cropRect,
+        image:  dataUrl
+      }
+    })
+  }
+
   onClickAnnotate = () => {
-    ipc.ask('ANNOTATE', {
-      linkData: {...this.state.linkData, rect: this.state.cropRect}
+    this.prepareLinkData()
+    .then(linkData => {
+      return ipc.ask('ANNOTATE', { linkData })
     })
     .catch(e => log.error(e.stack))
   }
@@ -194,7 +206,7 @@ class App extends Component {
             height: this.state.image.height
           }}
         >
-          <img src={this.state.image.dataUrl} />
+          <img src={this.state.image.dataUrl} ref={r => { this.$img = r }}/>
           {this.renderCropArea()}
         </div>
         <div className="actions">
