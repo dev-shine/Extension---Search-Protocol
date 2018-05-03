@@ -9,8 +9,6 @@ export const hackOnce = ({ url, add }) => {
     return prev
   }, {})
   const listener = (resp) => {
-    console.log('got request to hack', resp.url)
-
     const headers = resp.responseHeaders
     const result  = {}
 
