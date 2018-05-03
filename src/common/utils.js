@@ -176,3 +176,22 @@ export const liveBuild = ({ bindEvent, unbindEvent, getFuse, isEqual, onFuseChan
     }
   }
 }
+
+// Note: rects here are all DOMRect
+// will return a list of objects with top, left, width, height
+export const reduceRects = (rects) => {
+  const area = rect => rect.width * rect.height
+  const isIn = (a, b) => {
+    return b.top >= a.top && b.left >= a.left &&
+            (b.top + b.height <= a.top + a.height) &&
+            (b.left + b.width <= a.left + a.width)
+  }
+  const list = rects.slice()
+  list.sort((a, b) => area(b) - area(a))
+
+  return list.reduce((prev, cur) => {
+    if (prev.find(bigger => isIn(bigger, cur))) return prev
+    prev.push(cur)
+    return prev
+  }, [])
+}
