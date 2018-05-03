@@ -589,23 +589,27 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage }) => {
 
     if (isOnImage(e)) {
       e.preventDefault()
-      return showContextMenus({
-        pos,
-        menuOptions: menusOnImage,
-        eventData: {
-          $img: e.target,
-          linkData: {
-            type:     TARGET_TYPE.IMAGE,
-            url:      window.location.href,
-            locator:  xpath(e.target),
-            rect: {
-              x: 0,
-              y: 0,
-              ...imageSize(e.target)
-            },
-            image: ''   // TODO, leave it as blank for now
+
+      return dataUrlOfImage(e.target)
+      .then(({ dataUrl }) => {
+        return showContextMenus({
+          pos,
+          menuOptions: menusOnImage,
+          eventData: {
+            $img: e.target,
+            linkData: {
+              type:     TARGET_TYPE.IMAGE,
+              url:      window.location.href,
+              locator:  xpath(e.target),
+              rect: {
+                x: 0,
+                y: 0,
+                ...imageSize(e.target)
+              },
+              image: dataUrl
+            }
           }
-        }
+        })
       })
     }
 
