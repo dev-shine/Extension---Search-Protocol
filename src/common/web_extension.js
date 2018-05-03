@@ -64,6 +64,7 @@
       extension: ['getURL'],
       runtime: ['onMessage', 'sendMessage'],
       storage: ['onChanged'],
+      webRequest: ['onHeadersReceived'],
       browserAction: ['setBadgeText', 'setBadgeBackgroundColor']
     }
   }
