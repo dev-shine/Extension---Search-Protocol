@@ -186,12 +186,61 @@ export const reduceRects = (rects) => {
             (b.top + b.height <= a.top + a.height) &&
             (b.left + b.width <= a.left + a.width)
   }
+  const isPointInRect = (x, y, r) => {
+    return y >= r.top && x >= r.left &&
+            (y <= r.top + r.height) &&
+            (x <= r.left + r.width)
+  }
+  const fourPointsOfRect = (r) => {
+    return [
+      { x: r.left, y: r.top },
+      { x: r.left, y: r.top + r.height },
+      { x: r.left + r.width, y: r.top },
+      { x: r.left + r.width, y: r.top + r.height }
+    ]
+  }
+  const isIntersect = (a, b) => {
+    return or(
+      ...fourPointsOfRect(a).map(p => isPointInRect(p.x, p.y, b)),
+      ...fourPointsOfRect(b).map(p => isPointInRect(p.x, p.y, a))
+    )
+  }
+  const combineRect = (a, b) => {
+    const lt = {
+      x: Math.min(a.left, b.left),
+      y: Math.min(a.top, b.top)
+    }
+    const rb = {
+      x: Math.max(a.left + a.width, b.left + b.width),
+      y: Math.max(a.top + a.height, b.top + b.height)
+    }
+
+    return {
+      top:    lt.y,
+      left:   lt.x,
+      width:  rb.x - lt.x,
+      height: rb.y - lt.y
+    }
+  }
   const list = rects.slice()
   list.sort((a, b) => area(b) - area(a))
 
-  return list.reduce((prev, cur) => {
-    if (prev.find(bigger => isIn(bigger, cur))) return prev
-    prev.push(cur)
-    return prev
-  }, [])
+  // return list
+
+  let result = []
+
+  for (let i = 0, len = list.length; i < len; i++) {
+    let cur = list[i]
+
+    for (let j = result.length - 1; j >= 0; j--) {
+      if (isIntersect(list[i], result[j])) {
+        cur = combineRect(cur, result[j])
+        result.splice(j, 1)
+      }
+    }
+
+    result.push(cur)
+  }
+
+  return result
 }
