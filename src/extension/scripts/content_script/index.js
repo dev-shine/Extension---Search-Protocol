@@ -239,7 +239,40 @@ const annotate = ({ linkData = {} } = {}) => {
 
 const selectImageArea = ({ $img, linkData }) => {
   const extraWidth  = 40
-  const extraHeight = 80
+  const extraHeight = 100
+  const showIframe  = ({ width, height, dataUrl }) => {
+    const onAsk = (cmd, args) => {
+      switch (cmd) {
+        case 'INIT':
+          return {
+            linkData,
+            dataUrl,
+            width,
+            height
+          }
+
+        case 'CLOSE':
+          iframeAPI.destroy()
+          return true
+      }
+    }
+    const totalWidth  = width + extraWidth
+    const totalHeight = height + extraHeight
+    const iframeAPI   = createIframeWithMask({
+      onAsk,
+      url:    Ext.extension.getURL('image_area.html'),
+      width:  totalWidth,
+      height: totalHeight
+    })
+
+    setStyle(iframeAPI.$iframe, {
+      position:   'absolute',
+      zIndex:     110000,
+      top:        pixel(scrollTop(document) + (clientHeight(document) - totalHeight) / 2),
+      left:       pixel(scrollLeft(document) + (clientWidth(document) - totalWidth) / 2),
+      border:     '1px solid #ccc'
+    })
+  }
 
   API.hackHeader({
     url: $img.src,
@@ -247,42 +280,8 @@ const selectImageArea = ({ $img, linkData }) => {
       'Access-Control-Allow-Origin': '*'
     }
   })
-  .then(() => {
-    return dataUrlFromImageElement($img)
-    .then(({ width, height, dataUrl }) => {
-      const onAsk = (cmd, args) => {
-        switch (cmd) {
-          case 'INIT':
-            return {
-              linkData,
-              dataUrl,
-              width,
-              height
-            }
-
-          case 'CLOSE':
-            iframeAPI.destroy()
-            return true
-        }
-      }
-
-      const iframeAPI = createIframeWithMask({
-        onAsk,
-        url:    Ext.extension.getURL('image_area.html'),
-        width:  width + extraWidth,
-        height: height + extraHeight
-      })
-
-      setStyle(iframeAPI.$iframe, {
-        position: 'fixed',
-        zIndex: 110000,
-        left: '50%',
-        top: '50%',
-        transform: 'translate(-50%, -50%)',
-        border: '1px solid #ccc'
-      })
-    })
-  })
+  .then(() => dataUrlFromImageElement($img))
+  .then(showIframe)
   .catch(e => {
     log.error(e.stack)
   })
