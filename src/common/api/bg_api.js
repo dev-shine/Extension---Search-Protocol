@@ -4,6 +4,7 @@ import Ext from '../web_extension'
 import { getTabIpcstore } from '../tab_ipc_store'
 import { captureScreenInSelection } from '../capture_screenshot'
 import { getLinkPair } from '../models/link_pair_model'
+import { hackOnce } from '../hack_header'
 import * as httpAPI from './http_api'
 import * as mockHttpAPI from './mock_http_api'
 import log from '../log'
@@ -123,6 +124,10 @@ const API = {
     log('saveAnnotation', data)
     API.addLink(data)
     return Promise.resolve(true)
+  },
+  hackHeader: ({ url, headers }) => {
+    hackOnce({ url, add: headers })
+    return true
   }
 }
 
