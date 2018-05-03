@@ -14,6 +14,7 @@ class App extends Component {
   state = {
     status: null,
     linkData: null,
+    cropRect: null,
     image: {
       dataUrl: null,
       width: 0,
@@ -22,7 +23,10 @@ class App extends Component {
   }
 
   onClickAnnotate = () => {
-    log('annotate')
+    ipc.ask('ANNOTATE', {
+      linkData: {...this.state.linkData, rect: this.state.cropRect}
+    })
+    .catch(e => log.error(e.stack))
   }
 
   onClickCreateBridge = () => {

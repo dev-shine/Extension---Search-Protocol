@@ -251,6 +251,11 @@ const selectImageArea = ({ $img, linkData }) => {
             height
           }
 
+        case 'ANNOTATE':
+          iframeAPI.destroy()
+          annotate({ linkData: args.linkData })
+          return true
+
         case 'CLOSE':
           iframeAPI.destroy()
           return true
