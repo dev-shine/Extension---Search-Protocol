@@ -4,12 +4,15 @@ import { notifyError, notifySuccess } from '../components/notification'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import API from '../common/api/cs_iframe_api'
 import log from '../common/log'
+import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../common/shapes/box'
 import './app.scss'
+import { pixel } from '../common/dom_utils';
 
 const ipc = ipcForIframe()
 
 class App extends Component {
   state = {
+    status: null,
     linkData: null,
     image: {
       dataUrl: null,
@@ -30,10 +33,86 @@ class App extends Component {
     ipc.ask('CLOSE')
   }
 
+  onMouseMove = (e) => {
+    switch (this.state.status) {
+      case 'moving_box': {
+        this.state.box.moveBox({
+          dx: e.pageX - this.state.startPos.x,
+          dy: e.pageY - this.state.startPos.y
+        })
+        break
+      }
+
+      case 'moving_anchor': {
+        const containerRect = this.$container.getBoundingClientRect()
+        const x = e.clientX - containerRect.left
+        const y = e.clientY - containerRect.top
+
+        this.state.box.moveAnchor({ x, y })
+        break
+      }
+    }
+  }
+
+  onMouseUp = (e) => {
+    switch (this.state.status) {
+      case 'moving_box':
+        this.state.box.moveBoxEnd()
+        break
+
+      case 'moving_anchor':
+        this.state.box.moveAnchorEnd()
+        break
+    }
+
+    this.setState({ status: null })
+  }
+
   componentDidMount () {
     ipc.ask('INIT')
     .then(({ linkData, dataUrl, width, height }) => {
+      const box = new Box({
+        width,
+        height,
+        x: 0,
+        y: 0,
+        firstSilence: false,
+        onStateChange: ({ rect }) => {
+          log('box onStateChange', rect)
+          this.setState({ cropRect: rect })
+        },
+        normalizeRect: (rect, action) => {
+          if (action === 'moveAnchor') {
+            return {
+              x:      Math.max(0, rect.x),
+              y:      Math.max(0, rect.y),
+              width:  Math.min(rect.width, width - rect.x),
+              height: Math.min(rect.height, height - rect.y)
+            }
+          } else if (action === 'moveBox') {
+            const dx = (function () {
+              if (rect.x < 0)  return -1 * rect.x
+              if (rect.x + rect.width > width)  return (width - rect.x - rect.width)
+              return 0
+            })()
+            const dy = (function () {
+              if (rect.y < 0)  return -1 * rect.y
+              if (rect.y + rect.height > height)  return (height - rect.y - rect.height)
+              return 0
+            })()
+
+            return {
+              x:      rect.x + dx,
+              y:      rect.y + dy,
+              width:  rect.width,
+              height: rect.height
+            }
+          }
+        }
+      })
+
       this.setState({
+        box,
         linkData,
         image: {
           dataUrl,
@@ -44,10 +123,67 @@ class App extends Component {
     })
   }
 
+  renderCropArea () {
+    const { cropRect } = this.state
+    if (!cropRect)  return null
+
+    const klass = {
+      TOP_LEFT:     'lt',
+      TOP_RIGHT:    'rt',
+      BOTTOM_RIGHT: 'rb',
+      BOTTOM_LEFT:  'lb'
+    }
+    const anchorPos = Object.keys(BOX_ANCHOR_POS).map(key => ({
+      key,
+      className:  klass[key],
+      value:      BOX_ANCHOR_POS[key]
+    }))
+
+    return (
+      <div
+        className="crop-area"
+        style={{
+          top:    pixel(cropRect.y),
+          left:   pixel(cropRect.x),
+          width:  pixel(cropRect.width),
+          height: pixel(cropRect.height)
+        }}
+        onMouseDown={(e) => {
+          this.state.box.moveBoxStart()
+          this.setState({
+            status: 'moving_box',
+            startPos: {
+              x: e.pageX,
+              y: e.pageY
+            }
+          })
+        }}
+      >
+        {anchorPos.map(item => (
+          <div
+            key={item.key}
+            className={`anchor ${item.className}`}
+            onMouseDown={(e) => {
+              e.stopPropagation()
+              this.state.box.moveAnchorStart({ anchorPos: item.value })
+              this.setState({ status: 'moving_anchor' })
+            }}
+          >
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   render () {
     return (
-      <div className="select-area-wrapper">
+      <div
+        className="select-area-wrapper"
+        onMouseMove={this.onMouseMove}
+        onMouseUp={this.onMouseUp}
+      >
         <div
+          ref={r => { this.$container = r }}
           className="image-wrapper"
           style={{
             width: this.state.image.width,
@@ -55,6 +191,7 @@ class App extends Component {
           }}
         >
           <img src={this.state.image.dataUrl} />
+          {this.renderCropArea()}
         </div>
         <div className="actions">
           <Button

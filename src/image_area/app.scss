@@ -1,10 +1,65 @@
+@import '../styles/basic.scss';
+
+body {
+  padding: 0;
+}
+
 .select-area-wrapper {
+  padding: 20px;
+  user-select: none;
+
   .image-wrapper {
+    margin: 0 auto;
     position: relative;
-    border: 1px solid red;
+    border: 1px solid #ccc;
+    box-sizing: content-box;
+
+    .crop-area {
+      position: absolute;
+      border: 3px solid $primary-color;
+      cursor: move;
+
+
+      $anchor-size: 14px;
+
+      .anchor {
+        position: absolute;
+        box-sizing: border-box;
+        width: $anchor-size;
+        height: $anchor-size;
+        border: 2px solid #666;
+        background: #fff;
+
+        &.lt {
+          left: -0.5 * $anchor-size;
+          top: -0.5 * $anchor-size;
+          cursor: nwse-resize;
+        }
+
+        &.rt {
+          right: -0.5 * $anchor-size;
+          top: -0.5 * $anchor-size;
+          cursor: nesw-resize;
+        }
+
+        &.lb {
+          left: -0.5 * $anchor-size;
+          bottom: -0.5 * $anchor-size;
+          cursor: nesw-resize;
+        }
+
+        &.rb {
+          right: -0.5 * $anchor-size;
+          bottom: -0.5 * $anchor-size;
+          cursor: nwse-resize;
+        }
+      }
+    }
   }
 
   .actions {
+    margin-top: 15px;
+
     button {
       margin-right: 10px;
 
