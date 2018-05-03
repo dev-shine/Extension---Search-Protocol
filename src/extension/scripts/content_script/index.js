@@ -16,7 +16,13 @@ const bindEvents = () => {
 const init = () => {
   bindEvents()
   initContextMenus()
-  setTimeout(tryShowBridges, 0)
+
+  API.getUserSettings()
+  .then(settings => {
+    if (settings.showOnLoad) {
+      tryShowBridges()
+    }
+  })
 }
 
 let rectAPI
