@@ -186,15 +186,18 @@ export const pageY = (clientY, doc = document) => {
   return clientY + scrollTop(doc)
 }
 
-export const dataUrlFromImageElement = ($img) => {
+export const dataUrlFromImageElement = ($img, rect) => {
   const imgStyle  = getStyle($img)
   const width     = parseInt(imgStyle.width, 10)
   const height    = parseInt(imgStyle.height, 10)
   const canvas    = document.createElement('canvas')
   const ctx       = canvas.getContext('2d')
 
-  canvas.width  = width
-  canvas.height = height
+  canvas.width  = rect ? rect.width : width
+  canvas.height = rect ? rect.height : height
+
+  const drawImageArgs = !rect ? [0, 0, width, height]
+                              : [0, 0, width, height, -1 * rect.x, -1 * rect.y, width, height]
 
   return new Promise((resolve, reject) => {
     const newImg = new Image()
@@ -206,7 +209,7 @@ export const dataUrlFromImageElement = ($img) => {
     newImg.setAttribute('crossOrigin', '*')
     newImg.onerror  = reject
     newImg.onload   = () => {
-      ctx.drawImage(newImg, 0, 0, width, height)
+      ctx.drawImage(newImg, ...drawImageArgs)
       resolve({
         width,
         height,
