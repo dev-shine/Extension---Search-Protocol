@@ -587,6 +587,7 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage }) => {
         pos,
         menuOptions: menusOnImage,
         eventData: {
+          $img: e.target,
           linkData: {
             type:     TARGET_TYPE.IMAGE,
             url:      window.location.href,

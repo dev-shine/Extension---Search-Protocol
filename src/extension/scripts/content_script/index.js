@@ -3,7 +3,7 @@ import log from '../../../common/log'
 import Ext from '../../../common/web_extension'
 import API from '../../../common/api/cs_api'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
-import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel } from '../../../common/dom_utils'
+import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, dataUrlFromImageElement } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
 import { rect2offset, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/link_pair_model'
 import { createSelectionBox, createButtons, createRect, createContextMenus, createIframeWithMask } from './common'
@@ -138,15 +138,15 @@ const initContextMenus = () => {
       menus: () => {
         const selectAreaItem = {
           text: 'Select Area',
-          onClick: () => {
-            log('todo select area')
+          onClick: (e, { linkData, $img }) => {
+            selectImageArea({ linkData, $img })
           }
         }
 
         switch (linkPairStatus) {
           case LINK_PAIR_STATUS.EMPTY:
             return [
-              // selectAreaItem,
+              selectAreaItem,
               {
                 text: 'Create Bridge',
                 onClick: (e, { linkData }) => {
@@ -157,7 +157,7 @@ const initContextMenus = () => {
             ]
           case LINK_PAIR_STATUS.ONE:
             return [
-              // selectAreaItem,
+              selectAreaItem,
               {
                 text: 'Build Bridge',
                 onClick: (e, { linkData }) => {
@@ -234,6 +234,57 @@ const annotate = ({ linkData = {} } = {}) => {
     top: '50%',
     transform: 'translate(-50%, -50%)',
     border: '1px solid #ccc'
+  })
+}
+
+const selectImageArea = ({ $img, linkData }) => {
+  const extraWidth  = 40
+  const extraHeight = 80
+
+  API.hackHeader({
+    url: $img.src,
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    }
+  })
+  .then(() => {
+    return dataUrlFromImageElement($img)
+    .then(({ width, height, dataUrl }) => {
+      const onAsk = (cmd, args) => {
+        switch (cmd) {
+          case 'INIT':
+            return {
+              linkData,
+              dataUrl,
+              width,
+              height
+            }
+
+          case 'CLOSE':
+            iframeAPI.destroy()
+            return true
+        }
+      }
+
+      const iframeAPI = createIframeWithMask({
+        onAsk,
+        url:    Ext.extension.getURL('image_area.html'),
+        width:  width + extraWidth,
+        height: height + extraHeight
+      })
+
+      setStyle(iframeAPI.$iframe, {
+        position: 'fixed',
+        zIndex: 110000,
+        left: '50%',
+        top: '50%',
+        transform: 'translate(-50%, -50%)',
+        border: '1px solid #ccc'
+      })
+    })
+  })
+  .catch(e => {
+    log.error(e.stack)
   })
 }
 
