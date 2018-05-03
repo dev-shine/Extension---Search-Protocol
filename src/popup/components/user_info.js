@@ -1,7 +1,8 @@
 import React from 'react'
-import { withRouter } from 'react-router-dom'
+import { withRouter, Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { bindActionCreators }  from 'redux'
+import { Icon } from 'antd'
 
 import * as actions from '../actions'
 import { compose } from '../../common/utils'
@@ -24,13 +25,19 @@ class UserInfo extends React.Component {
           <span className="welcome">Welcome:</span>
           <span className="user-name">{userInfo.user_name}</span>
         </div>
-        <div
-          className="logout-button"
-          role="button"
-          onClick={this.onClickLogout}
-        >
-          Logout
+        <div className="actions">
+          <Link to="/settings">
+            <Icon type="setting" style={{ fontSize: '16px' }} />
+          </Link>
+          <div
+            className="logout-button"
+            role="button"
+            onClick={this.onClickLogout}
+          >
+            Logout
+          </div>
         </div>
+
       </div>
     )
   }
