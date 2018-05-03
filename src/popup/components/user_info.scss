@@ -16,9 +16,23 @@
     }
   }
 
-  .logout-button {
-    color: $link-color;
-    cursor: pointer;
+  .actions {
+    display: flex;
+    flex-direction: row;
+
+    & > * {
+      margin-right: 10px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+
+    .logout-button {
+      color: $link-color;
+      cursor: pointer;
+    }
   }
+
 }
 
