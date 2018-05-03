@@ -23,18 +23,32 @@
     }
   }
 
-  .image-box {
+  .image-box,
+  .text-box {
     width: 160px;
     height: 100px;
     overflow: hidden;
     border: 1px solid #ddd;
     border-radius: 4px;
+  }
+
+  .image-box {
     text-align: center;
 
     img {
       max-height: 100px;
       max-width: 160px;
     }
+  }
+
+  .text-box {
+    display: -webkit-box;
+    padding: 5px;
+    line-height: 22px;
+    box-sizing: border-box;
+    word-break: break-all;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
   }
 
   .actions {

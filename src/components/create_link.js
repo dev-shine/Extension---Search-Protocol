@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Alert, Button, Select, Form, Input } from 'antd'
+import { TARGET_TYPE } from '../common/models/link_pair_model'
 import './create_link.scss'
 
 const relationships = [
@@ -24,6 +25,25 @@ class CreateLinkComp extends React.Component {
     })
   }
 
+  renderLinkPreview (link) {
+    switch (link.type) {
+      case TARGET_TYPE.IMAGE:
+      case TARGET_TYPE.SCREENSHOT:
+        return (
+          <div className="image-box">
+            <img src={link.image} />
+          </div>
+        )
+
+      case TARGET_TYPE.SELECTION:
+        return (
+          <div className="text-box">
+            {link.text}
+          </div>
+        )
+    }
+  }
+
   render () {
     if (!this.props.linkPair) return null
 
@@ -38,9 +58,7 @@ class CreateLinkComp extends React.Component {
         <Form onSubmit={this.handleSubmit} className="create-link-form">
           <Form.Item label="How are these links related?">
             <div className="relationship-row">
-              <div className="image-box">
-                <img src={pair.links[0].image} />
-              </div>
+              {this.renderLinkPreview(pair.links[0])}
 
               <div>
                 {getFieldDecorator('relation', {
