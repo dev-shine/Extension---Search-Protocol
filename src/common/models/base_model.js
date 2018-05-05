@@ -1,4 +1,4 @@
-import { uid } from '../utils'
+import { uid, and } from '../utils'
 import storage from '../storage'
 import { assertFields }  from '../type_check'
 
@@ -132,6 +132,22 @@ export const createLocalBackend = (name) => {
         const found = list.find(item => item.id === id)
         return found
       })
+    },
+    list: (where) => {
+      const filter = (item) => {
+        return and(
+          ...Object.keys(where).map(key => {
+            if (Array.isArray(where[key])) {
+              return where[key].indexOf(item[key]) !== -1
+            } else {
+              return item[key] === where[key]
+            }
+          })
+        )
+      }
+
+      return storage.get(name)
+      .then(list => list.filter(filter))
     }
   }
 }
