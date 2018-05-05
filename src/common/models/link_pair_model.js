@@ -73,7 +73,6 @@ export function decodeLink (prefix, data) {
           }
       }
     })()
-    ,
   }
 }
 
