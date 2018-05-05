@@ -1,7 +1,18 @@
 import { BaseModel, createLocalBackend } from './base_model'
 import { ObjectWith } from '../type_check'
 
-const backend = createLocalBackend('bridges')
+export const backend = {
+  ...createLocalBackend('bridges'),
+  listWithElementId: ({ eid }) => {
+    const check  = Array.isArray(eid)
+                      ? (elementId) => eid.indexOf(elementId) !== -1
+                      : (elementId) => elementId === eid
+    const filter = (item) => check(item.from) || check(item.to)
+
+    return backend.list()
+    .then(list => list.filter(filter))
+  }
+}
 
 const bridgeShape = new ObjectWith({
   // from and to are both id of elements

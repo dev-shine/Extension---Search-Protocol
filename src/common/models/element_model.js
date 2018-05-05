@@ -2,7 +2,7 @@ import { BaseModel, createLocalBackend } from './base_model'
 import { TARGET_TYPE } from './link_pair_model'
 import { ObjectWith } from '../type_check'
 
-const backend = createLocalBackend('elements')
+export const backend = createLocalBackend('elements')
 
 const rectShape  = new ObjectWith({
   x:        Number,
