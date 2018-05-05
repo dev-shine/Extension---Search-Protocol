@@ -54,7 +54,7 @@ class CreateLinkComp extends React.Component {
 
     return (
       <div className="to-create-link">
-        <h2>Create Link</h2>
+        <h2>Build Bridge</h2>
         <Form onSubmit={this.handleSubmit} className="create-link-form">
           <Form.Item label="How are these links related?">
             <div className="relationship-row">
