@@ -1,5 +1,6 @@
 import { uid } from '../utils'
 import storage from '../storage'
+import { assertFields }  from '../type_check'
 
 export const MODEL_STATUS = {
   LOCAL:    'LOCAL',
@@ -9,11 +10,13 @@ export const MODEL_STATUS = {
 }
 
 export class BaseModel {
-  constructor ({ id, local } = {}) {
+  constructor ({ id, local, data } = {}) {
     if (id) {
       this.setRemoteId(id)
     } else if (local) {
       this.setLocalData(local)
+    } else if (data) {
+      this.setSyncedData(data)
     } else {
       this.__status = MODEL_STATUS.UNKNOWN
     }
@@ -27,13 +30,28 @@ export class BaseModel {
     throw new Error('should override this method')
   }
 
+  shapeOfData (data) {
+    throw new Error('should override this method')
+  }
+
+  checkData (data) {
+    assertFields(data, this.shapeOfData(data))
+  }
+
   setStatus (status) {
     this.__status = status
   }
 
   setLocalData (data) {
+    this.checkData(data)
     this.__local  = data
     this.__status = MODEL_STATUS.LOCAL
+  }
+
+  setSyncedData (data) {
+    this.checkData(data)
+    this.__data   = data
+    this.__status = MODEL_STATUS.SYNCED
   }
 
   setRemoteId (id) {
