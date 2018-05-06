@@ -23,7 +23,7 @@ class App extends Component {
   }
 
   onClickSubmit = (data) => {
-    API.postLinks(data)
+    API.createBridge(data)
     .then(() => {
       notifySuccess('Successfully posted')
       setTimeout(() => {

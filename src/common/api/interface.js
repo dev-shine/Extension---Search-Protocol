@@ -16,8 +16,15 @@ export const methods = [
   'askCurrentTab',
   'startAnnotationOnCurrentTab',
   'captureScreenInSelection',
+
+  // backend API
   'loadLinks',
   'postLinks',
+  'createContentElement',
+  'createAnnotation',
+  'createBridge',
+  'annotationsAndBridgesByUrl',
+
   'loadLinksForCurrentPage',
   'getLinkPairStatus',
   'setLinkPair',
