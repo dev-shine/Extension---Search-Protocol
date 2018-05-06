@@ -1,4 +1,4 @@
-import { uid, and, getIn, setIn, updateIn, compose } from '../utils'
+import { uid, and, getIn, setIn, updateIn, compose, until } from '../utils'
 import { assertFields, ObjectWith }  from '../type_check'
 import storage from '../storage'
 import log from '../log'
@@ -189,8 +189,39 @@ export const createData = (data) => {
 }
 
 export const createLocalBackend = (name) => {
+  let writeLock = false
+
+  const waitForWriteLock = (fn) => {
+    return (...args) => {
+      let p
+
+      if (!writeLock) {
+        writeLock = true
+        p = Promise.resolve()
+      } else {
+        p = until('write lock', () => ({
+          pass:   !writeLock,
+          result: true
+        }), 100, 1000)
+      }
+
+      return p
+      .then(() => fn(...args))
+      .then(
+        data => {
+          writeLock = false
+          return data
+        },
+        e => {
+          writeLock = true
+          throw e
+        }
+      )
+    }
+  }
+
   return {
-    commit: (data) => {
+    commit: waitForWriteLock((data) => {
       const isAdd = !data.id
 
       return storage.get(name)
@@ -211,7 +242,7 @@ export const createLocalBackend = (name) => {
 
         return storage.set(name, list).then(() => newItem)
       })
-    },
+    }),
     fetch: (id) => {
       return storage.get(name)
       .then((list = []) => {
