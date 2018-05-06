@@ -39,9 +39,14 @@ export const linksFromPairs = (pairs, url) => {
   }, [])
 }
 
-export const showLinks = (pairs, url) => {
-  const links     = linksFromPairs(pairs, url)
-  log('showLinks pairts => links', links, pairs, url)
+export const showLinks = ({ elements, bridges, annotations }, url) => {
+  const links = elements.map(item => {
+    return {
+      ...item,
+      bridges:      bridges.filter(a => a.from === item.id || a.to === item.id),
+      annotations:  annotations.filter(b => b.target === item.id)
+    }
+  })
   const allLinks  = links.map(link => showOneLink(link, () => linksAPI))
 
   const linksAPI = {
@@ -61,9 +66,6 @@ export const showOneLink = (link, getLinksAPI) => {
   log('showOneLink', link.type, link)
 
   switch (link.type) {
-    case TARGET_TYPE.SCREENSHOT:
-      return showScreenshot(link, getLinksAPI)
-
     case TARGET_TYPE.IMAGE:
       return showImage(link, getLinksAPI)
 
@@ -75,104 +77,9 @@ export const showOneLink = (link, getLinksAPI) => {
   }
 }
 
-export const showScreenshot = (link, getLinksAPI) => {
-  const bridges     = Object.keys(link.pairDict).map(pid => link.pairDict[pid])
-  const pairCount   = Object.keys(link.pairDict).length
-  const rectObj     = createRect({
-    ...rect2offset(link.rect),
-    rectBorderWidth: 3,
-    rectStyle: {
-      borderStyle: 'dashed',
-      pointerEvents: 'none'
-    },
-    containerStyle: {
-      zIndex: 'auto'
-    }
-  })
-  const actionsObj = createButtons([
-    {
-      text: 'Link Another',
-      style: {
-        width: 'auto'
-      },
-      onClick: () => {
-        getLinksAPI().hide()
-
-        API.captureScreenInSelection({
-          rect: link.rect,
-          devicePixelRatio: window.devicePixelRatio
-        })
-        .then(image => {
-          return API.addLink({
-            ...link,
-            image
-          })
-        })
-        .then(() => {
-          getLinksAPI().destroy()
-          setTimeout(() => {
-            alert('Successfully captured. Click on extension icon to take further actions')
-          }, 500)
-          return true
-        })
-        .catch(e => {
-          log.error(e)
-        })
-      }
-    }
-    // {
-    //   text: pairCount <= 1 ? `${pairCount} Link` : `${pairCount} Links`,
-    //   onClick: () => {
-    //     const bridges = Object.keys(link.pairDict).map(pid => link.pairDict[pid])
-    //     showBridgesModal(bridges)
-    //   }
-    // }
-  ], {
-    groupStyle: {
-      position: 'absolute',
-      right: '10px',
-      top: '10px'
-    }
-  })
-
-  // log('rectObj', rectObj)
-  // log('actionsObj', actionsObj)
-
-  rectObj.$container.appendChild(actionsObj.$group)
-  document.body.appendChild(rectObj.$container)
-
-  const topRight    = {
-    top:  pixel(link.rect.y),
-    left: pixel(link.rect.x + link.rect.width)
-  }
-  const badgeAPI    = showBridgeCount({
-    text:     '' + pairCount,
-    position: topRight,
-    onClick:  () => showBridgesModal(bridges)
-  })
-
-  return {
-    rectObj,
-    actionsObj,
-    show: () => {
-      rectObj.show()
-      badgeAPI.show()
-    },
-    hide: () => {
-      rectObj.hide()
-      badgeAPI.hide()
-    },
-    destroy: () => {
-      rectObj.destroy()
-      actionsObj.destroy()
-      badgeAPI.destroy()
-    }
-  }
-}
-
 export const showImage = (link, getLinksAPI) => {
-  const bridges     = Object.keys(link.pairDict).map(pid => link.pairDict[pid])
-  const pairCount   = Object.keys(link.pairDict).length
+  const { bridges, annotations } = link
+  const totalCount  = bridges.length + annotations.length
 
   const liveBuildAPI = liveBuild({
     bindEvent: (fn) => {
@@ -205,7 +112,7 @@ export const showImage = (link, getLinksAPI) => {
       }
       const overlayAPI  = createOverlayForRects({ rects: [rect] })
       const badgeAPI    = showBridgeCount({
-        text:     '' + pairCount,
+        text:     '' + totalCount,
         position: topRight,
         onClick:  () => showBridgesModal(bridges)
       })
@@ -241,8 +148,8 @@ export const showImage = (link, getLinksAPI) => {
 }
 
 export const showSelection = (link, getLinksAPI) => {
-  const bridges     = Object.keys(link.pairDict).map(pid => link.pairDict[pid])
-  const pairCount   = Object.keys(link.pairDict).length
+  const { bridges, annotations } = link
+  const totalCount  = bridges.length + annotations.length
 
   const liveBuildAPI = liveBuild({
     bindEvent: (fn) => {
@@ -269,7 +176,7 @@ export const showSelection = (link, getLinksAPI) => {
       }
       const overlayAPI  = createOverlayForRects({ rects })
       const badgeAPI    = showBridgeCount({
-        text:     '' + pairCount,
+        text:     '' + totalCount,
         position: topRight,
         onClick:  () => showBridgesModal(bridges)
       })
