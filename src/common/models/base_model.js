@@ -250,7 +250,7 @@ export const createLocalBackend = (name) => {
         return found
       })
     },
-    list: (where) => {
+    list: (where = {}) => {
       const filter = (item) => {
         return and(
           ...Object.keys(where).map(key => {
