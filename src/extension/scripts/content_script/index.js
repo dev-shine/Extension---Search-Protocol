@@ -122,6 +122,12 @@ const initContextMenus = () => {
     buildBridge: {
       text: 'Build Bridge',
       onClick: (e, { linkData }) => {
+        // Note: Here is the logic of build bridge with last annotation
+        // we need to add element of last annotation to local annotation model.
+        if (linkPairData.links.length === 0 && linkPairData.lastAnnotation) {
+          API.addLink(linkPairData.lastAnnotation.target)
+        }
+
         API.addLink(linkData)
         .then(() => buildBridge())
         .catch(e => log.error(e.stack))
