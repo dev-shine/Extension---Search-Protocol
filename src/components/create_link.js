@@ -21,7 +21,13 @@ class CreateLinkComp extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (err)  return
       const pair = this.props.linkPair.data
-      this.props.onSubmit({...pair, ...values})
+      const data = {
+        ...values,
+        from: pair.links[0],
+        to:   pair.links[1]
+      }
+
+      this.props.onSubmit(data)
     })
   }
 
