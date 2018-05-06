@@ -84,9 +84,7 @@ class CreateLinkComp extends React.Component {
                 )}
               </div>
 
-              <div className="image-box">
-                <img src={pair.links[1].image} />
-              </div>
+              {this.renderLinkPreview(pair.links[1])}
             </div>
           </Form.Item>
 
