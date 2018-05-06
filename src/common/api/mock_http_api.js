@@ -3,7 +3,7 @@ import { or, uid } from '../utils'
 import { ElementModel, backend as elementBackend } from '../models/element_model'
 import { AnnotationModel, backend as annotationBackend } from '../models/annotation_model'
 import { BridgeModel, backend as bridgeBackend } from '../models/bridge_model'
-import { createData } from '../models/base_model'
+import { createModelData } from '../models/base_model'
 
 export const loadLinks = ({ url }) => {
   return storage.get('bridgit_links')
@@ -33,7 +33,7 @@ export const createAnnotation = ({ target, ...data }) => {
   const annotation = new AnnotationModel({
     local: {
       ...data,
-      target: createData(target)
+      target: createModelData(target)
     }
   })
   return annotation.sync()
@@ -43,8 +43,8 @@ export const createBridge = ({ from, to, ...data }) => {
   const bridge = new BridgeModel({
     local: {
       ...data,
-      from: createData(from),
-      to:   createData(to)
+      from: createModelData(from),
+      to:   createModelData(to)
     }
   })
   return bridge.sync()
