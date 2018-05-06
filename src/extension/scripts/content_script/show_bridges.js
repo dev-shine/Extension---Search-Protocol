@@ -114,7 +114,7 @@ export const showImage = (link, getLinksAPI) => {
       const badgeAPI    = showBridgeCount({
         text:     '' + totalCount,
         position: topRight,
-        onClick:  () => showBridgesModal(bridges)
+        onClick:  () => showBridgesModal(bridges, annotations)
       })
 
       return {
@@ -178,7 +178,7 @@ export const showSelection = (link, getLinksAPI) => {
       const badgeAPI    = showBridgeCount({
         text:     '' + totalCount,
         position: topRight,
-        onClick:  () => showBridgesModal(bridges)
+        onClick:  () => showBridgesModal(bridges, annotations)
       })
 
       return {
@@ -254,7 +254,7 @@ export const showBridgeCount = ({ position, text, onClick }) => {
   }
 }
 
-export const showBridgesModal = (bridges) => {
+export const showBridgesModal = (bridges, annotations) => {
   const iframeAPI = createIframe({
     url:    Ext.extension.getURL('links_modal.html'),
     width:  clientWidth(document),
@@ -262,7 +262,7 @@ export const showBridgesModal = (bridges) => {
     onAsk: (cmd, args) => {
       switch (cmd) {
         case 'INIT':
-          return bridges
+          return { bridges, annotations }
 
         case 'CLOSE':
           modalAPI.destroy()
