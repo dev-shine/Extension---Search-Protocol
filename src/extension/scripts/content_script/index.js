@@ -80,6 +80,7 @@ const onBgRequest = (cmd, args) => {
 
 const initContextMenus = () => {
   let linkPairStatus = LINK_PAIR_STATUS.EMPTY
+  let linkPairData   = null
 
   const commonOptions = {
     hoverStyle: {
@@ -101,100 +102,75 @@ const initContextMenus = () => {
       boxShadow:    'rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px'
     }
   }
+  const commonMenuItems = {
+    annotate: {
+      text: 'Annotate',
+      onClick: (e, { linkData }) => {
+        annotate({ linkData })
+      }
+    },
+    createBridge: {
+      text: 'Create Bridge',
+      onClick: (e, { linkData }) => {
+        log('todo create bridge')
+      }
+    },
+    buildBridge: {
+      text: 'Build Bridge',
+      onClick: (e, { linkData }) => {
+        log('todo build bridge')
+      }
+    },
+    selectImageArea: {
+      text: 'Select Area',
+      onClick: (e, { linkData, $img }) => {
+        selectImageArea({ linkData, $img })
+      }
+    }
+  }
   const destroy = createContextMenus({
     menusOnSelection: {
       ...commonOptions,
       id: '__on_selection__',
       menus: () => {
-        switch (linkPairStatus) {
-          case LINK_PAIR_STATUS.EMPTY:
-            return [
-              {
-                text: 'Create Bridge',
-                onClick: (e, { linkData }) => {
-                  log('todo annotate')
-                  annotate({ linkData })
-                }
-              }
-            ]
-          case LINK_PAIR_STATUS.ONE:
-            return [
-              {
-                text: 'Build Bridge',
-                onClick: (e, { linkData }) => {
-                  log('todo annotate')
-                  annotate({ linkData })
-                }
-              }
-            ]
-          case LINK_PAIR_STATUS.TWO:
-          case LINK_PAIR_STATUS.READY:
-          case LINK_PAIR_STATUS.TOO_MANY:
-            return [
-              {
-                text: 'Clear the temporary bridge data',
-                onClick: () => {
-                  API.clearLinks()
-                }
-              }
-            ]
+        const menus = [
+          commonMenuItems.annotate,
+          commonMenuItems.createBridge
+        ]
+
+        // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
+        if (linkPairStatus === LINK_PAIR_STATUS.ONE || linkPairData.lastAnnotation) {
+          menus.push(commonMenuItems.buildBridge)
         }
+
+        return menus
       }
     },
     menusOnImage: {
       ...commonOptions,
       id: '__on_image__',
       menus: () => {
-        const selectAreaItem = {
-          text: 'Select Area',
-          onClick: (e, { linkData, $img }) => {
-            selectImageArea({ linkData, $img })
-          }
+        const menus = [
+          commonMenuItems.selectImageArea,
+          commonMenuItems.annotate,
+          commonMenuItems.createBridge
+        ]
+
+        // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
+        if (linkPairStatus === LINK_PAIR_STATUS.ONE || linkPairData.lastAnnotation) {
+          menus.push(commonMenuItems.buildBridge)
         }
 
-        switch (linkPairStatus) {
-          case LINK_PAIR_STATUS.EMPTY:
-            return [
-              selectAreaItem,
-              {
-                text: 'Create Bridge',
-                onClick: (e, { linkData }) => {
-                  log('todo annotate')
-                  annotate({ linkData })
-                }
-              }
-            ]
-          case LINK_PAIR_STATUS.ONE:
-            return [
-              selectAreaItem,
-              {
-                text: 'Build Bridge',
-                onClick: (e, { linkData }) => {
-                  log('todo annotate')
-                  annotate({ linkData })
-                }
-              }
-            ]
-          case LINK_PAIR_STATUS.TWO:
-          case LINK_PAIR_STATUS.READY:
-          case LINK_PAIR_STATUS.TOO_MANY:
-            return [
-              {
-                text: 'Clear the temporary bridge data',
-                onClick: () => {
-                  log('todo clear')
-                }
-              }
-            ]
-        }
+        return menus
       }
     }
   })
 
   const pullStatus = () => {
     API.getLinkPairStatus()
-    .then(({ status }) => {
+    .then(({ status, data }) => {
       linkPairStatus = status
+      linkPairData   = data
     })
   }
 
