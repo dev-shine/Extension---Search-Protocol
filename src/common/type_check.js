@@ -3,6 +3,10 @@ export class ObjectWith {
     this.fieldTypes = fieldTypes
   }
 
+  getFieldTypes () {
+    return this.fieldTypes
+  }
+
   toString () {
     const data = objMap((val, key) => {
       return typeString(val)
