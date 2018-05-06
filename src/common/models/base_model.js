@@ -178,23 +178,27 @@ export const createLocalBackend = (name) => {
       const isAdd = !data.id
 
       return storage.get(name)
-      .then(list => {
+      .then((list = []) => {
+        let newItem
+
         if (isAdd) {
-          list.push({ id: uid(), ...data })
+          newItem = { id: uid(), ...data }
+          list.push(newItem)
         } else {
           const index = list.findIndex(item => item.id === data.id)
           if (index === -1) {
             throw new Error(`item with id '${data.id}' doesn't exist`)
           }
           list[index] = Object.assign(list[index], data)
+          newItem     = list[index]
         }
 
-        return storage.set(name, list).then(() => list)
+        return storage.set(name, list).then(() => newItem)
       })
     },
     fetch: (id) => {
       return storage.get(name)
-      .then(list => {
+      .then((list = []) => {
         const found = list.find(item => item.id === id)
         return found
       })
@@ -213,7 +217,7 @@ export const createLocalBackend = (name) => {
       }
 
       return storage.get(name)
-      .then(list => list.filter(filter))
+      .then((list = []) => list.filter(filter))
     }
   }
 }
