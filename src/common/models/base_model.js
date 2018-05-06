@@ -1,6 +1,7 @@
-import { uid, and } from '../utils'
+import { uid, and, getIn, setIn, updateIn, compose } from '../utils'
+import { assertFields, ObjectWith }  from '../type_check'
 import storage from '../storage'
-import { assertFields }  from '../type_check'
+import log from '../log'
 
 export const MODEL_STATUS = {
   LOCAL:    'LOCAL',
@@ -38,6 +39,57 @@ export class BaseModel {
     assertFields(data, this.shapeOfData(data))
   }
 
+  getCurrentData () {
+    switch (this.__status) {
+      case MODEL_STATUS.LOCAL:      return this.__local
+      case MODEL_STATUS.SYNCED:     return this.__data
+      default:                      return null
+    }
+  }
+
+  getDataShape () {
+    const currentData = this.getCurrentData()
+    return this.shapeOfData(currentData)
+  }
+
+  getDependencies () {
+    const shape = this.getDataShape()
+
+    const helper = (shape, paths, result) => {
+      if ([String, Number, Boolean].indexOf(shape) !== -1) {
+        return result
+      }
+
+      if (!(shape instanceof ObjectWith)) {
+        return [...result, { paths, Klass: shape }]
+      }
+
+      const fieldObj = shape.getFieldTypes()
+      const extra    =  Object.keys(fieldObj).reduce((prev, key) => {
+        const fieldType = fieldObj[key]
+        const list      = helper(fieldType, [...paths, key], [])
+        return [...prev, ...list]
+      }, [])
+
+      return [...result, ...extra]
+    }
+
+    return helper(shape, [], [])
+  }
+
+  getDependencyInstances () {
+    const data      = this.getCurrentData()
+    const deps      = this.getDependencies()
+    const instances = deps.map(dep => {
+      const { paths, Klass } = dep
+      const args = getIn(paths, data)
+      const ins  = new Klass(args)
+      return ins
+    })
+
+    return { data, deps, instances }
+  }
+
   setStatus (status) {
     this.__status = status
   }
@@ -60,16 +112,30 @@ export class BaseModel {
   }
 
   pull () {
+    // Note: replace all id with an object of id
+    const deps    = this.getDependencies()
+    const changes = deps.map((d, i) => updateIn(d.paths, id => ({ id })))
+    const update  = compose(...changes)
+
     return this.fetch(this.__id)
     .then(data => {
-      this.__data   = data
+      this.__data   = update(data)
       this.__status = MODEL_STATUS.SYNCED
-      return data
+      return this.__data
     })
   }
 
   push () {
-    return this.commit(this.__local)
+    const { data, deps, instances } = this.getDependencyInstances()
+    const prepare = Promise.all(instances.map(ins => ins.sync()))
+    .then(results => {
+      // Note: replace all previous dependency data with a string-type id
+      const changes = results.map((r, i) => setIn(deps[i].paths, r.id))
+      return compose(...changes)(data)
+    })
+
+    return prepare
+    .then(data => this.commit(data))
     .then(data => {
       this.__data   = data
       this.__status = MODEL_STATUS.SYNCED
