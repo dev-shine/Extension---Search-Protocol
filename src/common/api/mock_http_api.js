@@ -68,3 +68,10 @@ export const annotationsAndBridgesByUrl = (url) => {
     })
   })
 }
+
+export const loadElementsByIds = (ids) => {
+  return elementBackend.list()
+  .then(elements => {
+    return elements.filter(el => ids.indexOf(el.id) !== -1)
+  })
+}
