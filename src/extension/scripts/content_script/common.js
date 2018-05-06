@@ -678,3 +678,7 @@ export const dataUrlOfImage = ($img) => {
 
   return p.then(() => dataUrlFromImageElement($img))
 }
+
+export const notify = (text) => {
+  alert(text)
+}

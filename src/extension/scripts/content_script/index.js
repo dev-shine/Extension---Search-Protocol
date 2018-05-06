@@ -8,7 +8,8 @@ import { captureClientAPI } from '../../../common/capture_screenshot'
 import { rect2offset, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/local_annotation_model'
 import {
   createSelectionBox, createButtons, createRect,
-  createContextMenus, createIframeWithMask, dataUrlOfImage
+  createContextMenus, createIframeWithMask,
+  dataUrlOfImage, notify
 } from './common'
 import { showLinks } from './show_bridges'
 
@@ -112,13 +113,18 @@ const initContextMenus = () => {
     createBridge: {
       text: 'Create Bridge',
       onClick: (e, { linkData }) => {
-        log('todo create bridge')
+        API.clearLinks()
+        .then(() => API.addLink(linkData))
+        .then(() => notify('Content selected. Please select another content and right click on it to build bridge'))
+        .catch(e => log.error(e.stack))
       }
     },
     buildBridge: {
       text: 'Build Bridge',
       onClick: (e, { linkData }) => {
-        log('todo build bridge')
+        API.addLink(linkData)
+        .then(() => buildBridge())
+        .catch(e => log.error(e.stack))
       }
     },
     selectImageArea: {
@@ -294,12 +300,7 @@ const selectScreenshotArea = () => {
   })
 }
 
-const builBridgeWithData = (linkPair) => {
-  const p = linkPair ? Promise.resolve(linkPair) : API.getLinkPairStatus()
-  return p.then(buildBridge)
-}
-
-const buildBridge = (linkPair) => {
+const buildBridge = () => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('build_bridge.html'),
     width:  600,
@@ -316,15 +317,6 @@ const buildBridge = (linkPair) => {
         case 'CLOSE':
           iframeAPI.destroy()
           return true
-
-        case 'DID_SAVE':
-          API.getLinkPairStatus()
-          .then(({ status }) => {
-            if (status === LINK_PAIR_STATUS.READY) {
-              buildBridge()
-            }
-          })
-          return undefined
       }
     }
   })
