@@ -1,4 +1,5 @@
 import { BaseModel, createLocalBackend } from './base_model'
+import { ElementModel } from './element_model'
 import { ObjectWith } from '../type_check'
 
 export const backend = {
@@ -16,8 +17,8 @@ export const backend = {
 
 const bridgeShape = new ObjectWith({
   // from and to are both id of elements
-  from:       String,
-  to:         String,
+  from:       ElementModel,
+  to:         ElementModel,
   desc:       String,
   tags:       String,
   // relation is an enum number
