@@ -180,7 +180,7 @@ export const createLocalBackend = (name) => {
       return storage.get(name)
       .then(list => {
         if (isAdd) {
-          list.push(data)
+          list.push({ id: uid(), ...data })
         } else {
           const index = list.findIndex(item => item.id === data.id)
           if (index === -1) {
