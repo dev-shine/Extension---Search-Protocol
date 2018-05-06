@@ -22,7 +22,9 @@ const onApiRequest = (cmd, args) => {
   if (cmd !== 'API_CALL') return
   const { method, params = [] } = args
 
-  log('API_CALL', method, params)
+  if (method !== 'getLinkPairStatus') {
+    log('API_CALL', method, params)
+  }
 
   if (typeof API[method] !== 'function') {
     throw new Error(`API method not found for '${method}'`)
