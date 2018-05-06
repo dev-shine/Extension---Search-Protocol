@@ -172,7 +172,7 @@ export class BaseModel {
   }
 }
 
-export const createData = (data) => {
+export const createModelData = (data) => {
   if (typeof data === 'string') {
     return { id: data }
   }
