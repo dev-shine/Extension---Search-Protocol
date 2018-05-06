@@ -51,8 +51,9 @@ export const typeCheck = (type, field) => {
     }
   }
 
-  return () => {
-    throw new Error(`Unsupported type to check`)
+  // Note: XxxModel could be in form of { id }, { local } or { data }
+  return (a) => {
+    return a && (!!a.id || !!a.local || !!a.data)
   }
 }
 
