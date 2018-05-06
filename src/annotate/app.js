@@ -22,7 +22,13 @@ class App extends Component {
       })
       .then(annotation => {
         // Note: record last annotation, it will add 'build bridge' menu item for further selection on text / image
-        API.recordLastAnnotation(annotation)
+        API.recordLastAnnotation({
+          ...annotation,
+          target: {
+            ...this.state.linkData,
+            id: annotation.target
+          }
+        })
         notifySuccess('Successfully saved')
         setTimeout(() => this.onClickCancel(), 1500)
       })
