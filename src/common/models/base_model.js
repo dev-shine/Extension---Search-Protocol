@@ -229,7 +229,11 @@ export const createLocalBackend = (name) => {
         let newItem
 
         if (isAdd) {
-          newItem = { id: uid(), ...data }
+          newItem = {
+            id: uid(),
+            created: new Date() * 1,
+            ...data
+          }
           list.push(newItem)
         } else {
           const index = list.findIndex(item => item.id === data.id)
