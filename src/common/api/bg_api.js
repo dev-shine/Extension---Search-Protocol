@@ -83,7 +83,7 @@ const API = {
       const isUrlValid = /^(https?|file)/.test(info.url)
 
       if (!isUrlValid) throw new Error('current page not supported')
-      return API.loadLinks({ url: info.url })
+      return API.annotationsAndBridgesByUrl(info.url)
     })
   },
   getCurrentPageInfo,

@@ -34,10 +34,10 @@ let linksAPI
 const tryShowBridges = () => {
   const url = window.location.href
 
-  API.loadLinks({ url })
-  .then(links => {
-    log('tryShowBridges got links', links)
-    showLinks(links, url)
+  API.annotationsAndBridgesByUrl(url)
+  .then(data => {
+    log('tryShowBridges got links', data)
+    showLinks(data, url)
   })
   .catch(e => log.error(e.stack))
 }
@@ -52,11 +52,11 @@ const onBgRequest = (cmd, args) => {
     }
 
     case 'SHOW_LINKS': {
-      log('got show links', args.links)
+      log('got show links', args)
       if (linksAPI) linksAPI.destroy()
 
       try {
-        linksAPI = showLinks(args.links, window.location.href)
+        linksAPI = showLinks(args, window.location.href)
       } catch (e) {
         log.error(e.stack)
       }
