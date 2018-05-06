@@ -1,11 +1,12 @@
 import { BaseModel, createLocalBackend } from './base_model'
+import { ElementModel } from './element_model'
 import { ObjectWith } from '../type_check'
 
 export const backend = createLocalBackend('annotations')
 
 const annotationShape = new ObjectWith({
   // target is id of element
-  target: String,
+  target: ElementModel,
   title:  String,
   desc:   String,
   tags:   String
