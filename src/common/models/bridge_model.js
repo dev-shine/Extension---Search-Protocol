@@ -21,8 +21,7 @@ const bridgeShape = new ObjectWith({
   to:         ElementModel,
   desc:       String,
   tags:       String,
-  // relation is an enum number
-  relation:   Number
+  relation:   String
 })
 
 export class BridgeModel extends BaseModel {
