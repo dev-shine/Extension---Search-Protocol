@@ -3,6 +3,7 @@ import { or, uid } from '../utils'
 import { ElementModel, backend as elementBackend } from '../models/element_model'
 import { AnnotationModel, backend as annotationBackend } from '../models/annotation_model'
 import { BridgeModel, backend as bridgeBackend } from '../models/bridge_model'
+import { createData } from '../models/base_model'
 
 export const loadLinks = ({ url }) => {
   return storage.get('bridgit_links')
@@ -28,39 +29,25 @@ export const createContentElement = (data) => {
   return el.sync()
 }
 
-const getKey = (element) => typeof element === 'string' ? 'id' : 'local'
-
 export const createAnnotation = ({ target, ...data }) => {
-  const key = getKey(target)
-  const el  = new ElementModel({ [key]: target })
-
-  return el.sync()
-  .then(element => {
-    const annotation = new AnnotationModel({
-      local: {
-        ...data,
-        target: element.id
-      }
-    })
-
-    return annotation.sync()
+  const annotation = new AnnotationModel({
+    local: {
+      ...data,
+      target: createData(target)
+    }
   })
+  return annotation.sync()
 }
 
 export const createBridge = ({ from, to, ...data }) => {
-  const elFrom  = new ElementModel({ [getKey(from)]:  from })
-  const elTo    = new ElementModel({ [getKey(to)]:    to })
-
-  return Promise.all([elFrom.sync(), elTo.sync()])
-  .then(tuple => {
-    const bridge = new BridgeModel({
-      local: {
-        ...data,
-        from: tuple[0].id,
-        to:   tuple[1].id
-      }
-    })
+  const bridge = new BridgeModel({
+    local: {
+      ...data,
+      from: createData(from),
+      to:   createData(to)
+    }
   })
+  return bridge.sync()
 }
 
 export const annotationsAndBridgesByUrl = (url) => {

@@ -172,6 +172,22 @@ export class BaseModel {
   }
 }
 
+export const createData = (data) => {
+  if (typeof data === 'string') {
+    return { id: data }
+  }
+
+  if (typeof data === 'object') {
+    if (data.id) {
+      return { data }
+    } else {
+      return { local: data }
+    }
+  }
+
+  throw new Error('not able to create data')
+}
+
 export const createLocalBackend = (name) => {
   return {
     commit: (data) => {

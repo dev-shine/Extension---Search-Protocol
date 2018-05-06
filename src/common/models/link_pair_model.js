@@ -209,11 +209,12 @@ export class LinkPairModel {
       case 0:   return LINK_PAIR_STATUS.EMPTY
       case 1:   return LINK_PAIR_STATUS.ONE
       case 2:   {
-        if (isLinkReady(this.pair.links[0]) && isLinkReady(this.pair.links[1])) {
-          return LINK_PAIR_STATUS.READY
-        } else {
-          return LINK_PAIR_STATUS.TWO
-        }
+        return LINK_PAIR_STATUS.READY
+        // if (isLinkReady(this.pair.links[0]) && isLinkReady(this.pair.links[1])) {
+        //   return LINK_PAIR_STATUS.READY
+        // } else {
+        //   return LINK_PAIR_STATUS.TWO
+        // }
       }
       default:  return LINK_PAIR_STATUS.TOO_MANY
     }

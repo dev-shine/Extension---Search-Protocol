@@ -62,7 +62,6 @@ export const assertFields = (obj, fieldObj) => {
 
   Object.keys(fieldTypes).forEach(field => {
     if (obj[field] === undefined) {
-      debugger
       throw new Error(`${field} is required`)
     }
 
