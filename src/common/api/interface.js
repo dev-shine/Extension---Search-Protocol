@@ -30,7 +30,8 @@ export const methods = [
   'setLinkPair',
   'addLink',
   'clearLinks',
-  'saveAnnotation',
+  'recordLastAnnotation',
+
   'hackHeader',
   'resetUserSettings',
   'getUserSettings',

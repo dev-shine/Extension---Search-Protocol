@@ -171,6 +171,8 @@ const initContextMenus = () => {
     .then(({ status, data }) => {
       linkPairStatus = status
       linkPairData   = data
+
+      log('getLinkPairStatus', linkPairData)
     })
   }
 
@@ -197,16 +199,6 @@ const annotate = ({ linkData = {} } = {}) => {
 
         case 'CLOSE':
           iframeAPI.destroy()
-          return true
-
-        case 'DID_SAVE':
-          API.getLinkPairStatus()
-          .then(linkPair => {
-            log('AFTER DID_SAVE', linkPair)
-            if (linkPair.status === LINK_PAIR_STATUS.READY) {
-              builBridgeWithData(linkPair)
-            }
-          })
           return true
       }
     }

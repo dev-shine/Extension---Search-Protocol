@@ -185,11 +185,14 @@ export class LinkPairModel {
       tags: null,
       relation: null
     }
+    this.lastAnnotation = null
   }
 
   addLink (link) {
     this.pair.links.push(link)
-    console.log('addLink', this.pair)
+    // Note: any 'create bridge' or 'build bridge' actions should clear the state of last annotation
+    // Because at that point, link to last annotation doesn't make that much sense
+    this.setLastAnnotation(null)
   }
 
   clear () {
@@ -197,11 +200,19 @@ export class LinkPairModel {
   }
 
   get () {
-    return this.pair
+    return {
+      ...this.pair,
+      lastAnnotation: this.lastAnnotation
+    }
   }
 
   set (data) {
     this.pair = data
+    this.setLastAnnotation(null)
+  }
+
+  setLastAnnotation (annotation) {
+    this.lastAnnotation = annotation
   }
 
   getStatus () {

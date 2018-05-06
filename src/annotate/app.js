@@ -16,8 +16,13 @@ class App extends Component {
     this.props.form.validateFields((err, values) => {
       if (err)  return
 
-      API.saveAnnotation({...this.state.linkData, ...values})
-      .then(() => {
+      API.createAnnotation({
+        ...values,
+        target: this.state.linkData
+      })
+      .then(annotation => {
+        // Note: record last annotation, it will add 'build bridge' menu item for further selection on text / image
+        API.recordLastAnnotation(annotation)
         notifySuccess('Successfully saved')
         setTimeout(() => this.onClickCancel(), 1500)
       })
@@ -28,7 +33,6 @@ class App extends Component {
   }
 
   onClickCancel = () => {
-    ipc.ask('DID_SAVE')
     ipc.ask('CLOSE')
   }
 

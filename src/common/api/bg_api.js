@@ -135,10 +135,8 @@ const API = {
     getLinkPair().clear()
     return Promise.resolve(true)
   },
-  saveAnnotation: (data) => {
-    // TODO
-    log('saveAnnotation', data)
-    API.addLink(data)
+  recordLastAnnotation: (data) => {
+    getLinkPair().setLastAnnotation(data)
     return Promise.resolve(true)
   },
   hackHeader: ({ url, headers }) => {
