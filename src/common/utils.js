@@ -155,6 +155,13 @@ export const and = (...list) => list.reduce((prev, cur) => prev && cur, true)
 
 export const or = (...list) => list.reduce((prev, cur) => prev || cur, false)
 
+export const objMap = (fn, obj) => {
+  return Object.keys(obj).reduce((prev, key, i) => {
+    prev[key] = fn(obj[key], key, i, obj)
+    return prev
+  }, {})
+}
+
 export const liveBuild = ({ bindEvent, unbindEvent, getFuse, isEqual, onFuseChange, initial = true }) => {
   let fuse = initial ? getFuse() : null
   let api  = initial ? onFuseChange(fuse) : null

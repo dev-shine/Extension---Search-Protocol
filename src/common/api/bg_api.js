@@ -8,6 +8,7 @@ import { getLinkPair } from '../models/link_pair_model'
 import { hackOnce } from '../hack_header'
 import * as httpAPI from './http_api'
 import * as mockHttpAPI from './mock_http_api'
+import { objMap } from '../utils'
 import log from '../log'
 
 const tabIpcStore = getTabIpcstore()
@@ -57,6 +58,18 @@ const getCurrentPageInfo = () => {
 const getCurrentTabIpc = () => {
   return getCurrentTab()
   .then(tab => tabIpcStore.get(tab.id))
+}
+
+const wrapLogError = (fn) => {
+  return (...args) => {
+    return new Promise((resolve, reject) => {
+      Promise.resolve(fn(...args)).then(resolve, reject)
+    })
+    .catch(e => {
+      log.error(e.stack)
+      throw e
+    })
+  }
 }
 
 const API = {
@@ -149,4 +162,4 @@ const API = {
   }
 }
 
-export default API
+export default objMap(fn => wrapLogError(fn), API)
