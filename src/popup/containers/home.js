@@ -13,9 +13,9 @@ import { notifyError, notifySuccess } from '../../components/notification'
 class Home extends React.Component {
   onClickLoadLinks = () => {
     API.loadLinksForCurrentPage()
-    .then(links => {
+    .then(data => {
       notifySuccess('Found Bridgit links.', 'Success', { duration: 1500 })
-      API.askCurrentTab('SHOW_LINKS', { links })
+      API.askCurrentTab('SHOW_LINKS', data)
     })
     .catch(e => {
       notifyError(e.message)
