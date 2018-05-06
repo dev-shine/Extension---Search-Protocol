@@ -13,7 +13,7 @@ import API from '../../common/api/popup_api'
 
 class CreateLink extends React.Component {
   onClickSubmit = (data) => {
-    API.postLinks(data)
+    API.createBridge(data)
     .then(() => {
       notifySuccess('Successfully posted')
       setTimeout(() => this.props.resetLinkPair(), 1500)
