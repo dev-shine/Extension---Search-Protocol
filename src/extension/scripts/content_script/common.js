@@ -8,7 +8,7 @@ import {
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../../../common/shapes/box'
 import { isPointInRange, selectionToJSON } from '../../../common/selection'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
-import { TARGET_TYPE } from '../../../common/models/link_pair_model'
+import { TARGET_TYPE } from '../../../common/models/local_annotation_model'
 import API from '../../../common/api/cs_api'
 import log from '../../../common/log'
 

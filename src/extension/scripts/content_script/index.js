@@ -5,7 +5,7 @@ import API from '../../../common/api/cs_api'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
 import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, dataUrlFromImageElement } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
-import { rect2offset, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/link_pair_model'
+import { rect2offset, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/local_annotation_model'
 import {
   createSelectionBox, createButtons, createRect,
   createContextMenus, createIframeWithMask, dataUrlOfImage

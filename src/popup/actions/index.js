@@ -1,6 +1,6 @@
 import { type3, types as T } from './action_types'
 import API from '../../common/api/popup_api'
-import { LINK_PAIR_STATUS } from '../../common/models/link_pair_model'
+import { LINK_PAIR_STATUS } from '../../common/models/local_annotation_model'
 
 export function setRoute (data) {
   return {

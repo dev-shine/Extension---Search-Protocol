@@ -1,6 +1,6 @@
 import request from 'superagent'
 import storage from '../storage'
-import { encodePair, decodePair } from '../models/link_pair_model'
+import { encodePair, decodePair } from '../models/local_annotation_model'
 
 const apiUrl = 'https://bridgit.io/bridgit/master.php'
 

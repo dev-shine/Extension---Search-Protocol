@@ -1,5 +1,5 @@
 import { BaseModel, createLocalBackend } from './base_model'
-import { TARGET_TYPE } from './link_pair_model'
+import { TARGET_TYPE } from './local_annotation_model'
 import { ObjectWith } from '../type_check'
 
 export const backend = createLocalBackend('elements')

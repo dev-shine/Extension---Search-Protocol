@@ -2,7 +2,7 @@ import log from '../../../common/log'
 import API from '../../../common/api/cs_api'
 import Ext from '../../../common/web_extension'
 import { parseRangeJSON } from '../../../common/selection'
-import { rect2offset, isLinkEqual, TARGET_TYPE } from '../../../common/models/link_pair_model'
+import { rect2offset, isLinkEqual, TARGET_TYPE } from '../../../common/models/local_annotation_model'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
 import { liveBuild } from '../../../common/utils'
 import {
