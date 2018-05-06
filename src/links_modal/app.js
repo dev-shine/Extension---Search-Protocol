@@ -1,35 +1,16 @@
 import React, { Component } from 'react'
 import { Modal, Select, Form, Input } from 'antd'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
+import { flatten } from '../common/utils'
+import API from '../common/api/cs_api'
+import log from '../common/log'
 import './app.scss'
 
 const ipc = ipcForIframe()
 
 class App extends Component {
   state = {
-    pairs: [
-      {
-        desc: '111',
-        id: '1',
-        tags: 'one',
-        relation: 'is Metaphor for',
-        links: [
-          { desc: 'A link', tags: 'cool A', url: 'http://a.com' },
-          { desc: 'B link', tags: 'cool B', url: 'http://b.com' }
-        ]
-      },
-      {
-        desc: '222',
-        id: '2',
-        tags: 'two',
-        relation: 'is Example of',
-        links: [
-          { desc: 'AA link', tags: 'cool AA', url: 'http://aa.com' },
-          { desc: 'BA link', tags: 'cool BB', url: 'http://bb.com' }
-        ]
-      }
-    ],
-    pid: '2'
+    ready: false
   }
 
   onClose = () => {
@@ -38,88 +19,131 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT')
-    .then(pairs => {
-      console.log('init got pairs', pairs)
+    .then(({ bridges, annotations, elementId }) => {
+      const elementIds = [
+        ...flatten(bridges.map(b => [b.from, b.to])),
+        ...annotations.map(a => a.target)
+      ]
 
       this.setState({
-        pairs,
-        pid: pairs.length > 0 ? pairs[0].id : null
+        bridges,
+        annotations,
+        elementId,
+        ready: elementIds.length === 0
       })
+
+      API.loadElementsByIds(elementIds)
+      .then(elements => {
+        const dict = elements.reduce((prev, el) => {
+          prev[el.id] = el
+          return prev
+        }, {})
+
+        this.setState({
+          elementDict: dict,
+          ready: true
+        })
+      })
+      .catch(e => log.error(e.stack))
     })
   }
 
+  renderAnnotation (annotation, index) {
+    return (
+      <div className="annotation-item" key={index}>
+        <table className="the-table">
+          <tbody>
+            <tr>
+              <td>Title</td>
+              <td>{annotation.title}</td>
+            </tr>
+            <tr>
+              <td>Body</td>
+              <td>{annotation.desc}</td>
+            </tr>
+            <tr>
+              <td>Tags</td>
+              <td>{annotation.tags}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
+  renderBridge (bridge, currentElementId, index) {
+    const renderParty = (party) => {
+      if (party === currentElementId) {
+        return 'this content'
+      } else {
+        const element = this.state.elementDict[party] || {}
+        return <a href={element.url || 'https://www.google.com'} target="_blank">{element.url || '[URL deleted]'}</a>
+      }
+    }
+    const from  = renderParty(bridge.from)
+    const to    = renderParty(bridge.to)
+
+    return (
+      <div className="bridge-item" key={index}>
+        <table className="the-table">
+          <tbody>
+            <tr>
+              <td>Description</td>
+              <td>{bridge.desc}</td>
+            </tr>
+            <tr>
+              <td>Tags</td>
+              <td>{bridge.tags}</td>
+            </tr>
+            <tr>
+              <td>Relation</td>
+              <td>{from} <span className="relation-verb">{bridge.relation}</span> {to}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
+  renderA () {
+    const { bridges, annotations, elementId } = this.state
+    console.log('state', this.state)
+
+    return (
+      <div className="two-columns">
+        {!bridges.length ? null : (
+          <div className="bridge-list">
+            <h3>Bridges</h3>
+            {bridges.map((bridge, i) => this.renderBridge(bridge, elementId, i))}
+          </div>
+        )}
+        {!annotations.length ? null : (
+          <div className="annotation-list">
+            <h3>Annotations</h3>
+            {annotations.map((annotation, i) => this.renderAnnotation(annotation, i))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  renderB () {
+
+  }
+
   render () {
-    const pair = this.state.pairs.find(p => p.id === this.state.pid) || {}
+    if (!this.state.ready)  return <div>Loading...</div>
 
     return (
       <Modal
         title="Bridgit Links"
         visible={true}
-        style={{
-          width: '100%',
-          height: '100%'
-        }}
+        width={700}
         className="links-modal"
         footer={null}
         onCancel={this.onClose}
       >
-        <Select
-          className="pair-select"
-          value={'' + this.state.pid}
-          onChange={val => { this.setState({ pid: val }) }}
-        >
-          {this.state.pairs.map(p => (
-            <Select.Option key={p.id} value={'' + p.id}>{p.desc}</Select.Option>
-          ))}
-        </Select>
-        <table className="pair-details">
-          <tbody>
-            <tr>
-              <td>Description</td>
-              <td>{pair.desc}</td>
-            </tr>
-            <tr>
-              <td>Relation</td>
-              <td>{pair.relation}</td>
-            </tr>
-            <tr>
-              <td>Tags</td>
-              <td>{pair.tags}</td>
-            </tr>
-            <tr>
-              <td>Link 1 Description</td>
-              <td>{pair.links[0].desc}</td>
-            </tr>
-            <tr>
-              <td>Link 2 Description</td>
-              <td>{pair.links[1].desc}</td>
-            </tr>
-            <tr>
-              <td>Link 1</td>
-              <td>
-                <a href={pair.links[0].url} target="_blank">
-                  {pair.links[0].url}
-                </a>
-              </td>
-            </tr>
-            <tr>
-              <td>Link 2</td>
-              <td>
-                <a href={pair.links[1].url} target="_blank">
-                  {pair.links[1].url}
-                </a>
-              </td>
-            </tr>
-            <tr>
-              <td>Link 1 Tags</td>
-              <td>{pair.links[0].tags}</td>
-            </tr>
-            <tr>
-              <td>Link 2 Tags</td>
-              <td>{pair.links[1].tags}</td>
-            </tr>
-          </tbody>
-        </table>
+        {this.renderA()}
       </Modal>
     )
   }
