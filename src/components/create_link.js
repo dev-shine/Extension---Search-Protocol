@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Alert, Button, Select, Form, Input } from 'antd'
-import { TARGET_TYPE } from '../common/models/link_pair_model'
+import { TARGET_TYPE } from '../common/models/local_annotation_model'
 import './create_link.scss'
 
 const relationships = [
