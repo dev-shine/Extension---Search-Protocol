@@ -58,13 +58,16 @@ export const typeCheck = (type, field) => {
 }
 
 export const assertFields = (obj, fieldObj) => {
-  Object.keys(fieldObj).forEach(field => {
+  const fieldTypes = (fieldObj instanceof ObjectWith) ? fieldObj.getFieldTypes() : fieldObj
+
+  Object.keys(fieldTypes).forEach(field => {
     if (obj[field] === undefined) {
+      debugger
       throw new Error(`${field} is required`)
     }
 
-    if (!typeCheck(fieldObj[field], field)(obj[field])) {
-      throw new Error(`${field} should be a ${typeString(fieldObj[field])}`)
+    if (!typeCheck(fieldTypes[field], field)(obj[field])) {
+      throw new Error(`${field} should be a ${typeString(fieldTypes[field])}`)
     }
   })
 }
