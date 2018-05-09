@@ -25,6 +25,7 @@ export const methods = [
   'createBridge',
   'annotationsAndBridgesByUrl',
   'loadElementsByIds',
+  'clearAllData',
 
   'loadLinksForCurrentPage',
   'getLinkPairStatus',

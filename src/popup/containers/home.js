@@ -50,6 +50,21 @@ class Home extends React.Component {
             Bridgit Specs
           </Button>
         </div>
+        <div className="one-line-button">
+          <Button
+            type="primary"
+            size="large"
+            className="show-links-button"
+            onClick={() => {
+              API.clearAllData()
+              .then(() => {
+                window.close()
+              })
+            }}
+          >
+            Clear all data (for test)
+          </Button>
+        </div>
       </div>
     )
   }
