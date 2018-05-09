@@ -14,7 +14,7 @@ body {
     border-collapse: collapse;
 
     tr > td:first-child {
-      width: 100px;
+      width: 150px;
       min-width: 100px;
 
       &::after {
@@ -26,6 +26,14 @@ body {
       padding: 5px;
       border: 1px solid #ddd;
       word-break: break-all;
+    }
+  }
+
+  .one-column {
+    & > * {
+      &:nth-child(even) {
+        background: #f0f0f0;
+      }
     }
   }
 
