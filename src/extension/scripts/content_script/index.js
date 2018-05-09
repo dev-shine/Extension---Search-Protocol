@@ -122,13 +122,7 @@ const initContextMenus = () => {
     buildBridge: {
       text: 'Build Bridge',
       onClick: (e, { linkData }) => {
-        // Note: Here is the logic of build bridge with last annotation
-        // we need to add element of last annotation to local annotation model.
-        if (linkPairData.links.length === 0 && linkPairData.lastAnnotation) {
-          API.addLink(linkPairData.lastAnnotation.target)
-        }
-
-        API.addLink(linkData)
+        API.buildLink(linkData)
         .then(() => buildBridge())
         .catch(e => log.error(e.stack))
       }
@@ -229,21 +223,46 @@ const annotate = ({ linkData = {} } = {}) => {
 const selectImageArea = ({ $img, linkData }) => {
   const extraWidth  = 40
   const extraHeight = 100
+  const minWidth    = 500
   const showIframe  = ({ width, height, dataUrl }) => {
     const onAsk = (cmd, args) => {
       switch (cmd) {
         case 'INIT':
-          return {
-            linkData,
-            dataUrl,
-            width,
-            height
-          }
+          return API.getLinkPairStatus()
+          .then(linkPair => {
+            return {
+              linkPair,
+              linkData,
+              dataUrl,
+              width,
+              height
+            }
+          })
 
         case 'ANNOTATE':
           iframeAPI.destroy()
           annotate({ linkData: args.linkData })
           return true
+
+        case 'CREATE_BRIDGE': {
+          iframeAPI.destroy()
+
+          API.createLink(args.linkData)
+          .then(() => notify('Content selected. Please select another content and right click on it to build bridge'))
+          .catch(e => log.error(e.stack))
+
+          return true
+        }
+
+        case 'BUILD_BRIDGE': {
+          iframeAPI.destroy()
+
+          API.buildLink(args.linkData)
+          .then(() => buildBridge())
+          .catch(e => log.error(e.stack))
+
+          return true
+        }
 
         case 'CLOSE':
           iframeAPI.destroy()
@@ -254,7 +273,7 @@ const selectImageArea = ({ $img, linkData }) => {
           return true
       }
     }
-    const totalWidth  = width + extraWidth
+    const totalWidth  = Math.max(minWidth, width + extraWidth)
     const totalHeight = height + extraHeight
     const iframeAPI   = createIframeWithMask({
       onAsk,

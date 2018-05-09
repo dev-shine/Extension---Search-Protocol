@@ -7,11 +7,13 @@ import log from '../common/log'
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../common/shapes/box'
 import './app.scss'
 import { pixel, dataUrlFromImageElement } from '../common/dom_utils'
+import { LINK_PAIR_STATUS } from '../common/models/local_annotation_model'
 
 const ipc = ipcForIframe()
 
 class App extends Component {
   state = {
+    linkPair: null,
     status: null,
     linkData: null,
     cropRect: null,
@@ -20,6 +22,12 @@ class App extends Component {
       width: 0,
       height: 0
     }
+  }
+
+  canBuildBridge = () => {
+    const { linkPair } = this.state
+    if (!linkPair)  return false
+    return linkPair.status === LINK_PAIR_STATUS.ONE || linkPair.data.lastAnnotation
   }
 
   prepareLinkData = () => {
@@ -42,7 +50,15 @@ class App extends Component {
   }
 
   onClickCreateBridge = () => {
-    log('create bridge')
+    this.prepareLinkData()
+    .then(linkData => ipc.ask('CREATE_BRIDGE', { linkData }))
+    .catch(e => log.error(e.stack))
+  }
+
+  onClickBuildBridge = () => {
+    this.prepareLinkData()
+    .then(linkData => ipc.ask('BUILD_BRIDGE', { linkData }))
+    .catch(e => log.error(e.stack))
   }
 
   onClickCancel = () => {
@@ -86,7 +102,7 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT')
-    .then(({ linkData, dataUrl, width, height }) => {
+    .then(({ linkPair, linkData, dataUrl, width, height }) => {
       const box = new Box({
         width,
         height,
@@ -130,6 +146,7 @@ class App extends Component {
       this.setState({
         box,
         linkData,
+        linkPair,
         image: {
           dataUrl,
           width,
@@ -221,11 +238,21 @@ class App extends Component {
           <Button
             type="primary"
             size="large"
-            className="cancel-button"
+            className="create-bridge-button"
             onClick={this.onClickCreateBridge}
           >
             Create Bridge
           </Button>
+          {this.canBuildBridge() ? (
+            <Button
+              type="primary"
+              size="large"
+              className="build-bridge-button"
+              onClick={this.onClickBuildBridge}
+            >
+              Build Bridge
+            </Button>
+          ) : null}
           <Button
             type="danger"
             size="large"
