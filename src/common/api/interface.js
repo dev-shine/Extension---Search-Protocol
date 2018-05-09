@@ -31,6 +31,8 @@ export const methods = [
   'getLinkPairStatus',
   'setLinkPair',
   'addLink',
+  'createLink',
+  'buildLink',
   'clearLinks',
   'recordLastAnnotation',
 
