@@ -75,3 +75,12 @@ export const loadElementsByIds = (ids) => {
     return elements.filter(el => ids.indexOf(el.id) !== -1)
   })
 }
+
+export const clearAllData = () => {
+  return Promise.all([
+    elementBackend.clear(),
+    annotationBackend.clear(),
+    bridgeBackend.clear()
+  ])
+  .then(() => true)
+}

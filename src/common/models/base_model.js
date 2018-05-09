@@ -269,6 +269,9 @@ export const createLocalBackend = (name) => {
 
       return storage.get(name)
       .then((list = []) => list.filter(filter))
+    },
+    clear: () => {
+      return storage.set(name, [])
     }
   }
 }
