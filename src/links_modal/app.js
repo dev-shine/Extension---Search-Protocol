@@ -4,6 +4,7 @@ import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import { flatten } from '../common/utils'
 import API from '../common/api/cs_api'
 import log from '../common/log'
+import { TARGET_TYPE } from '../common/models/local_annotation_model'
 import './app.scss'
 
 const ipc = ipcForIframe()
@@ -48,9 +49,9 @@ class App extends Component {
     })
   }
 
-  renderAnnotation (annotation, index) {
+  renderAnnotation (annotation, key) {
     return (
-      <div className="annotation-item" key={index}>
+      <div className="annotation-item" key={key}>
         <table className="the-table">
           <tbody>
             <tr>
@@ -71,7 +72,7 @@ class App extends Component {
     )
   }
 
-  renderBridge (bridge, currentElementId, index) {
+  renderBridge (bridge, currentElementId, key) {
     const renderParty = (party) => {
       if (party === currentElementId) {
         return 'this content'
@@ -80,13 +81,42 @@ class App extends Component {
         return <a href={element.url || 'https://www.google.com'} target="_blank">{element.url || '[URL deleted]'}</a>
       }
     }
-    const from  = renderParty(bridge.from)
-    const to    = renderParty(bridge.to)
+    const from    = renderParty(bridge.from)
+    const to      = renderParty(bridge.to)
+    const cpartId = bridge.from !== currentElementId ? bridge.from : bridge.to
+    const cpart   = this.state.elementDict[cpartId]
+    const source  = new URL(cpart.url).origin
+    const cpartContent = (function () {
+      switch (cpart.type) {
+        case TARGET_TYPE.IMAGE:
+          return <img src={cpart.image} style={{ maxHeight: '100px', border: '1px solid #eee' }} />
+
+        case TARGET_TYPE.SELECTION:
+          return <p>{cpart.text}</p>
+
+        default:
+          return 'unknown source type, '  + cpart.type
+      }
+    })()
 
     return (
-      <div className="bridge-item" key={index}>
+      <div className="bridge-item" key={key}>
         <table className="the-table">
           <tbody>
+            <tr>
+              <td>Connected with</td>
+              <td>{cpartContent}</td>
+            </tr>
+            <tr>
+              <td>Relation</td>
+              <td>{from} <span className="relation-verb">{bridge.relation}</span> {to}</td>
+            </tr>
+            <tr>
+              <td>Source</td>
+              <td>
+                <a href={source} target="_blank">{source}</a>
+              </td>
+            </tr>
             <tr>
               <td>Description</td>
               <td>{bridge.desc}</td>
@@ -94,10 +124,6 @@ class App extends Component {
             <tr>
               <td>Tags</td>
               <td>{bridge.tags}</td>
-            </tr>
-            <tr>
-              <td>Relation</td>
-              <td>{from} <span className="relation-verb">{bridge.relation}</span> {to}</td>
             </tr>
           </tbody>
         </table>
@@ -107,22 +133,37 @@ class App extends Component {
 
   renderA () {
     const { bridges, annotations, elementId } = this.state
-    console.log('state', this.state)
+    const sortList = (list) => {
+      const getCreated = (item) => (item && item.created) ? parseInt(item.created, 10) : 0
+      const compare = (a, b) => {
+        return getCreated(a) - getCreated(b)
+      }
+      const result = list.slice()
+      result.sort(compare)
+      return result
+    }
+    const allList = sortList([
+      ...bridges.map(data => ({ type: 'bridge', data })),
+      ...annotations.map(data => ({ type: 'annotation', data }))
+    ])
+    const renderItem = (item, index) => {
+      switch (item.type) {
+        case 'bridge':
+          return this.renderBridge(item.data, elementId, index)
+
+        case 'annotation':
+          return this.renderAnnotation(item.data, index)
+
+        default:
+          throw new Error(`not supported type ${item.type}`)
+      }
+    }
 
     return (
-      <div className="two-columns">
-        {!bridges.length ? null : (
-          <div className="bridge-list">
-            <h3>Bridges</h3>
-            {bridges.map((bridge, i) => this.renderBridge(bridge, elementId, i))}
-          </div>
-        )}
-        {!annotations.length ? null : (
-          <div className="annotation-list">
-            <h3>Annotations</h3>
-            {annotations.map((annotation, i) => this.renderAnnotation(annotation, i))}
-          </div>
-        )}
+      <div className="one-column">
+        {allList.map(item => (
+          renderItem(item)
+        ))}
       </div>
     )
   }
@@ -136,7 +177,7 @@ class App extends Component {
 
     return (
       <Modal
-        title="Bridgit Links"
+        title="Related Elements"
         visible={true}
         width={700}
         className="links-modal"
