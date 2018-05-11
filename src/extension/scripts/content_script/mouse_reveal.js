@@ -132,6 +132,14 @@ export class MouseReveal {
     this.disabled = false
   }
 
+  setDistance (distance) {
+    this.distance = distance
+  }
+
+  setDuration (duration) {
+    this.duration = duration
+  }
+
   destroy () {
     const doc = this.doc
 
