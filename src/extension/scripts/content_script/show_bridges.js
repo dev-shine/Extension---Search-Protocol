@@ -63,15 +63,15 @@ export const showLinks = ({ elements, bridges, annotations }, url) => {
   return linksAPI
 }
 
-export const showOneLink = (link, getLinksAPI) => {
+export const showOneLink = ({ link, getLinksAPI, color, opacity, needBadge = true }) => {
   log('showOneLink', link.type, link)
 
   switch (link.type) {
     case TARGET_TYPE.IMAGE:
-      return showImage(link, getLinksAPI)
+      return showImage({ link, getLinksAPI, color, opacity, needBadge })
 
     case TARGET_TYPE.SELECTION:
-      return showSelection(link, getLinksAPI)
+      return showSelection({ link, getLinksAPI, color, opacity, needBadge })
 
     default:
       throw new Error(`Unsupported type '${link.type}'`)
@@ -111,8 +111,8 @@ const commonShowAPI = ({ rects }) => {
   }
 }
 
-export const showImage = (link, getLinksAPI) => {
-  const { bridges, annotations } = link
+export const showImage = ({ link, getLinksAPI, color, opacity, needBadge }) => {
+  const { bridges = [], annotations = [] } = link
   const totalCount  = bridges.length + annotations.length
 
   const liveBuildAPI = liveBuild({
@@ -144,12 +144,16 @@ export const showImage = (link, getLinksAPI) => {
         top:  pixel(pageY(rect.top)),
         left: pixel(pageX(rect.left + rect.width))
       }
-      const overlayAPI  = createOverlayForRects({ rects: [rect] })
-      const badgeAPI    = showBridgeCount({
+      const overlayAPI  = createOverlayForRects({ color, opacity, rects: [rect] })
+      const badgeAPI    = needBadge ? showBridgeCount({
         text:     '' + totalCount,
         position: topRight,
         onClick:  () => showBridgesModal({ bridges, annotations, elementId: link.id })
-      })
+      }) : {
+        show: () => {},
+        hide: () => {},
+        destory: () => {}
+      }
 
       return {
         ...commonShowAPI({ rects: [rect] }),
@@ -177,7 +181,7 @@ export const showImage = (link, getLinksAPI) => {
   }, {})
 }
 
-export const showSelection = (link, getLinksAPI) => {
+export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge }) => {
   const { bridges, annotations } = link
   const totalCount  = bridges.length + annotations.length
 
@@ -204,12 +208,16 @@ export const showSelection = (link, getLinksAPI) => {
         top:  pixel(pageY(rects[0].top)),
         left: pixel(pageX(rects[0].left + rects[0].width))
       }
-      const overlayAPI  = createOverlayForRects({ rects })
-      const badgeAPI    = showBridgeCount({
+      const overlayAPI  = createOverlayForRects({ color, opacity, rects })
+      const badgeAPI    = needBadge ? showBridgeCount({
         text:     '' + totalCount,
         position: topRight,
         onClick:  () => showBridgesModal({ bridges, annotations, elementId: link.id })
-      })
+      }) : {
+        show: () => {},
+        hide: () => {},
+        destory: () => {}
+      }
 
       return {
         ...commonShowAPI({ rects }),
