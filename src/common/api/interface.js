@@ -16,6 +16,7 @@ export const methods = [
   'askCurrentTab',
   'startAnnotationOnCurrentTab',
   'captureScreenInSelection',
+  'showElementInNewTab',
 
   // backend API
   'loadLinks',
