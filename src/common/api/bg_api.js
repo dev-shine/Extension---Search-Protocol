@@ -166,7 +166,8 @@ const API = {
   },
   resetUserSettings: () => {
     const initial = {
-      showOnLoad: true
+      showOnLoad:         true,
+      nearDistanceInInch: 1
     }
 
     return storage.set('user_settings', initial)
