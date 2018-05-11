@@ -26,19 +26,21 @@ export const objMap = (fn, obj) => {
 export const and = (...list) => list.reduce((prev, cur) => prev && cur, true)
 
 export const typeString = (type) => {
-  if (type === String)  return 'String'
-  if (type === Number)  return 'Number'
-  if (type === Array)   return 'Array'
-  if (type === Boolean) return 'Boolean'
+  if (type === String)    return 'String'
+  if (type === Number)    return 'Number'
+  if (type === Array)     return 'Array'
+  if (type === Boolean)   return 'Boolean'
+  if (type === Function)  return 'Function'
 
   return type.toString()
 }
 
-export const typeCheck = (type, field) => {
-  if (type === String)  return (a) => typeof a === 'string'
-  if (type === Number)  return (a) => typeof a === 'number'
-  if (type === Array)   return (a) => Array.isArray(a)
-  if (type === Boolean) return (a) => typeof a === 'boolean'
+export const typeCheck = (type) => {
+  if (type === String)    return (a) => typeof a === 'string'
+  if (type === Number)    return (a) => typeof a === 'number'
+  if (type === Array)     return (a) => Array.isArray(a)
+  if (type === Boolean)   return (a) => typeof a === 'boolean'
+  if (type === Function)  return (a) => typeof a === 'function'
 
   if (type instanceof ObjectWith) {
     return (a) => {
