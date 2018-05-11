@@ -182,6 +182,15 @@ const API = {
     .then(settings => {
       return storage.set('user_settings', {...settings, ...obj})
     })
+  },
+  showElementInNewTab: (element) => {
+    return Ext.tabs.create({ url: element.url })
+    .then(tab => {
+      return tabIpcStore.get(tab.id)
+    })
+    .then(ipc => {
+      return ipc.ask('HIGHLIGHT_ELEMNT', { element })
+    })
   }
 }
 
