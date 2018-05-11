@@ -44,7 +44,7 @@ export class MouseReveal {
 
   createItemController (item, id) {
     let timer
-    let lastPosition      = POSITION_TYPE.FAR
+    let lastNonNearPosition = POSITION_TYPE.FAR
     let lastMoveTimeStamp = 0
 
     const api = {
@@ -60,7 +60,7 @@ export class MouseReveal {
         item.hide()
       },
       showAndFade: () => {
-        if (lastPosition !== POSITION_TYPE.FAR) return
+        if (lastNonNearPosition !== POSITION_TYPE.FAR) return
 
         clearTimeout(timer)
         item.show()
@@ -75,7 +75,7 @@ export class MouseReveal {
       reset: () => {
         api.hide()
         clearTimeout(timer)
-        lastPosition      = POSITION_TYPE.FAR
+        lastNonNearPosition = POSITION_TYPE.FAR
         lastMoveTimeStamp = 0
       },
       updateVisibility: (point) => {
@@ -96,7 +96,10 @@ export class MouseReveal {
             break
         }
 
-        lastPosition      = pos
+        if (pos !== POSITION_TYPE.NEAR) {
+          lastNonNearPosition = pos
+        }
+
         lastMoveTimeStamp = new Date() * 1
       }
     }
