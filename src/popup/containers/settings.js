@@ -54,6 +54,14 @@ class Settings extends React.Component {
             step={0.1}
           />
         </Form.Item>
+        <Form.Item label="Display active items for Y seconds">
+          <InputNumber
+            onChange={value => this.onChangeSettings('nearVisibleDuration', parseFloat(value))}
+            value={this.state.settings.nearVisibleDuration || 0}
+            min={0}
+            max={100}
+          />
+        </Form.Item>
       </Form>
 
     )
