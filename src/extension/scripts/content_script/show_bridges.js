@@ -79,21 +79,34 @@ export const showOneLink = (link, getLinksAPI) => {
 }
 
 const commonShowAPI = ({ rects }) => {
+  const normalizedRects = rects.map(r => ({
+    left:   pageX(r.left),
+    top:    pageY(r.top),
+    width:  r.width,
+    height: r.height
+  }))
+
   return {
     isInView: () => {
       const winRect = {
-        x:        scrollLeft(document),
-        y:        scrollTop(document),
+        left:     scrollLeft(document),
+        top:      scrollTop(document),
         width:    clientWidth(document),
         height:   clientHeight(document)
       }
-
-      return or(
-        ...rects.map(rect => isRectsIntersect(winRect, rect))
+      const result = or(
+        ...normalizedRects.map(rect => isRectsIntersect(winRect, rect))
       )
+
+      log('isInView', normalizedRects, winRect, result)
+      return result
     },
-    pointPosition: (point) => {
-      return rectsPointPosition({ rects, point, nearDistance: 100 })
+    pointPosition: (point, distance) => {
+      return rectsPointPosition({
+        point,
+        rects: normalizedRects,
+        nearDistance: distance
+      })
     }
   }
 }
@@ -158,7 +171,7 @@ export const showImage = (link, getLinksAPI) => {
 
   return ['show', 'hide', 'destory', 'isInView', 'pointPosition'].reduce((prev, key) => {
     prev[key] = (...args) => {
-      liveBuildAPI().getAPI()[key](...args)
+      return liveBuildAPI.getAPI()[key](...args)
     }
     return prev
   }, {})
@@ -218,7 +231,7 @@ export const showSelection = (link, getLinksAPI) => {
 
   return ['show', 'hide', 'destory', 'isInView', 'pointPosition'].reduce((prev, key) => {
     prev[key] = (...args) => {
-      liveBuildAPI().getAPI()[key](...args)
+      return liveBuildAPI.getAPI()[key](...args)
     }
     return prev
   }, {})

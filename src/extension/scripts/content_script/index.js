@@ -11,6 +11,7 @@ import {
   createContextMenus, createIframeWithMask,
   dataUrlOfImage, notify
 } from './common'
+import { MouseReveal } from './mouse_reveal'
 import { showLinks } from './show_bridges'
 
 const bindEvents = () => {
@@ -32,13 +33,23 @@ const init = () => {
 let rectAPI
 let linksAPI
 
+const initLinks = (data, url) => {
+  const oldAPI = showLinks(data, url)
+  oldAPI.hide()
+
+  linksAPI = new MouseReveal({
+    items:    oldAPI.links,
+    distance: 100
+  })
+}
+
 const tryShowBridges = () => {
   const url = window.location.href
 
   API.annotationsAndBridgesByUrl(url)
   .then(data => {
     log('tryShowBridges got links', data)
-    showLinks(data, url)
+    initLinks(data, url)
   })
   .catch(e => log.error(e.stack))
 }
@@ -57,7 +68,7 @@ const onBgRequest = (cmd, args) => {
       if (linksAPI) linksAPI.destroy()
 
       try {
-        linksAPI = showLinks(args, window.location.href)
+        initLinks(args, window.location.href)
       } catch (e) {
         log.error(e.stack)
       }
@@ -178,7 +189,7 @@ const initContextMenus = () => {
       linkPairStatus = status
       linkPairData   = data
 
-      log('getLinkPairStatus', linkPairData)
+      // log('getLinkPairStatus', linkPairData)
     })
   }
 
