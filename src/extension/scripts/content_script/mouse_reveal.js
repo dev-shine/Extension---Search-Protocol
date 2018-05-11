@@ -80,7 +80,7 @@ export class MouseReveal {
       },
       updateVisibility: (point) => {
         const pos = api.pointPosition(point, this.distance)
-        log('updateVisibility', point, pos)
+        // log('updateVisibility', point, pos)
 
         switch (pos) {
           case POSITION_TYPE.FAR:

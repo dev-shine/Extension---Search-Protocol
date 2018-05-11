@@ -78,7 +78,20 @@ class App extends Component {
         return 'this content'
       } else {
         const element = this.state.elementDict[party] || {}
-        return <a href={element.url || 'https://www.google.com'} target="_blank">{element.url || '[URL deleted]'}</a>
+        return (
+          <a
+            target="_blank"
+            href={element.url || 'https://www.google.com'}
+            onClick={(e) => {
+              if (this.state.elementDict[party]) {
+                e.preventDefault()
+                API.showElementInNewTab(element)
+              }
+            }}
+          >
+            {element.url || '[URL deleted]'}
+          </a>
+        )
       }
     }
     const from    = renderParty(bridge.from)

@@ -48,7 +48,7 @@ export const showLinks = ({ elements, bridges, annotations }, url) => {
       annotations:  annotations.filter(b => b.target === item.id)
     }
   })
-  const allLinks  = links.map(link => showOneLink(link, () => linksAPI))
+  const allLinks  = links.map(link => showOneLink({ link, getLinksAPI: () => linksAPI }))
 
   const linksAPI = {
     links: allLinks,
@@ -98,7 +98,7 @@ const commonShowAPI = ({ rects }) => {
         ...normalizedRects.map(rect => isRectsIntersect(winRect, rect))
       )
 
-      log('isInView', normalizedRects, winRect, result)
+      // log('isInView', normalizedRects, winRect, result)
       return result
     },
     pointPosition: (point, distance) => {
@@ -152,11 +152,14 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge }) => {
       }) : {
         show: () => {},
         hide: () => {},
-        destory: () => {}
+        destroy: () => {}
       }
 
       return {
         ...commonShowAPI({ rects: [rect] }),
+        getOverlayContainer: () => {
+          return overlayAPI.$container
+        },
         show: () => {
           overlayAPI.show()
           badgeAPI.show()
@@ -173,7 +176,7 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge }) => {
     }
   })
 
-  return ['show', 'hide', 'destory', 'isInView', 'pointPosition'].reduce((prev, key) => {
+  return ['getOverlayContainer', 'show', 'hide', 'destroy', 'isInView', 'pointPosition'].reduce((prev, key) => {
     prev[key] = (...args) => {
       return liveBuildAPI.getAPI()[key](...args)
     }
@@ -182,7 +185,7 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge }) => {
 }
 
 export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge }) => {
-  const { bridges, annotations } = link
+  const { bridges = [], annotations = [] } = link
   const totalCount  = bridges.length + annotations.length
 
   const liveBuildAPI = liveBuild({
@@ -216,11 +219,14 @@ export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge }) 
       }) : {
         show: () => {},
         hide: () => {},
-        destory: () => {}
+        destroy: () => {}
       }
 
       return {
         ...commonShowAPI({ rects }),
+        getOverlayContainer: () => {
+          return overlayAPI.$container
+        },
         show: () => {
           overlayAPI.show()
           badgeAPI.show()
@@ -237,7 +243,7 @@ export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge }) 
     }
   })
 
-  return ['show', 'hide', 'destory', 'isInView', 'pointPosition'].reduce((prev, key) => {
+  return ['getOverlayContainer', 'show', 'hide', 'destroy', 'isInView', 'pointPosition'].reduce((prev, key) => {
     prev[key] = (...args) => {
       return liveBuildAPI.getAPI()[key](...args)
     }
