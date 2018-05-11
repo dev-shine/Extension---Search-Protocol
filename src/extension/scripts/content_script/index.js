@@ -3,7 +3,7 @@ import log from '../../../common/log'
 import Ext from '../../../common/web_extension'
 import API from '../../../common/api/cs_api'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
-import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, dataUrlFromImageElement, getPPI } from '../../../common/dom_utils'
+import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, dataUrlFromImageElement, getPPI, getElementByXPath } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
 import { rect2offset, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/local_annotation_model'
 import {
@@ -12,7 +12,7 @@ import {
   dataUrlOfImage, notify
 } from './common'
 import { MouseReveal } from './mouse_reveal'
-import { showLinks } from './show_bridges'
+import { showLinks, showOneLink } from './show_bridges'
 
 let state = {
   nearDistanceInInch:   1,
@@ -81,6 +81,8 @@ const tryShowBridges = () => {
 }
 
 const onBgRequest = (cmd, args) => {
+  log('onBgRequest', cmd, args)
+
   switch (cmd) {
     case 'START_ANNOTATION': {
       log('got start annotation', rectAPI)
@@ -121,6 +123,33 @@ const onBgRequest = (cmd, args) => {
       if (linksAPI) {
         linksAPI.setDistance(state.nearDistanceInInch * state.pixelsPerInch)
         linksAPI.setDuration(state.nearVisibleDuration)
+      }
+
+      return true
+    }
+
+    case 'HIGHLIGHT_ELEMENT': {
+      const { element } = args
+
+      try {
+        const linkAPI = showOneLink({
+          link:       element,
+          color:      'green',
+          needBadge:  false
+        })
+        let $el = getElementByXPath(element.locator || element.start.locator)
+
+        if ($el.nodeType === 3) {
+          $el = $el.parentNode
+        }
+
+        $el.scrollIntoView({ block: 'center' })
+
+        setTimeout(() => {
+          linkAPI.destroy()
+        }, 3000)
+      } catch (e) {
+        log.error(e.stack)
       }
 
       return true
