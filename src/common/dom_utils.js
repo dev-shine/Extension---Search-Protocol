@@ -219,3 +219,20 @@ export const dataUrlFromImageElement = ($img, rect) => {
     newImg.src = $img.src
   })
 }
+
+export const getPPI = () => {
+  const $el = document.createElement('div')
+
+  setStyle($el, {
+    width: '1in',
+    position: 'absolute',
+    left: '-9999px',
+    top: '-9999px'
+  })
+
+  document.body.appendChild($el)
+  const width = getComputedStyle($el).width
+  $el.remove()
+
+  return parseInt(width, 10)
+}
