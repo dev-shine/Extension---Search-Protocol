@@ -27,6 +27,14 @@ const setState = (obj) => {
   }
 }
 
+const setStateWithSettings = (settings) => {
+  setState({
+    nearDistanceInInch:   settings.nearDistanceInInch,
+    nearVisibleDuration:  settings.nearVisibleDuration,
+    pixelsPerInch:        getPPI()
+  })
+}
+
 const bindEvents = () => {
   ipc.onAsk(onBgRequest)
 }
@@ -37,11 +45,7 @@ const init = () => {
 
   API.getUserSettings()
   .then(settings => {
-    setState({
-      nearDistanceInInch:   settings.nearDistanceInInch,
-      nearVisibleDuration:  settings.nearVisibleDuration,
-      pixelsPerInch:        getPPI()
-    })
+    setStateWithSettings(settings)
 
     if (settings.showOnLoad) {
       tryShowBridges()
@@ -108,6 +112,12 @@ const onBgRequest = (cmd, args) => {
 
     case 'SCROLL_PAGE': {
       return captureClientAPI.scrollPage(args.offset)
+    }
+
+    case 'UPDATE_SETTINGS': {
+      log('Got UPDATE_SETTINGS', args)
+      setStateWithSettings(args.settings)
+      return true
     }
   }
 }

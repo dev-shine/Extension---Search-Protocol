@@ -22,6 +22,16 @@ export class TabIpcStore {
   del (tabId) {
     delete this.cache[tabId]
   }
+
+  forEach (fn) {
+    Object.keys(this.cache).forEach(key => {
+      const ipc = this.cache[key]
+
+      try {
+        fn(ipc)
+      } catch (e) {}
+    })
+  }
 }
 
 let instance
