@@ -184,6 +184,28 @@ export const liveBuild = ({ bindEvent, unbindEvent, getFuse, isEqual, onFuseChan
   }
 }
 
+const fourPointsOfRect = (r) => {
+  return [
+    { x: r.left, y: r.top },
+    { x: r.left, y: r.top + r.height },
+    { x: r.left + r.width, y: r.top },
+    { x: r.left + r.width, y: r.top + r.height }
+  ]
+}
+
+export const isPointInRect = (x, y, r) => {
+  return y >= r.top && x >= r.left &&
+          (y <= r.top + r.height) &&
+          (x <= r.left + r.width)
+}
+
+export const isRectsIntersect = (a, b) => {
+  return or(
+    ...fourPointsOfRect(a).map(p => isPointInRect(p.x, p.y, b)),
+    ...fourPointsOfRect(b).map(p => isPointInRect(p.x, p.y, a))
+  )
+}
+
 // Note: rects here are all DOMRect
 // will return a list of objects with top, left, width, height
 export const reduceRects = (rects) => {
@@ -192,25 +214,6 @@ export const reduceRects = (rects) => {
     return b.top >= a.top && b.left >= a.left &&
             (b.top + b.height <= a.top + a.height) &&
             (b.left + b.width <= a.left + a.width)
-  }
-  const isPointInRect = (x, y, r) => {
-    return y >= r.top && x >= r.left &&
-            (y <= r.top + r.height) &&
-            (x <= r.left + r.width)
-  }
-  const fourPointsOfRect = (r) => {
-    return [
-      { x: r.left, y: r.top },
-      { x: r.left, y: r.top + r.height },
-      { x: r.left + r.width, y: r.top },
-      { x: r.left + r.width, y: r.top + r.height }
-    ]
-  }
-  const isIntersect = (a, b) => {
-    return or(
-      ...fourPointsOfRect(a).map(p => isPointInRect(p.x, p.y, b)),
-      ...fourPointsOfRect(b).map(p => isPointInRect(p.x, p.y, a))
-    )
   }
   const combineRect = (a, b) => {
     const lt = {
@@ -240,7 +243,7 @@ export const reduceRects = (rects) => {
     let cur = list[i]
 
     for (let j = result.length - 1; j >= 0; j--) {
-      if (isIntersect(list[i], result[j])) {
+      if (isRectsIntersect(list[i], result[j])) {
         cur = combineRect(cur, result[j])
         result.splice(j, 1)
       }
