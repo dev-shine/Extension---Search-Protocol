@@ -117,6 +117,12 @@ const onBgRequest = (cmd, args) => {
     case 'UPDATE_SETTINGS': {
       log('Got UPDATE_SETTINGS', args)
       setStateWithSettings(args.settings)
+
+      if (linksAPI) {
+        linksAPI.setDistance(state.nearDistanceInInch * state.pixelsPerInch)
+        linksAPI.setDuration(state.nearVisibleDuration)
+      }
+
       return true
     }
   }
