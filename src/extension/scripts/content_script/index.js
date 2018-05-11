@@ -3,7 +3,7 @@ import log from '../../../common/log'
 import Ext from '../../../common/web_extension'
 import API from '../../../common/api/cs_api'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
-import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, dataUrlFromImageElement } from '../../../common/dom_utils'
+import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, dataUrlFromImageElement, getPPI } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
 import { rect2offset, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/local_annotation_model'
 import {
@@ -13,6 +13,19 @@ import {
 } from './common'
 import { MouseReveal } from './mouse_reveal'
 import { showLinks } from './show_bridges'
+
+let state = {
+  nearDistanceInInch:   1,
+  nearVisibleDuration:  2,
+  pixelsPerInch: 40
+}
+
+const setState = (obj) => {
+  state = {
+    ...state,
+    ...obj
+  }
+}
 
 const bindEvents = () => {
   ipc.onAsk(onBgRequest)
@@ -24,6 +37,12 @@ const init = () => {
 
   API.getUserSettings()
   .then(settings => {
+    setState({
+      nearDistanceInInch:   settings.nearDistanceInInch,
+      nearVisibleDuration:  settings.nearVisibleDuration,
+      pixelsPerInch:        getPPI()
+    })
+
     if (settings.showOnLoad) {
       tryShowBridges()
     }
@@ -37,9 +56,12 @@ const initLinks = (data, url) => {
   const oldAPI = showLinks(data, url)
   oldAPI.hide()
 
+  log('distance', state.nearDistanceInInch, state.pixelsPerInch)
+
   linksAPI = new MouseReveal({
     items:    oldAPI.links,
-    distance: 100
+    distance: state.nearDistanceInInch * state.pixelsPerInch,
+    duration: state.nearVisibleDuration
   })
 }
 
