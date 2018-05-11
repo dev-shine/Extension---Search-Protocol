@@ -4,7 +4,7 @@ import Ext from '../../../common/web_extension'
 import { parseRangeJSON } from '../../../common/selection'
 import { rect2offset, isLinkEqual, TARGET_TYPE } from '../../../common/models/local_annotation_model'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
-import { liveBuild } from '../../../common/utils'
+import { liveBuild, isRectsIntersect, isPointInRect, or } from '../../../common/utils'
 import {
   setStyle, scrollLeft, scrollTop, clientWidth, clientHeight,
   pixel, pageX, pageY, getElementByXPath
@@ -15,6 +15,7 @@ import {
   createContextMenus, createIframeWithMask,
   createOverlayForRange, createOverlayForRects
 } from './common'
+import { rectsPointPosition } from './position'
 
 export const linksFromPairs = (pairs, url) => {
   return pairs.reduce((prev, pair) => {
@@ -77,6 +78,26 @@ export const showOneLink = (link, getLinksAPI) => {
   }
 }
 
+const commonShowAPI = ({ rects }) => {
+  return {
+    isInView: () => {
+      const winRect = {
+        x:        scrollLeft(document),
+        y:        scrollTop(document),
+        width:    clientWidth(document),
+        height:   clientHeight(document)
+      }
+
+      return or(
+        ...rects.map(rect => isRectsIntersect(winRect, rect))
+      )
+    },
+    pointPosition: (point) => {
+      return rectsPointPosition({ rects, point, nearDistance: 100 })
+    }
+  }
+}
+
 export const showImage = (link, getLinksAPI) => {
   const { bridges, annotations } = link
   const totalCount  = bridges.length + annotations.length
@@ -118,6 +139,7 @@ export const showImage = (link, getLinksAPI) => {
       })
 
       return {
+        ...commonShowAPI({ rects: [rect] }),
         show: () => {
           overlayAPI.show()
           badgeAPI.show()
@@ -134,17 +156,12 @@ export const showImage = (link, getLinksAPI) => {
     }
   })
 
-  return {
-    show: () => {
-      liveBuildAPI.getAPI().show()
-    },
-    hide: () => {
-      liveBuildAPI.getAPI().hide()
-    },
-    destroy: () => {
-      liveBuildAPI.getAPI().destroy()
+  return ['show', 'hide', 'destory', 'isInView', 'pointPosition'].reduce((prev, key) => {
+    prev[key] = (...args) => {
+      liveBuildAPI().getAPI()[key](...args)
     }
-  }
+    return prev
+  }, {})
 }
 
 export const showSelection = (link, getLinksAPI) => {
@@ -182,6 +199,7 @@ export const showSelection = (link, getLinksAPI) => {
       })
 
       return {
+        ...commonShowAPI({ rects }),
         show: () => {
           overlayAPI.show()
           badgeAPI.show()
@@ -198,17 +216,12 @@ export const showSelection = (link, getLinksAPI) => {
     }
   })
 
-  return {
-    show: () => {
-      liveBuildAPI.getAPI().show()
-    },
-    hide: () => {
-      liveBuildAPI.getAPI().hide()
-    },
-    destroy: () => {
-      liveBuildAPI.getAPI().destroy()
+  return ['show', 'hide', 'destory', 'isInView', 'pointPosition'].reduce((prev, key) => {
+    prev[key] = (...args) => {
+      liveBuildAPI().getAPI()[key](...args)
     }
-  }
+    return prev
+  }, {})
 }
 
 export const showBridgeCount = ({ position, text, onClick }) => {
