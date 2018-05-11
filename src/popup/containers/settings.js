@@ -2,7 +2,7 @@ import React from 'react'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { bindActionCreators }  from 'redux'
-import { Checkbox, Form } from 'antd'
+import { Checkbox, Form, InputNumber } from 'antd'
 
 import './settings.scss'
 import * as actions from '../actions'
@@ -44,6 +44,15 @@ class Settings extends React.Component {
           >
             Show anntations and bridges on each page load
           </Checkbox>
+        </Form.Item>
+        <Form.Item label="Show if cursor is within X inches">
+          <InputNumber
+            onChange={value => this.onChangeSettings('nearDistanceInInch', parseFloat(value))}
+            value={this.state.settings.nearDistanceInInch || 0}
+            min={0}
+            max={5}
+            step={0.1}
+          />
         </Form.Item>
       </Form>
 
