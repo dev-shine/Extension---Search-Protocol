@@ -1,3 +1,4 @@
+import log from '../../../common/log'
 
 export const POSITION_TYPE = {
   FAR:    'FAR',
@@ -14,17 +15,18 @@ export const nearer = (p1, p2) => {
 }
 
 export const pointInRect = ({ rect, point }) => {
-  return (point.x > rect.x && point.y > rect.y &&
-          point.x < rect.x + rect.width &&
-          point.y < rect.y + rect.height)
+  return (point.x > rect.left && point.y > rect.top &&
+          point.x < rect.left + rect.width &&
+          point.y < rect.top + rect.height)
 }
 
 export const rectPointPosition = ({ rect, point, nearDistance }) => {
+  // log('rectPointPosition', rect, point, nearDistance)
   if (pointInRect({ rect, point })) return POSITION_TYPE.HOVER
 
   const outerRect = {
-    x:      rect.x - nearDistance,
-    y:      rect.y - nearDistance,
+    left:   rect.left - nearDistance,
+    top:    rect.top - nearDistance,
     width:  rect.width + 2 * nearDistance,
     height: rect.height + 2 * nearDistance
   }

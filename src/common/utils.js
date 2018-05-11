@@ -1,4 +1,5 @@
 import throttle from 'lodash.throttle'
+import log from './log';
 
 export const delay = (fn, timeout) => {
   return new Promise((resolve, reject) => {
@@ -200,10 +201,13 @@ export const isPointInRect = (x, y, r) => {
 }
 
 export const isRectsIntersect = (a, b) => {
-  return or(
+  const result = or(
     ...fourPointsOfRect(a).map(p => isPointInRect(p.x, p.y, b)),
     ...fourPointsOfRect(b).map(p => isPointInRect(p.x, p.y, a))
   )
+
+  // log('isRectsIntersect', a, b, result)
+  return result
 }
 
 // Note: rects here are all DOMRect

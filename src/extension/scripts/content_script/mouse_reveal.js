@@ -1,6 +1,7 @@
 import throttle from 'lodash.throttle'
+import log from '../../../common/log'
 import { uid } from '../../../common/utils'
-import { scrollLeft, scrollTop, clientWidth, clientHeight } from '../../../common/dom_utils'
+import { scrollLeft, scrollTop, clientWidth, clientHeight, pageX, pageY } from '../../../common/dom_utils'
 import { POSITION_TYPE } from './position'
 
 const TROTTLE_INTERVAL = 200
@@ -25,8 +26,8 @@ export class MouseReveal {
 
   onMouseMove = throttle((e) => {
     this.mousePosition = {
-      x: e.pageX,
-      y: e.pageY
+      x: e.clientX,
+      y: e.clientY
     }
 
     if (this.disabled)  return
@@ -63,7 +64,7 @@ export class MouseReveal {
 
         clearTimeout(timer)
         item.show()
-        timer = setTimeout(() => item.hide(), this.duration)
+        timer = setTimeout(() => item.hide(), this.duration * 1000)
       },
       isInView: () => {
         return item.isInView()
@@ -79,6 +80,7 @@ export class MouseReveal {
       },
       updateVisibility: (point) => {
         const pos = api.pointPosition(point, this.distance)
+        log('updateVisibility', point, pos)
 
         switch (pos) {
           case POSITION_TYPE.FAR:
@@ -106,12 +108,16 @@ export class MouseReveal {
     const newOnes = this.items.filter(item => item.isInView())
     const removed = this.candidates.filter(item => newOnes.indexOf(item) === -1)
 
+    // log('updateCandidates, removed, newOnes', removed, newOnes)
     removed.forEach(item => item.reset())
     this.candidates = newOnes
   }
 
   updateCandidatesVisiblitiy () {
-    this.candidates.forEach(item => item.updateVisibility(this.mousePosition))
+    this.candidates.forEach(item => item.updateVisibility({
+      x: pageX(this.mousePosition.x),
+      y: pageY(this.mousePosition.y)
+    }))
   }
 
   disable () {
