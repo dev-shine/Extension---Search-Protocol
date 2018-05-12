@@ -61,8 +61,8 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    margin-bottom: 5px;
-    padding-bottom: 5px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
     border-bottom: 1px solid #eee;
 
     &:last-child {
@@ -83,13 +83,13 @@ body {
 
       img {
         max-height: $item-height;
-
+        max-width: $item-height * 4 / 3;
       }
     }
 
     .bridge-detail {
       flex: 1;
-      margin: 0 15px;
+      margin: 0 25px 0 15px;
       word-break: break-all;
 
       & > * {
@@ -105,8 +105,8 @@ body {
           content: ':'
         }
 
-        margin-right: 15px;
-        width: 80px;
+        margin-right: 10px;
+        width: 70px;
       }
 
       .the-table {
@@ -118,17 +118,21 @@ body {
     }
 
     .bridge-type {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
       height: $item-height;
 
       img {
-        max-height: $item-height;
+        max-height: $item-height / 2;
       }
     }
   }
 
   .annotation-item {
-    margin-bottom: 5px;
-    padding-bottom: 5px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
     border-bottom: 1px solid #eee;
 
     &:last-child {
