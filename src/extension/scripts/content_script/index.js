@@ -3,7 +3,11 @@ import log from '../../../common/log'
 import Ext from '../../../common/web_extension'
 import API from '../../../common/api/cs_api'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
-import { setStyle, scrollLeft, scrollTop, clientWidth, clientHeight, pixel, dataUrlFromImageElement, getPPI, getElementByXPath } from '../../../common/dom_utils'
+import {
+  setStyle, scrollLeft, scrollTop, clientWidth, clientHeight,
+  pixel, dataUrlFromImageElement, getPPI, getElementByXPath,
+  pageX, pageY
+} from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
 import { rect2offset, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/local_annotation_model'
 import {
@@ -13,6 +17,8 @@ import {
 } from './common'
 import { MouseReveal } from './mouse_reveal'
 import { showLinks, showOneLink } from './show_bridges'
+import { parseRangeJSON } from '../../../common/selection'
+import { setIn } from '../../../common/utils'
 
 let state = {
   nearDistanceInInch:   1,
@@ -208,6 +214,34 @@ const initContextMenus = () => {
       ...commonOptions,
       id: '__on_selection__',
       menus: () => {
+        const decorateOnClick = (menuItem) => {
+          return {
+            ...menuItem,
+            onClick: (e, extra) => {
+              const range     = parseRangeJSON(extra.linkData)
+              const rawRect   = range.getBoundingClientRect()
+              const rect      = {
+                x:      pageX(rawRect.left),
+                y:      pageY(rawRect.top),
+                width:  rawRect.width,
+                height: rawRect.height
+              }
+
+              API.captureScreenInSelection({
+                rect,
+                devicePixelRatio: window.devicePixelRatio
+              })
+              .then(image => {
+                const updatedExtra = setIn(['linkData', 'image'], image, extra)
+                menuItem.onClick(e, updatedExtra)
+              })
+              .catch(e => {
+                log.error(e.stack)
+              })
+            }
+          }
+        }
+
         const menus = [
           commonMenuItems.annotate,
           commonMenuItems.createBridge
@@ -218,7 +252,7 @@ const initContextMenus = () => {
           menus.push(commonMenuItems.buildBridge)
         }
 
-        return menus
+        return menus.map(decorateOnClick)
       }
     },
     menusOnImage: {
