@@ -171,6 +171,7 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge }) => {
         destroy: () => {
           overlayAPI.destroy()
           badgeAPI.destroy()
+          liveBuildAPI.destroy()
         }
       }
     }
@@ -238,6 +239,7 @@ export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge }) 
         destroy: () => {
           overlayAPI.destroy()
           badgeAPI.destroy()
+          liveBuildAPI.destroy()
         }
       }
     }
