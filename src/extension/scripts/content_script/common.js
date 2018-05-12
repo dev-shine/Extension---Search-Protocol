@@ -682,3 +682,68 @@ export const dataUrlOfImage = ($img) => {
 export const notify = (text) => {
   alert(text)
 }
+
+export const submenuEffect = ({ main, sub }) => {
+  let createWeakOffSwitch = ({ onSwitchOn, onSwitchOff, waitOff = 300 }) => {
+    let timer
+    let status
+
+    return {
+      on: () => {
+        if (status === 1) return
+
+        status = 1
+        clearTimeout(timer)
+        onSwitchOn()
+      },
+      off: () => {
+        if (status === 0) return
+
+        status = 0
+        clearTimeout(timer)
+        timer = setTimeout(onSwitchOff, waitOff)
+      },
+      destroy: () => {
+        clearTimeout(timer)
+      }
+    }
+  }
+
+  const controller = createWeakOffSwitch({
+    onSwitchOn: () => {
+      const rect = main.getRect()
+      sub.showAround({ rect })
+    },
+    onSwitchOff: () => {
+      sub.destroy()
+    }
+  })
+
+  const unbindMain = bindHoverAndClick({
+    $el: main.getContainer(),
+    onMouseOver: () => {
+      controller.on()
+    },
+    onMouseOut: () => {
+      controller.off()
+    },
+    onClick: () => {}
+  })
+
+  const unbindSub = bindHoverAndClick({
+    $el: sub.getContainer(),
+    onMouseOver: () => {
+      controller.on()
+    },
+    onMouseOut: () => {
+      controller.off()
+    },
+    onClick: () => {}
+  })
+
+  return () => {
+    unbindMain()
+    unbindSub()
+    controller.destroy()
+  }
+}
