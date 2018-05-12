@@ -439,7 +439,16 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.5 
   return api
 }
 
-export const renderContentMenus = ({ menus, hoverStyle, normalStyle, containerStyle = {} }, eventData) => {
+export const renderContentMenus = (menuOptions, eventData) => {
+  const {
+    menus,
+    hoverStyle,
+    normalStyle,
+    containerStyle = {},
+    onMouseOver = () => {},
+    onMouseOut  = () => {}
+  } = menuOptions
+
   const menuStyle = {
     ...commonStyle,
     ...containerStyle,
@@ -460,11 +469,13 @@ export const renderContentMenus = ({ menus, hoverStyle, normalStyle, containerSt
     })
     const unbind = bindHoverAndClick({
       $el: $dom,
-      onMouseOver: () => {
+      onMouseOver: (e) => {
         setStyle($dom, hoverStyle)
+        onMouseOver(e)
       },
-      onMouseOut: () => {
+      onMouseOut: (e) => {
         setStyle($dom, normalStyle)
+        onMouseOut(e)
       },
       onClick: (e) => {
         if (menu.onClick) {
@@ -526,7 +537,7 @@ export const showContextMenus = (function () {
       return
     }
 
-    const { id, menus, hoverStyle, normalStyle } = menuOptions
+    const { id } = menuOptions
     // let menuObj = cache[id]
     let menuObj = null
 
