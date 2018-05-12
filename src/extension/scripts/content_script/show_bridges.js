@@ -40,7 +40,7 @@ export const linksFromPairs = (pairs, url) => {
   }, [])
 }
 
-export const showLinks = ({ elements, bridges, annotations }, url) => {
+export const showLinks = ({ elements, bridges, annotations }, url, onCreate) => {
   const links = elements.map(item => {
     return {
       ...item,
@@ -48,7 +48,7 @@ export const showLinks = ({ elements, bridges, annotations }, url) => {
       annotations:  annotations.filter(b => b.target === item.id)
     }
   })
-  const allLinks  = links.map(link => showOneLink({ link, getLinksAPI: () => linksAPI }))
+  const allLinks  = links.map(link => showOneLink({ link, onCreate, getLinksAPI: () => linksAPI }))
 
   const linksAPI = {
     links: allLinks,
@@ -63,15 +63,15 @@ export const showLinks = ({ elements, bridges, annotations }, url) => {
   return linksAPI
 }
 
-export const showOneLink = ({ link, getLinksAPI, color, opacity, needBadge = true }) => {
+export const showOneLink = ({ link, getLinksAPI, color, opacity, needBadge = true, onCreate = () => {} }) => {
   log('showOneLink', link.type, link)
 
   switch (link.type) {
     case TARGET_TYPE.IMAGE:
-      return showImage({ link, getLinksAPI, color, opacity, needBadge })
+      return showImage({ link, getLinksAPI, color, opacity, needBadge, onCreate })
 
     case TARGET_TYPE.SELECTION:
-      return showSelection({ link, getLinksAPI, color, opacity, needBadge })
+      return showSelection({ link, getLinksAPI, color, opacity, needBadge, onCreate })
 
     default:
       throw new Error(`Unsupported type '${link.type}'`)
@@ -111,7 +111,7 @@ const commonShowAPI = ({ rects }) => {
   }
 }
 
-export const showImage = ({ link, getLinksAPI, color, opacity, needBadge }) => {
+export const showImage = ({ link, getLinksAPI, color, opacity, needBadge, onCreate }) => {
   const { bridges = [], annotations = [] } = link
   const totalCount  = bridges.length + annotations.length
 
@@ -157,7 +157,7 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge }) => {
         destroy: () => {}
       }
 
-      return {
+      const api = {
         ...commonShowAPI({ rects: [rect] }),
         getOverlayContainer: () => {
           return overlayAPI.$container
@@ -181,6 +181,9 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge }) => {
           badgeAPI.destroy()
         }
       }
+
+      onCreate(api)
+      return api
     }
   })
 
@@ -199,7 +202,7 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge }) => {
   return api
 }
 
-export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge }) => {
+export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge, onCreate }) => {
   const { bridges = [], annotations = [] } = link
   const totalCount  = bridges.length + annotations.length
 
@@ -237,7 +240,7 @@ export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge }) 
         destroy: () => {}
       }
 
-      return {
+      const api = {
         ...commonShowAPI({ rects }),
         getOverlayContainer: () => {
           return overlayAPI.$container
@@ -261,6 +264,9 @@ export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge }) 
           badgeAPI.destroy()
         }
       }
+
+      onCreate(api)
+      return api
     }
   })
 
