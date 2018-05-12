@@ -84,13 +84,6 @@ const onBgRequest = (cmd, args) => {
   log('onBgRequest', cmd, args)
 
   switch (cmd) {
-    case 'START_ANNOTATION': {
-      log('got start annotation', rectAPI)
-      if (rectAPI) rectAPI.destroy()
-      rectAPI = selectScreenshotArea()
-      return true
-    }
-
     case 'SHOW_LINKS': {
       log('got show links', args)
       if (linksAPI) linksAPI.destroy()
@@ -130,27 +123,25 @@ const onBgRequest = (cmd, args) => {
 
     case 'HIGHLIGHT_ELEMENT': {
       const { element } = args
+      let $el = getElementByXPath(element.locator || element.start.locator)
 
-      try {
+      if ($el.nodeType === 3) {
+        $el = $el.parentNode
+      }
+
+      $el.scrollIntoView({ block: 'center' })
+
+      setTimeout(() => {
         const linkAPI = showOneLink({
           link:       element,
           color:      'green',
           needBadge:  false
         })
-        let $el = getElementByXPath(element.locator || element.start.locator)
-
-        if ($el.nodeType === 3) {
-          $el = $el.parentNode
-        }
-
-        $el.scrollIntoView({ block: 'center' })
 
         setTimeout(() => {
           linkAPI.destroy()
-        }, 3000)
-      } catch (e) {
-        log.error(e.stack)
-      }
+        }, 2000)
+      }, 1000)
 
       return true
     }
