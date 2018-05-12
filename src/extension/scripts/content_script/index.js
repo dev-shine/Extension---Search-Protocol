@@ -78,9 +78,8 @@ let rectAPI
 let linksAPI
 
 const initLinks = (data, url) => {
-  const oldAPI = showLinks(data, url)
+  const oldAPI = showLinks(data, url, (api) => addSubmenuForBadge(api))
   oldAPI.hide()
-  oldAPI.links.forEach(link => addSubmenuForBadge(link))
 
   log('distance', state.nearDistanceInInch, state.pixelsPerInch)
 
