@@ -1,3 +1,6 @@
+
+$item-height: 90px;
+
 body {
   background: transparent;
 }
@@ -9,22 +12,21 @@ body {
   }
 
   .the-table {
-    margin-bottom: 15px;
+    // margin-bottom: 15px;
     width: 100%;
     border-collapse: collapse;
 
     tr > td:first-child {
-      width: 150px;
-      min-width: 100px;
+      width: 80px;
 
       &::after {
-        content: ' :'
+        content: ':'
       }
     }
 
     td {
-      padding: 5px;
-      border: 1px solid #ddd;
+      padding-bottom: 5px;
+      // border: 1px solid #ddd;
       word-break: break-all;
     }
   }
@@ -52,6 +54,87 @@ body {
       h3 {
         margin-bottom: 15px;
       }
+    }
+  }
+
+  .bridge-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .bridge-image {
+      box-sizing: content-box;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      width:  $item-height * 4 / 3;
+      height: $item-height;
+      border: 1px solid #eee;
+
+      img {
+        max-height: $item-height;
+
+      }
+    }
+
+    .bridge-detail {
+      flex: 1;
+      margin: 0 15px;
+      word-break: break-all;
+
+      & > * {
+        margin-bottom: 10px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      label {
+        &::after {
+          content: ':'
+        }
+
+        margin-right: 15px;
+        width: 80px;
+      }
+
+      .the-table {
+        td {
+          padding: 0 0 5px 0;
+          border: 0;
+        }
+      }
+    }
+
+    .bridge-type {
+      height: $item-height;
+
+      img {
+        max-height: $item-height;
+      }
+    }
+  }
+
+  .annotation-item {
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: 0;
     }
   }
 }
