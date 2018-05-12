@@ -42,11 +42,19 @@ class CreateLinkComp extends React.Component {
         )
 
       case TARGET_TYPE.SELECTION:
-        return (
-          <div className="text-box">
-            {link.text}
-          </div>
-        )
+        if (link.image) {
+          return (
+            <div className="image-box">
+              <img src={link.image} />
+            </div>
+          )
+        } else {
+          return (
+            <div className="text-box">
+              {link.text}
+            </div>
+          )
+        }
     }
   }
 

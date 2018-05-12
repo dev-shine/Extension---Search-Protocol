@@ -26,7 +26,8 @@ const selectionShape = new ObjectWith({
   url:      String,
   start:    selPosShape,
   end:      selPosShape,
-  text:     String
+  text:     String,
+  image:    String
 })
 
 export class ElementModel extends BaseModel {
