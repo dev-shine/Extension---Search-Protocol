@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Modal, Select, Form, Input } from 'antd'
+import { Modal, Select, Form, Input, Collapse } from 'antd'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import { flatten } from '../common/utils'
 import API from '../common/api/cs_api'
@@ -73,73 +73,55 @@ class App extends Component {
   }
 
   renderBridge (bridge, currentElementId, key) {
-    const renderParty = (party) => {
-      if (party === currentElementId) {
-        return 'this content'
-      } else {
-        const element = this.state.elementDict[party] || {}
-        return (
-          <a
-            target="_blank"
-            href={element.url || 'https://www.google.com'}
-            onClick={(e) => {
-              if (this.state.elementDict[party]) {
-                e.preventDefault()
-                API.showElementInNewTab(element)
-              }
-            }}
-          >
-            {element.url || '[URL deleted]'}
-          </a>
-        )
-      }
-    }
-    const from    = renderParty(bridge.from)
-    const to      = renderParty(bridge.to)
-    const cpartId = bridge.from !== currentElementId ? bridge.from : bridge.to
-    const cpart   = this.state.elementDict[cpartId]
-    const source  = new URL(cpart.url).origin
-    const cpartContent = (function () {
+    const cpartId   = bridge.from !== currentElementId ? bridge.from : bridge.to
+    const cpart     = this.state.elementDict[cpartId]
+    const source    = new URL(cpart.url).origin.replace(/^.*?:\/\//, '')
+    const typeImage = (function () {
       switch (cpart.type) {
         case TARGET_TYPE.IMAGE:
-          return <img src={cpart.image} style={{ maxHeight: '100px', border: '1px solid #eee' }} />
+          return <img src="./svg/image.svg" />
 
         case TARGET_TYPE.SELECTION:
-          return <p>{cpart.text}</p>
-
-        default:
-          return 'unknown source type, '  + cpart.type
+          return <img src="./svg/text.svg" />
       }
     })()
+    const onClickLink = (e) => {
+      if (cpart) {
+        e.preventDefault()
+        API.showElementInNewTab(cpart)
+      }
+    }
 
     return (
       <div className="bridge-item" key={key}>
-        <table className="the-table">
-          <tbody>
-            <tr>
-              <td>Connected with</td>
-              <td>{cpartContent}</td>
-            </tr>
-            <tr>
-              <td>Relation</td>
-              <td>{from} <span className="relation-verb">{bridge.relation}</span> {to}</td>
-            </tr>
-            <tr>
-              <td>Source</td>
-              <td>
-                <a href={source} target="_blank">{source}</a>
-              </td>
-            </tr>
-            <tr>
-              <td>Description</td>
-              <td>{bridge.desc}</td>
-            </tr>
-            <tr>
-              <td>Tags</td>
-              <td>{bridge.tags}</td>
-            </tr>
-          </tbody>
-        </table>
+        <a className="bridge-image" href={cpart.url} onClick={onClickLink}>
+          <img src={cpart.image} />
+        </a>
+        <div className="bridge-detail">
+          <table className="the-table">
+            <tbody>
+              <tr>
+                <td>Relation</td>
+                <td>{bridge.relation}</td>
+              </tr>
+              <tr>
+                <td>Source</td>
+                <td>{source}</td>
+              </tr>
+              <tr>
+                <td>Link</td>
+                <td>
+                  <a target="_blank" href={cpart.url} onClick={onClickLink}>
+                    {cpart.url || '[URL deleted]'}
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="bridge-type">
+          {typeImage}
+        </div>
       </div>
     )
   }
@@ -182,7 +164,30 @@ class App extends Component {
   }
 
   renderB () {
+    const { bridges, annotations, elementId } = this.state
 
+    return (
+      <Collapse defaultActiveKey={['notes', 'bridges']}>
+        <Collapse.Panel
+          key="notes"
+          header={`Notes (${annotations.length})`}
+          disabled={annotations.length === 0}
+        >
+          {annotations.map((item, index) => (
+            this.renderAnnotation(item, index)
+          ))}
+        </Collapse.Panel>
+        <Collapse.Panel
+          key="bridges"
+          header={`Bridges (${annotations.length})`}
+          disabled={annotations.length === 0}
+        >
+          {bridges.map((item, index) => (
+            this.renderBridge(item, elementId, index)
+          ))}
+        </Collapse.Panel>
+      </Collapse>
+    )
   }
 
   render () {
@@ -197,7 +202,7 @@ class App extends Component {
         footer={null}
         onCancel={this.onClose}
       >
-        {this.renderA()}
+        {this.renderB()}
       </Modal>
     )
   }
