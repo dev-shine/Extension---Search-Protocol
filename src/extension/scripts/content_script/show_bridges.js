@@ -162,6 +162,9 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge }) => {
         getOverlayContainer: () => {
           return overlayAPI.$container
         },
+        getBadgeContainer: () => {
+          return badgeAPI.$dom
+        },
         show: () => {
           overlayAPI.show()
           badgeAPI.show()
@@ -178,7 +181,7 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge }) => {
     }
   })
 
-  const api = ['getOverlayContainer', 'show', 'hide', 'isInView', 'pointPosition'].reduce((prev, key) => {
+  const api = ['getOverlayContainer', 'getBadgeContainer', 'show', 'hide', 'isInView', 'pointPosition'].reduce((prev, key) => {
     prev[key] = (...args) => {
       return liveBuildAPI.getAPI()[key](...args)
     }
@@ -236,6 +239,9 @@ export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge }) 
         getOverlayContainer: () => {
           return overlayAPI.$container
         },
+        getBadgeContainer: () => {
+          return badgeAPI.$dom
+        },
         show: () => {
           overlayAPI.show()
           badgeAPI.show()
@@ -252,7 +258,7 @@ export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge }) 
     }
   })
 
-  const api = ['getOverlayContainer', 'show', 'hide', 'isInView', 'pointPosition'].reduce((prev, key) => {
+  const api = ['getOverlayContainer', 'getBadgeContainer', 'show', 'hide', 'isInView', 'pointPosition'].reduce((prev, key) => {
     prev[key] = (...args) => {
       return liveBuildAPI.getAPI()[key](...args)
     }
