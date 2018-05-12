@@ -42,7 +42,7 @@ function pCompose (list) {
 
 function getAllScrollOffsetsForRect (
   { x, y, width, height },
-  { pageWidth, pageHeight, windowWidth, windowHeight, topPadding = 150 }
+  { pageWidth, pageHeight, windowWidth, windowHeight, originalX, originalY, topPadding = 150 }
 ) {
   const topPad  = windowHeight > topPadding ? topPadding : 0
   const xStep   = windowWidth
@@ -53,6 +53,10 @@ function getAllScrollOffsetsForRect (
     for (let sx = x; sx < x + width; sx += xStep) {
       result.push({ x: sx, y: sy })
     }
+  }
+
+  if (result.length === 0) {
+    result.push({ x: originalX, y: originalY })
   }
 
   return result
