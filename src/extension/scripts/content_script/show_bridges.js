@@ -118,9 +118,11 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge }) => {
   const liveBuildAPI = liveBuild({
     bindEvent: (fn) => {
       window.addEventListener('resize', fn)
+      window.addEventListener('scroll', fn)
     },
     unbindEvent: (fn) => {
       window.removeEventListener('resize', fn)
+      window.removeEventListener('scroll', fn)
     },
     getFuse: () => {
       const $img        = getElementByXPath(link.locator)
