@@ -439,7 +439,7 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.5 
   return api
 }
 
-export const renderContentMenus = (menuOptions, eventData) => {
+export const renderContextMenus = (menuOptions, eventData) => {
   const {
     menus,
     hoverStyle,
@@ -542,7 +542,7 @@ export const showContextMenus = (function () {
     let menuObj = null
 
     if (!menuObj) {
-      menuObj   = renderContentMenus(menuOptions, eventData)
+      menuObj   = renderContextMenus(menuOptions, eventData)
       cache[id] = menuObj
     }
 
@@ -554,6 +554,8 @@ export const showContextMenus = (function () {
 
     setStyle(menuObj.$container, positionStyle)
     menuObj.show()
+
+    return menuObj
   }
 })()
 
@@ -569,6 +571,8 @@ export const rightPosition = ({ size, cursor }) => {
 
   const left = x + rw > w ? (x - rw) : x
   const top  = y + rh > h ? (y - rh) : y
+
+  log('rightPosition', left + sx, top + sy, size, cursor)
 
   return {
     left: pixel(left + sx),
@@ -720,12 +724,29 @@ export const submenuEffect = ({ main, sub }) => {
     }
   }
 
+  let lastUnBindSub
+
   const controller = createWeakOffSwitch({
     onSwitchOn: () => {
       const rect = main.getRect()
+
       sub.showAround({ rect })
+      log('switch on', rect)
+
+      lastUnBindSub = bindHoverAndClick({
+        $el: sub.getContainer(),
+        onMouseOver: () => {
+          controller.on()
+        },
+        onMouseOut: () => {
+          controller.off()
+        },
+        onClick: () => {}
+      })
     },
     onSwitchOff: () => {
+      log('switch off')
+      if (lastUnBindSub) lastUnBindSub()
       sub.destroy()
     }
   })
@@ -741,20 +762,8 @@ export const submenuEffect = ({ main, sub }) => {
     onClick: () => {}
   })
 
-  const unbindSub = bindHoverAndClick({
-    $el: sub.getContainer(),
-    onMouseOver: () => {
-      controller.on()
-    },
-    onMouseOut: () => {
-      controller.off()
-    },
-    onClick: () => {}
-  })
-
   return () => {
     unbindMain()
-    unbindSub()
     controller.destroy()
   }
 }

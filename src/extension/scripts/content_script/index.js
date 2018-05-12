@@ -13,12 +13,12 @@ import { rect2offset, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/mode
 import {
   createSelectionBox, createButtons, createRect,
   createContextMenus, createIframeWithMask,
-  dataUrlOfImage, notify
+  dataUrlOfImage, notify, submenuEffect, showContextMenus
 } from './common'
 import { MouseReveal } from './mouse_reveal'
 import { showLinks, showOneLink } from './show_bridges'
 import { parseRangeJSON } from '../../../common/selection'
-import { setIn } from '../../../common/utils'
+import { setIn, uid } from '../../../common/utils'
 
 let state = {
   nearDistanceInInch:   1,
@@ -32,6 +32,21 @@ const setState = (obj) => {
     ...obj
   }
 }
+
+let linkPairStatus = LINK_PAIR_STATUS.EMPTY
+let linkPairData   = null
+
+const pullStatus = () => {
+  API.getLinkPairStatus()
+  .then(({ status, data }) => {
+    linkPairStatus = status
+    linkPairData   = data
+
+    // log('getLinkPairStatus', linkPairData)
+  })
+}
+
+const timer = setInterval(pullStatus, 2000)
 
 const setStateWithSettings = (settings) => {
   setState({
@@ -65,6 +80,7 @@ let linksAPI
 const initLinks = (data, url) => {
   const oldAPI = showLinks(data, url)
   oldAPI.hide()
+  oldAPI.links.forEach(link => addSubmenuForBadge(link))
 
   log('distance', state.nearDistanceInInch, state.pixelsPerInch)
 
@@ -154,64 +170,64 @@ const onBgRequest = (cmd, args) => {
   }
 }
 
-const initContextMenus = () => {
-  let linkPairStatus = LINK_PAIR_STATUS.EMPTY
-  let linkPairData   = null
+const commonMenuOptions = {
+  hoverStyle: {
+    background: '#f384aa',
+    color:      '#fff'
+  },
+  normalStyle: {
+    background: '#fff',
+    color:      '#333',
+    fontSize:   '13px',
+    lineHeight: '32px',
+    padding:    '0 10px',
+    cursor:     'pointer'
+  },
+  containerStyle: {
+    overflow:     'hidden',
+    borderRadius: '3px',
+    border:       '1px solid #ccc',
+    boxShadow:    'rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px'
+  }
+}
 
-  const commonOptions = {
-    hoverStyle: {
-      background: '#f384aa',
-      color:      '#fff'
-    },
-    normalStyle: {
-      background: '#fff',
-      color:      '#333',
-      fontSize:   '13px',
-      lineHeight: '32px',
-      padding:    '0 10px',
-      cursor:     'pointer'
-    },
-    containerStyle: {
-      overflow:     'hidden',
-      borderRadius: '3px',
-      border:       '1px solid #ccc',
-      boxShadow:    'rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px'
+const commonMenuItems = {
+  annotate: {
+    text: 'Annotate',
+    onClick: (e, { linkData }) => {
+      log('annotate menu clicked', linkData)
+      annotate({ linkData })
+    }
+  },
+  createBridge: {
+    text: 'Create Bridge',
+    onClick: (e, { linkData }) => {
+      API.clearLinks()
+      .then(() => API.addLink(linkData))
+      .then(() => notify('Content selected. Please select another content and right click on it to build bridge'))
+      .catch(e => log.error(e.stack))
+    }
+  },
+  buildBridge: {
+    text: 'Build Bridge',
+    onClick: (e, { linkData }) => {
+      API.buildLink(linkData)
+      .then(() => buildBridge())
+      .catch(e => log.error(e.stack))
+    }
+  },
+  selectImageArea: {
+    text: 'Select Area',
+    onClick: (e, { linkData, $img }) => {
+      selectImageArea({ linkData, $img })
     }
   }
-  const commonMenuItems = {
-    annotate: {
-      text: 'Annotate',
-      onClick: (e, { linkData }) => {
-        annotate({ linkData })
-      }
-    },
-    createBridge: {
-      text: 'Create Bridge',
-      onClick: (e, { linkData }) => {
-        API.clearLinks()
-        .then(() => API.addLink(linkData))
-        .then(() => notify('Content selected. Please select another content and right click on it to build bridge'))
-        .catch(e => log.error(e.stack))
-      }
-    },
-    buildBridge: {
-      text: 'Build Bridge',
-      onClick: (e, { linkData }) => {
-        API.buildLink(linkData)
-        .then(() => buildBridge())
-        .catch(e => log.error(e.stack))
-      }
-    },
-    selectImageArea: {
-      text: 'Select Area',
-      onClick: (e, { linkData, $img }) => {
-        selectImageArea({ linkData, $img })
-      }
-    }
-  }
+}
+
+const initContextMenus = () => {
   const destroy = createContextMenus({
     menusOnSelection: {
-      ...commonOptions,
+      ...commonMenuOptions,
       id: '__on_selection__',
       menus: () => {
         const decorateOnClick = (menuItem) => {
@@ -248,7 +264,7 @@ const initContextMenus = () => {
         ]
 
         // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
-        if (linkPairStatus === LINK_PAIR_STATUS.ONE || linkPairData.lastAnnotation) {
+        if (linkPairStatus === LINK_PAIR_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
           menus.push(commonMenuItems.buildBridge)
         }
 
@@ -256,7 +272,7 @@ const initContextMenus = () => {
       }
     },
     menusOnImage: {
-      ...commonOptions,
+      ...commonMenuOptions,
       id: '__on_image__',
       menus: () => {
         const menus = [
@@ -266,7 +282,7 @@ const initContextMenus = () => {
         ]
 
         // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
-        if (linkPairStatus === LINK_PAIR_STATUS.ONE || linkPairData.lastAnnotation) {
+        if (linkPairStatus === LINK_PAIR_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
           menus.push(commonMenuItems.buildBridge)
         }
 
@@ -275,18 +291,73 @@ const initContextMenus = () => {
     }
   })
 
-  const pullStatus = () => {
-    API.getLinkPairStatus()
-    .then(({ status, data }) => {
-      linkPairStatus = status
-      linkPairData   = data
+  return () => {}
+}
 
-      // log('getLinkPairStatus', linkPairData)
-    })
+const addSubmenuForBadge = (link) => {
+  const $badge = link.getBadgeContainer()
+  const main   = {
+    getContainer: () => $badge,
+    getRect: () => {
+      const raw = $badge.getBoundingClientRect()
+      return {
+        x:      pageX(raw.left),
+        y:      pageY(raw.top),
+        width:  raw.width,
+        height: raw.height
+      }
+    }
+  }
+  const menuPositionFromRect = (rect) => {
+    log('menuPositionFromRect', rect)
+    return {
+      x: rect.x - 110,
+      y: rect.y
+    }
+  }
+  const createSub = () => {
+    let instance
+
+    return {
+      showAround: ({ rect }) => {
+        if (instance) return
+
+        instance = showContextMenus({
+          menuOptions: {
+            ...commonMenuOptions,
+            id: uid(),
+            menus: () => {
+              const menus = [
+                commonMenuItems.annotate,
+                commonMenuItems.createBridge
+              ]
+
+              // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
+              if (linkPairStatus === LINK_PAIR_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
+                menus.push(commonMenuItems.buildBridge)
+              }
+
+              return menus
+            }
+          },
+          eventData: {
+            linkData: link.getElement()
+          },
+          pos: menuPositionFromRect(rect)
+        })
+      },
+      getContainer: () => {
+        return instance.$container
+      },
+      destroy: () => {
+        instance.destroy()
+        instance = null
+      }
+    }
   }
 
-  const timer = setInterval(pullStatus, 2000)
-  return () => clearInterval(timer)
+  const destroySubMenuEffect = submenuEffect({ main, sub: createSub() })
+  return destroySubMenuEffect
 }
 
 const annotate = ({ linkData = {} } = {}) => {
