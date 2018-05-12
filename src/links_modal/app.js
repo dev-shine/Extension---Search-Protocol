@@ -179,8 +179,8 @@ class App extends Component {
         </Collapse.Panel>
         <Collapse.Panel
           key="bridges"
-          header={`Bridges (${annotations.length})`}
-          disabled={annotations.length === 0}
+          header={`Bridges (${bridges.length})`}
+          disabled={bridges.length === 0}
         >
           {bridges.map((item, index) => (
             this.renderBridge(item, elementId, index)
