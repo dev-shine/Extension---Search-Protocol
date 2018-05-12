@@ -173,18 +173,24 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge }) => {
         destroy: () => {
           overlayAPI.destroy()
           badgeAPI.destroy()
-          liveBuildAPI.destroy()
         }
       }
     }
   })
 
-  return ['getOverlayContainer', 'show', 'hide', 'destroy', 'isInView', 'pointPosition'].reduce((prev, key) => {
+  const api = ['getOverlayContainer', 'show', 'hide', 'isInView', 'pointPosition'].reduce((prev, key) => {
     prev[key] = (...args) => {
       return liveBuildAPI.getAPI()[key](...args)
     }
     return prev
   }, {})
+
+  api.destroy = () => {
+    liveBuildAPI.getAPI().destroy()
+    liveBuildAPI.destroy()
+  }
+
+  return api
 }
 
 export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge }) => {
@@ -241,18 +247,24 @@ export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge }) 
         destroy: () => {
           overlayAPI.destroy()
           badgeAPI.destroy()
-          liveBuildAPI.destroy()
         }
       }
     }
   })
 
-  return ['getOverlayContainer', 'show', 'hide', 'destroy', 'isInView', 'pointPosition'].reduce((prev, key) => {
+  const api = ['getOverlayContainer', 'show', 'hide', 'isInView', 'pointPosition'].reduce((prev, key) => {
     prev[key] = (...args) => {
       return liveBuildAPI.getAPI()[key](...args)
     }
     return prev
   }, {})
+
+  api.destroy = () => {
+    liveBuildAPI.getAPI().destroy()
+    liveBuildAPI.destroy()
+  }
+
+  return api
 }
 
 export const showBridgeCount = ({ position, text, onClick }) => {
