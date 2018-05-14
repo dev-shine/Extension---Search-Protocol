@@ -1,8 +1,10 @@
-import request from 'superagent'
 import storage from '../storage'
 import { encodePair, decodePair } from '../models/local_annotation_model'
+import { unpick, dataURItoBlob } from '../utils'
+import config from '../../config'
+import jwtRequest from '../jwt_request'
 
-const apiUrl = 'https://bridgit.io/bridgit/master.php'
+const apiUrl = (path) => `${config.api.base}${/^\//.test(path) ? path : ('/' + path)}`
 
 const onApiError = (e) => {
   let errMessage
@@ -27,17 +29,21 @@ const onApiError = (e) => {
 }
 
 const onApiReturn = (res) => {
-  const body = JSON.parse(res.text)
+  const body = res.body
 
-  if (body.status === 'error') {
+  if (body.error_code !== 0) {
     throw new Error(body.message)
   }
 
-  return body
+  return body.data
 }
 
 const id    = x => x
 const wrap  = (fn, { post = id } = {}) => (...args) => fn(...args).then(onApiReturn).catch(onApiError).then(post)
+
+const storeAccessToken = (data) => {
+  jwtRequest.saveToken(data['access_token'])
+}
 
 const storeUserInfo = (data) => {
   return storage.set('userInfo', data)
@@ -59,23 +65,23 @@ const ensureLoggedIn = (fn) => {
 }
 
 export const login = wrap(({ email, password }) => {
-  return request.post(apiUrl)
+  return jwtRequest.post(apiUrl('/login'))
   .type('form')
-  .send({ email, password, login: true })
+  .send({ email, password })
 }, {
-  post: storeUserInfo
+  post: storeAccessToken
 })
 
 export const register = wrap(({ name, email, password }) => {
-  return request.post(apiUrl)
+  return jwtRequest.post(apiUrl('/register'))
   .type('form')
-  .send({ name, email, password, register: true })
+  .send({ name, email, password })
 }, {
-  post: storeUserInfo
+  post: storeAccessToken
 })
 
 export const signInWithGoogle = ({ name, email }) => {
-  return request.post(apiUrl)
+  return jwtRequest.post(apiUrl('/login/google'))
   .type('form')
   .send({ name, email, googleSignin: true })
   .then(onApiReturn)
@@ -91,40 +97,78 @@ export const signInWithGoogle = ({ name, email }) => {
 export const checkUser = wrap(() => {
   return fetchUserInfo()
   .then(userInfo => {
-    if (!userInfo)  throw new Error('not logged in yet')
-
-    return request.post(apiUrl)
-    .type('form')
-    .send({
-      secret: userInfo.user_secret,
-      email:  userInfo.user_email,
-      login:  true
-    })
+    if (userInfo)  return userInfo
+    return jwtRequest.get(apiUrl('/user'))
   })
 }, {
   post: storeUserInfo
 })
 
 export const logout = () => {
-  return storeUserInfo(null)
+  jwtRequest.clearToken()
+  return Promise.resolve(true)
 }
 
-export const loadLinks = wrap(({ url }) => {
-  return request.post(apiUrl)
-  .type('form')
-  .send({ url, getContent: true })
-}, {
-  post: (pairs) => pairs.map(decodePair)
+// Elements
+export const getElementById = wrap((id) => {
+  return jwtRequest.get(apiUrl(`/elements/${id}`))
 })
 
-export const postLinks = wrap(ensureLoggedIn(
-  (linkPair, user) => {
-    return request.post(apiUrl)
-    .type('form')
-    .send({
-      ...encodePair(linkPair),
-      addContent:           true,
-      user:                 user.user_id
-    })
+export const createElement = wrap(({ image, ...textFields }) => {
+  if (!image) {
+    throw new Error()
   }
-))
+
+  const blob = dataURItoBlob(image)
+
+  return jwtRequest.post(apiUrl('/elements'))
+  .attach('image', blob)
+  .field(textFields)
+})
+
+export const updateElement = (id, data) => {
+  throw new Error('todo')
+}
+
+export const listElements = wrap((where = {}) => {
+  return jwtRequest.get(apiUrl('/elements'))
+  .query(where)
+})
+
+// Notes
+export const getNoteById = wrap((id) => {
+  return jwtRequest.get(apiUrl(`/notes/${id}`))
+})
+
+export const createNote = wrap((data) => {
+  return jwtRequest.post(apiUrl('/notes'))
+  .send(data)
+})
+
+export const updateNote = (id, data) => {
+  throw new Error('todo')
+}
+
+export const listNotes = wrap((where) => {
+  return jwtRequest.get(apiUrl('/notes'))
+  .query(where)
+})
+
+// Bridges
+export const getBridgeById = wrap((id) => {
+  return jwtRequest.get(apiUrl(`/bridges/${id}`))
+})
+
+export const createBridge = wrap((data) => {
+  return jwtRequest.post(apiUrl('/bridges'))
+  .send(data)
+})
+
+export const updateBridge = (id, data) => {
+  throw new Error('todo')
+}
+
+export const listBridges = wrap((where) => {
+  return jwtRequest.get(apiUrl('/bridges'))
+  .query(where)
+})
