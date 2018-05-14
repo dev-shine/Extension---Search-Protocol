@@ -1,8 +1,30 @@
 import { BaseModel, createLocalBackend } from './base_model'
 import { TARGET_TYPE } from './local_annotation_model'
 import { ObjectWith } from '../type_check'
+import { unpick } from '../utils'
+import config from '../../config'
+import * as HttpAPI from '../api/http_api'
 
-export const backend = createLocalBackend('elements')
+export const backend = config.localBackend ? createLocalBackend('elements') : {
+  commit: (data) => {
+    const isAdd = !data.id
+
+    if (isAdd) {
+      return HttpAPI.createElement(data)
+    } else {
+      return HttpAPI.updateElement(data.id, unpick(['id'], data))
+    }
+  },
+  fetch: (id) => {
+    return HttpAPI.getElementById(id)
+  },
+  list: (where = {}) => {
+    return HttpAPI.listElements(where)
+  },
+  clear: () => {
+    throw new Error('todo')
+  }
+}
 
 const rectShape  = new ObjectWith({
   x:        Number,

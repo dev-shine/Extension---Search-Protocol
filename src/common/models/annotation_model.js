@@ -1,8 +1,30 @@
 import { BaseModel, createLocalBackend } from './base_model'
 import { ElementModel } from './element_model'
 import { ObjectWith } from '../type_check'
+import { unpick } from '../utils'
+import config from '../../config'
+import * as HttpAPI from '../api/http_api'
 
-export const backend = createLocalBackend('annotations')
+export const backend = config.localBackend ? createLocalBackend('annotations') : {
+  commit: (data) => {
+    const isAdd = !data.id
+
+    if (isAdd) {
+      return HttpAPI.createNote(data)
+    } else {
+      return HttpAPI.updateNote(data.id, unpick(['id'], data))
+    }
+  },
+  fetch: (id) => {
+    return HttpAPI.getNoteById(id)
+  },
+  list: (where = {}) => {
+    return HttpAPI.listNotes(where)
+  },
+  clear: () => {
+    throw new Error('todo')
+  }
+}
 
 const annotationShape = new ObjectWith({
   // target is id of element
