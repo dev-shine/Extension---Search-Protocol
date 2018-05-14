@@ -7,7 +7,7 @@ import { captureScreenInSelection } from '../capture_screenshot'
 import { getLinkPair } from '../models/local_annotation_model'
 import { hackOnce } from '../hack_header'
 import * as httpAPI from './http_api'
-import * as mockHttpAPI from './mock_http_api'
+import * as backendAPI from './backend_api'
 import { objMap } from '../utils'
 import log from '../log'
 
@@ -76,7 +76,7 @@ const wrapLogError = (fn) => {
 
 const API = {
   ...httpAPI,
-  ...mockHttpAPI,
+  ...backendAPI,
   loadLinksForCurrentPage: () => {
     return getCurrentPageInfo()
     .then(info => {

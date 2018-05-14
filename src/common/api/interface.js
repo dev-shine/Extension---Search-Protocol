@@ -7,20 +7,20 @@
 // It means, whatever API you add to `bg_api.js`, you need to copy method names here
 export const methods = [
   'getCurrentPageInfo',
-  'login',
-  'logout',
-  'register',
-  'signInWithGoogle',
-  'checkUser',
   'createTab',
   'askCurrentTab',
   'startAnnotationOnCurrentTab',
   'captureScreenInSelection',
   'showElementInNewTab',
 
+  // http API
+  'login',
+  'logout',
+  'register',
+  'signInWithGoogle',
+  'checkUser',
+
   // backend API
-  'loadLinks',
-  'postLinks',
   'createContentElement',
   'createAnnotation',
   'createBridge',
