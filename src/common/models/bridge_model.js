@@ -1,17 +1,32 @@
 import { BaseModel, createLocalBackend } from './base_model'
 import { ElementModel } from './element_model'
 import { ObjectWith } from '../type_check'
+import { unpick } from '../utils'
+import config from '../../config'
+import * as HttpAPI from '../api/http_api'
 
-export const backend = {
-  ...createLocalBackend('bridges'),
+export const backend = config.localBackend ? createLocalBackend('bridges') : {
+  commit: (data) => {
+    const isAdd = !data.id
+
+    if (isAdd) {
+      return HttpAPI.createBridge(data)
+    } else {
+      return HttpAPI.updateBridge(data.id, unpick(['id'], data))
+    }
+  },
+  fetch: (id) => {
+    return HttpAPI.getBridgeById(id)
+  },
+  list: (where = {}) => {
+    return HttpAPI.listBridges(where)
+  },
   listWithElementId: ({ eid }) => {
-    const check  = Array.isArray(eid)
-                      ? (elementId) => eid.indexOf(elementId) !== -1
-                      : (elementId) => elementId === eid
-    const filter = (item) => check(item.from) || check(item.to)
-
-    return backend.list()
-    .then(list => list.filter(filter))
+    const eids = Array.isArray(eid) ? eid : [eid]
+    throw new Error('todo')
+  },
+  clear: () => {
+    throw new Error('todo')
   }
 }
 
