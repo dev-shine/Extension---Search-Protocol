@@ -114,15 +114,18 @@ const commonShowAPI = ({ rects }) => {
 export const showImage = ({ link, getLinksAPI, color, opacity, needBadge, onCreate }) => {
   const { bridges = [], annotations = [] } = link
   const totalCount  = bridges.length + annotations.length
+  let timer
 
   const liveBuildAPI = liveBuild({
     bindEvent: (fn) => {
       window.addEventListener('resize', fn)
       window.addEventListener('scroll', fn)
+      timer = setInterval(fn, 2000)
     },
     unbindEvent: (fn) => {
       window.removeEventListener('resize', fn)
       window.removeEventListener('scroll', fn)
+      clearInterval(timer)
     },
     getFuse: () => {
       const $img        = getElementByXPath(link.locator)
@@ -205,13 +208,18 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge, onCrea
 export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge, onCreate }) => {
   const { bridges = [], annotations = [] } = link
   const totalCount  = bridges.length + annotations.length
+  let timer
 
   const liveBuildAPI = liveBuild({
     bindEvent: (fn) => {
       window.addEventListener('resize', fn)
+      window.addEventListener('scroll', fn)
+      timer = setInterval(fn, 2000)
     },
     unbindEvent: (fn) => {
       window.removeEventListener('resize', fn)
+      window.removeEventListener('scroll', fn)
+      clearInterval(timer)
     },
     getFuse: () => {
       const range   = parseRangeJSON(link)
