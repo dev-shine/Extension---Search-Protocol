@@ -23,7 +23,7 @@ export const backend = config.localBackend ? createLocalBackend('bridges') : {
   },
   listWithElementId: ({ eid }) => {
     const eids = Array.isArray(eid) ? eid : [eid]
-    throw new Error('todo')
+    return HttpAPI.listBridgesWithElementIds(eids)
   },
   clear: () => {
     throw new Error('todo')
