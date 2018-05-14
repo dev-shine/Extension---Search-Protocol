@@ -1,6 +1,7 @@
 import storage from '../storage'
 import { encodePair, decodePair } from '../models/local_annotation_model'
 import { unpick, dataURItoBlob } from '../utils'
+import log from '../log'
 import config from '../../config'
 import jwtRequest from '../jwt_request'
 
@@ -41,8 +42,10 @@ const onApiReturn = (res) => {
 const id    = x => x
 const wrap  = (fn, { post = id } = {}) => (...args) => fn(...args).then(onApiReturn).catch(onApiError).then(post)
 
-const storeAccessToken = (data) => {
-  jwtRequest.saveToken(data['access_token'])
+const storeAccessToken = (res) => {
+  log('storeAccessToken', res)
+  jwtRequest.saveToken(res.body['access_token'])
+  return true
 }
 
 const storeUserInfo = (data) => {
@@ -64,21 +67,21 @@ const ensureLoggedIn = (fn) => {
   }
 }
 
-export const login = wrap(({ email, password }) => {
+export const login = ({ email, password }) => {
   return jwtRequest.post(apiUrl('/login'))
   .type('form')
   .send({ email, password })
-}, {
-  post: storeAccessToken
-})
+  .then(storeAccessToken)
+  .catch(onApiError)
+}
 
-export const register = wrap(({ name, email, password }) => {
+export const register = ({ name, email, password }) => {
   return jwtRequest.post(apiUrl('/register'))
   .type('form')
   .send({ name, email, password })
-}, {
-  post: storeAccessToken
-})
+  .then(storeAccessToken)
+  .catch(onApiError)
+}
 
 export const signInWithGoogle = ({ name, email }) => {
   return jwtRequest.post(apiUrl('/login/google'))
@@ -94,18 +97,20 @@ export const signInWithGoogle = ({ name, email }) => {
   })
 }
 
-export const checkUser = wrap(() => {
+export const checkUser = () => {
   return fetchUserInfo()
   .then(userInfo => {
     if (userInfo)  return userInfo
     return jwtRequest.get(apiUrl('/user'))
+    .then(onApiReturn)
+    .then(storeUserInfo)
+    .catch(onApiError)
   })
-}, {
-  post: storeUserInfo
-})
+}
 
 export const logout = () => {
   jwtRequest.clearToken()
+  storeUserInfo(null)
   return Promise.resolve(true)
 }
 

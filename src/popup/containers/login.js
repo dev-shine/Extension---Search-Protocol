@@ -160,7 +160,7 @@ class __RegisterForm extends React.Component {
 
         <Form onSubmit={this.handleSubmit} className="register-form">
           <Form.Item hasFeedback>
-            {getFieldDecorator('fullName', {
+            {getFieldDecorator('name', {
               rules: [
                 { required: true, message: 'Please input your full name' }
               ]
