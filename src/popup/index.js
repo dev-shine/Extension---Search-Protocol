@@ -30,13 +30,17 @@ setTimeout(() => {
   render(App)
 
   Promise.all([
-    API.checkUser().catch(() => null),
+    API.checkUser().catch(e => {
+      console.error(e)
+      return null
+    }),
     API.getLinkPairStatus().catch(e => console.error('getLinkPairStatus error', e))
   ])
   .then(
     data => {
       const [userInfo, linkPair] = data
 
+      console.log('got userInfo', userInfo)
       console.log('got linkPair', linkPair)
       store.dispatch(setUserInfo(userInfo))
       store.dispatch(setLinkPair(linkPair))

@@ -23,7 +23,7 @@ class UserInfo extends React.Component {
       <div className="user-info">
         <div className="user-name-box">
           <span className="welcome">Welcome:</span>
-          <span className="user-name">{userInfo.user_name}</span>
+          <span className="user-name">{userInfo.name}</span>
         </div>
         <div className="actions">
           <Link to="/settings">
