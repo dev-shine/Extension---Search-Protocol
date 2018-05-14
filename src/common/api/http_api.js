@@ -172,3 +172,8 @@ export const listBridges = wrap((where) => {
   return jwtRequest.get(apiUrl('/bridges'))
   .query(where)
 })
+
+export const listBridgesWithElementIds = wrap((eids) => {
+  return jwtRequest.get(apiUrl('/bridges'))
+  .query({ eids })
+})
