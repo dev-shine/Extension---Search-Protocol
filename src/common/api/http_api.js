@@ -13,9 +13,19 @@ const apiUrl = (path) => `${config.api.base}${/^\//.test(path) ? path : ('/' + p
 const onApiError = (e) => {
   let errMessage
 
-  if (e instanceof Error) {
-    errMessage = e.message
-  } else {
+  if (!errMessage && e.response && e.response.body && e.response.body.message) {
+    const { message } = e.response.body
+
+    if (typeof message === 'string') {
+      errMessage = message
+    } else if (Array.isArray(message)) {
+      errMessage = message[0]
+    } else if (Object.keys(message).length > 0) {
+      errMessage = message[Object.keys(message)[0]]
+    }
+  }
+
+  if (!errMessage) {
     if (!e.status || e.status === 401 || e.status === 403) {
       errMessage = 'Unauthorised'
     }
@@ -27,6 +37,10 @@ const onApiError = (e) => {
     if (e.status === 500) {
       errMessage = 'Internal server error'
     }
+  }
+
+  if (!errMessage && e instanceof Error) {
+    errMessage = e.message
   }
 
   throw new Error(errMessage)
