@@ -131,7 +131,7 @@ export const createElement = wrap(({ image, ...textFields }) => {
 
   return jwtRequest.post(apiUrl('/elements'))
   .attach('image', blob)
-  .field(textFields)
+  .field(unpick(['id'], textFields))
 })
 
 export const updateElement = (id, data) => {
