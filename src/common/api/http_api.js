@@ -1,6 +1,6 @@
 import storage from '../storage'
 import { encodePair, decodePair } from '../models/local_annotation_model'
-import { unpick, dataURItoBlob } from '../utils'
+import { pick, unpick, dataURItoBlob } from '../utils'
 import log from '../log'
 import config from '../../config'
 import jwtRequest from '../jwt_request'
@@ -140,6 +140,11 @@ export const listElements = wrap((where = {}) => {
   .query(where)
 })
 
+export const loadElementsByIds = wrap((ids) => {
+  return jwtRequest.get(apiUrl('/elements'))
+  .query({ eids: ids })
+})
+
 // Notes
 export const getNoteById = wrap((id) => {
   return jwtRequest.get(apiUrl(`/notes/${id}`))
@@ -181,4 +186,15 @@ export const listBridges = wrap((where) => {
 export const listBridgesWithElementIds = wrap((eids) => {
   return jwtRequest.get(apiUrl('/bridges'))
   .query({ eids })
+})
+
+// others
+export const annotationsAndBridgesByUrl = wrap((url) => {
+  return jwtRequest.post(apiUrl('/search/page'))
+  .send({ url })
+}, {
+  post: (data) => ({
+    ...pick(['elements', 'bridges'], data),
+    annotations: data.notes
+  })
 })
