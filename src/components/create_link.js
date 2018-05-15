@@ -2,12 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Alert, Button, Select, Form, Input } from 'antd'
 import { TARGET_TYPE } from '../common/models/local_annotation_model'
+import API from '../common/api/cs_api'
 import './create_link.scss'
-
-const relationships = [
-  'Supports', 'Refutes', 'Models', 'Aggregates',
-  'is Example of', 'is Metaphor for', 'is Instance of', 'is Member of'
-]
+import log from '../common/log';
 
 class CreateLinkComp extends React.Component {
   static propTypes = {
@@ -15,6 +12,10 @@ class CreateLinkComp extends React.Component {
     onUpdateField:  PropTypes.func.isRequired,
     onSubmit:       PropTypes.func.isRequired,
     onCancel:       PropTypes.func.isRequired
+  }
+
+  state = {
+    relations: []
   }
 
   onSubmit = () => {
@@ -29,6 +30,14 @@ class CreateLinkComp extends React.Component {
 
       this.props.onSubmit(data)
     })
+  }
+
+  componentDidMount () {
+    API.loadRelations()
+    .then(relations => {
+      this.setState({ relations })
+    })
+    .catch(e => log.error(e))
   }
 
   renderLinkPreview (link) {
@@ -85,8 +94,8 @@ class CreateLinkComp extends React.Component {
                     placeholder="Choose a relationship"
                     onChange={val => this.props.onUpdateField(val, 'relation')}
                   >
-                    {relationships.map(r => (
-                      <Select.Option key={r} value={r}>{r}</Select.Option>
+                    {this.state.relations.map(r => (
+                      <Select.Option key={r.id} value={r.id}>{r.active_name}</Select.Option>
                     ))}
                   </Select>
                 )}

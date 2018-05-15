@@ -37,7 +37,7 @@ const bridgeShape = new ObjectWith({
   to:         ElementModel,
   desc:       String,
   tags:       String,
-  relation:   String
+  relation:   Number
 })
 
 export class BridgeModel extends BaseModel {

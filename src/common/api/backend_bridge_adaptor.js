@@ -1,7 +1,7 @@
 
-export const encodeRelation = (relation) => 1
+export const encodeRelation = (relation) => relation
 
-export const decodeRelation = (relation) => 'models'
+export const decodeRelation = (relation) => relation
 
 export const encodeBridge = (bridge) => {
   return {

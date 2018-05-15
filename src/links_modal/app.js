@@ -20,13 +20,14 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT')
-    .then(({ bridges, annotations, elementId }) => {
+    .then(({ relations, bridges, annotations, elementId }) => {
       const elementIds = [
         ...flatten(bridges.map(b => [b.from, b.to])),
         ...annotations.map(a => a.target)
       ]
 
       this.setState({
+        relations,
         bridges,
         annotations,
         elementId,
@@ -66,6 +67,10 @@ class App extends Component {
   }
 
   renderBridge (bridge, currentElementId, key) {
+    const relation  = this.state.relations.find(r => '' + r.id === '' + bridge.relation)
+    const relField  = bridge.from !== currentElementId ? 'active_name' : 'passive_name'
+    const relStr    = relation ? (relation[relField].toUpperCase() + ' this piece') : 'unknown'
+
     const cpartId   = bridge.from !== currentElementId ? bridge.from : bridge.to
     const cpart     = this.state.elementDict[cpartId]
     const source    = new URL(cpart.url).origin.replace(/^.*?:\/\//, '')
@@ -95,7 +100,7 @@ class App extends Component {
             <tbody>
               <tr>
                 <td>Relation</td>
-                <td>{bridge.relation}</td>
+                <td>{relStr}</td>
               </tr>
               <tr>
                 <td>Source</td>
