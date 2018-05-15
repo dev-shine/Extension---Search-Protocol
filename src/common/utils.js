@@ -292,3 +292,10 @@ export function dataURItoBlob (dataURI) {
   var blob = new Blob([ab], {type: mimeString});
   return blob;
 }
+
+export const reverseKeyValue = (obj) => {
+  return Object.keys(obj).reduce((prev, key) => {
+    prev[obj[key]] = key
+    return prev
+  }, {})
+}
