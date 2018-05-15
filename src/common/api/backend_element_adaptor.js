@@ -61,6 +61,7 @@ export const encodeElement = (element) => {
 
   return {
     ...data,
+    id:   element.id,
     type: encodeElementType(element.type)
   }
 }
@@ -69,7 +70,7 @@ export const decodeElement = (element) => {
   const type = decodeElementType(element.type)
 
   const data = (function () {
-    switch (element.type) {
+    switch (type) {
       case TARGET_TYPE.IMAGE: {
         return {
           ...pick(['url', 'image'], element),
@@ -93,9 +94,9 @@ export const decodeElement = (element) => {
       }
 
       default:
-        throw new Error(`encodeElement: Unsupported element type, '${element.type}'`)
+        throw new Error(`decodeElement: Unsupported element type, '${element.type}'`)
     }
   })()
 
-  return { ...data, type }
+  return { ...data, type, id: element.id }
 }

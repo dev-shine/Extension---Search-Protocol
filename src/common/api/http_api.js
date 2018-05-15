@@ -4,6 +4,9 @@ import { pick, unpick, dataURItoBlob } from '../utils'
 import log from '../log'
 import config from '../../config'
 import jwtRequest from '../jwt_request'
+import { decodeElement } from '../api/backend_element_adaptor'
+import { decodeBridge } from '../api/backend_bridge_adaptor'
+import { decodeNote } from '../api/backend_note_adaptor'
 
 const apiUrl = (path) => `${config.api.base}${/^\//.test(path) ? path : ('/' + path)}`
 
@@ -142,7 +145,7 @@ export const listElements = wrap((where = {}) => {
 
 export const loadElementsByIds = wrap((ids) => {
   return jwtRequest.get(apiUrl('/elements'))
-  .query({ eids: ids })
+  .query({ 'eids[]': ids })
 })
 
 // Notes
@@ -185,7 +188,7 @@ export const listBridges = wrap((where) => {
 
 export const listBridgesWithElementIds = wrap((eids) => {
   return jwtRequest.get(apiUrl('/bridges'))
-  .query({ eids })
+  .query({ 'eids[]': eids })
 })
 
 // others
@@ -194,7 +197,8 @@ export const annotationsAndBridgesByUrl = wrap((url) => {
   .send({ url })
 }, {
   post: (data) => ({
-    ...pick(['elements', 'bridges'], data),
-    annotations: data.notes
+    elements:     data.elements.map(decodeElement),
+    bridges:      data.bridges.map(decodeBridge),
+    annotations:  data.notes.map(decodeNote)
   })
 })
