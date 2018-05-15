@@ -146,6 +146,8 @@ export const listElements = wrap((where = {}) => {
 export const loadElementsByIds = wrap((ids) => {
   return jwtRequest.get(apiUrl('/elements'))
   .query({ 'eids[]': ids })
+}, {
+  post: elements => elements.map(decodeElement)
 })
 
 // Notes
@@ -189,6 +191,8 @@ export const listBridges = wrap((where) => {
 export const listBridgesWithElementIds = wrap((eids) => {
   return jwtRequest.get(apiUrl('/bridges'))
   .query({ 'eids[]': eids })
+}, {
+  post: bridges => bridges.map(decodeBridge)
 })
 
 // others
