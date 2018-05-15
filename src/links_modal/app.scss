@@ -1,4 +1,6 @@
 
+@import '../styles/basic.scss';
+
 $item-height: 90px;
 
 body {
@@ -131,7 +133,7 @@ body {
   }
 
   .annotation-item {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     padding-bottom: 10px;
     border-bottom: 1px solid #eee;
 
@@ -139,6 +141,33 @@ body {
       margin-bottom: 0;
       padding-bottom: 0;
       border-bottom: 0;
+    }
+
+    & > * {
+      margin-bottom: 10px;
+    }
+
+    h4 {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    pre {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .tags {
+      .tag-item {
+        display: inline-block;
+        margin-right: 10px;
+        padding: 3px 5px;
+        border-radius:4px;
+        background: $primary-color;
+        color: #fff;
+      }
     }
   }
 
