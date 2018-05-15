@@ -29,7 +29,7 @@ export const decodeRect = (str = '') => {
   const list = str.split(',')
   if (list.length !== 4)  return null
 
-  const [x, y, width, height] = list
+  const [x, y, width, height] = list.map(n => parseFloat(n))
   return { x, y, width, height }
 }
 
