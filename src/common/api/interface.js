@@ -19,6 +19,7 @@ export const methods = [
   'register',
   'signInWithGoogle',
   'checkUser',
+  'loadRelations',
 
   // backend API
   'createContentElement',

@@ -7,6 +7,7 @@ import jwtRequest from '../jwt_request'
 import { decodeElement } from '../api/backend_element_adaptor'
 import { decodeBridge } from '../api/backend_bridge_adaptor'
 import { decodeNote } from '../api/backend_note_adaptor'
+import { withCache } from '../function_cache';
 
 const apiUrl = (path) => `${config.api.base}${/^\//.test(path) ? path : ('/' + path)}`
 
@@ -208,6 +209,13 @@ export const listBridgesWithElementIds = wrap((eids) => {
 }, {
   post: bridges => bridges.map(decodeBridge)
 })
+
+// Relations
+export const listRelations = wrap(() => {
+  return jwtRequest.get(apiUrl('/relations'))
+})
+
+export const loadRelations = withCache(listRelations, 1000 * 60 * 5)
 
 // others
 export const annotationsAndBridgesByUrl = wrap((url) => {

@@ -344,7 +344,8 @@ export const showBridgesModal = ({ bridges, annotations, elementId }) => {
     onAsk: (cmd, args) => {
       switch (cmd) {
         case 'INIT':
-          return { bridges, annotations, elementId }
+          return API.loadRelations()
+          .then(relations => ({ relations, bridges, annotations, elementId }))
 
         case 'CLOSE':
           modalAPI.destroy()
