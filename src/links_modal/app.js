@@ -50,24 +50,17 @@ class App extends Component {
   }
 
   renderAnnotation (annotation, key) {
+    const tags = annotation.tags.split(',').map(s => s.trim())
+
     return (
       <div className="annotation-item" key={key}>
-        <table className="the-table">
-          <tbody>
-            <tr>
-              <td>Title</td>
-              <td>{annotation.title}</td>
-            </tr>
-            <tr>
-              <td>Body</td>
-              <td>{annotation.desc}</td>
-            </tr>
-            <tr>
-              <td>Tags</td>
-              <td>{annotation.tags}</td>
-            </tr>
-          </tbody>
-        </table>
+        <h4>{annotation.title}</h4>
+        <pre>{annotation.desc}</pre>
+        <div className="tags">
+          {tags.map((tag, i) => (
+            <span key={i} className="tag-item">{tag}</span>
+          ))}
+        </div>
       </div>
     )
   }
