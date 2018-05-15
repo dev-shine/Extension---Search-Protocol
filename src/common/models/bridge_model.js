@@ -4,22 +4,23 @@ import { ObjectWith } from '../type_check'
 import { unpick } from '../utils'
 import config from '../../config'
 import * as HttpAPI from '../api/http_api'
+import { encodeBridge, decodeBridge } from '../api/backend_bridge_adaptor'
 
 export const backend = config.localBackend ? createLocalBackend('bridges') : {
   commit: (data) => {
     const isAdd = !data.id
 
     if (isAdd) {
-      return HttpAPI.createBridge(data)
+      return HttpAPI.createBridge(encodeBridge(data))
     } else {
-      return HttpAPI.updateBridge(data.id, unpick(['id'], data))
+      return HttpAPI.updateBridge(data.id, encodeBridge(unpick(['id'], data)))
     }
   },
   fetch: (id) => {
-    return HttpAPI.getBridgeById(id)
+    return HttpAPI.getBridgeById(id).then(decodeBridge)
   },
   list: (where = {}) => {
-    return HttpAPI.listBridges(where)
+    return HttpAPI.listBridges(where).then(list => list.map(decodeBridge))
   },
   listWithElementId: ({ eid }) => {
     const eids = Array.isArray(eid) ? eid : [eid]

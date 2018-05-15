@@ -4,22 +4,23 @@ import { ObjectWith } from '../type_check'
 import { unpick } from '../utils'
 import config from '../../config'
 import * as HttpAPI from '../api/http_api'
+import { encodeNote, decodeNote } from '../api/backend_note_adaptor'
 
 export const backend = config.localBackend ? createLocalBackend('annotations') : {
   commit: (data) => {
     const isAdd = !data.id
 
     if (isAdd) {
-      return HttpAPI.createNote(data)
+      return HttpAPI.createNote(encodeNote(data))
     } else {
-      return HttpAPI.updateNote(data.id, unpick(['id'], data))
+      return HttpAPI.updateNote(data.id, encodeNote(unpick(['id'], data)))
     }
   },
   fetch: (id) => {
-    return HttpAPI.getNoteById(id)
+    return HttpAPI.getNoteById(id).then(decodeNote)
   },
   list: (where = {}) => {
-    return HttpAPI.listNotes(where)
+    return HttpAPI.listNotes(where).then(list => list.map(decodeNote))
   },
   clear: () => {
     throw new Error('todo')
