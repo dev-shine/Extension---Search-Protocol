@@ -4,22 +4,23 @@ import { ObjectWith } from '../type_check'
 import { unpick } from '../utils'
 import config from '../../config'
 import * as HttpAPI from '../api/http_api'
+import { encodeElement, decodeElement } from '../api/backend_element_adaptor'
 
 export const backend = config.localBackend ? createLocalBackend('elements') : {
   commit: (data) => {
     const isAdd = !data.id
 
     if (isAdd) {
-      return HttpAPI.createElement(data)
+      return HttpAPI.createElement(encodeElement(data))
     } else {
-      return HttpAPI.updateElement(data.id, unpick(['id'], data))
+      return HttpAPI.updateElement(data.id, encodeElement(unpick(['id'], data)))
     }
   },
   fetch: (id) => {
-    return HttpAPI.getElementById(id)
+    return HttpAPI.getElementById(id).then(decodeElement)
   },
   list: (where = {}) => {
-    return HttpAPI.listElements(where)
+    return HttpAPI.listElements(where).then(list => list.map(decodeElement))
   },
   clear: () => {
     throw new Error('todo')
