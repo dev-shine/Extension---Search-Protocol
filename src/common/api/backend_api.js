@@ -29,32 +29,6 @@ export const createBridge = ({ from, to, ...data }) => {
   return bridge.sync()
 }
 
-export const annotationsAndBridgesByUrl = (url) => {
-  return elementBackend.list({ url })
-  .then(elements => {
-    const ids = elements.map(el => el.id)
-
-    return Promise.all([
-      annotationBackend.list({ target: ids }),
-      bridgeBackend.listWithElementId({ eid: ids })
-    ])
-    .then(tuple => {
-      return {
-        elements,
-        bridges:      tuple[1],
-        annotations:  tuple[0]
-      }
-    })
-  })
-}
-
-export const loadElementsByIds = (ids) => {
-  return elementBackend.list()
-  .then(elements => {
-    return elements.filter(el => ids.indexOf(el.id) !== -1)
-  })
-}
-
 export const clearAllData = () => {
   return Promise.all([
     elementBackend.clear(),
