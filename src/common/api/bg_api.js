@@ -167,7 +167,7 @@ const API = {
   resetUserSettings: () => {
     const initial = {
       showOnLoad:           true,
-      nearDistanceInInch:   1,
+      nearDistanceInInch:   3,
       nearVisibleDuration:  2
     }
 
