@@ -60,8 +60,24 @@ const bindEvents = () => {
   ipc.onAsk(onBgRequest)
 }
 
+const bindSocialLoginEvent = () => {
+  window.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'OAUTH_RESULT') {
+      const tokenData = e.data.data
+      log('got OAUTH_RESULT', tokenData)
+
+      API.saveAccessToken(tokenData.access_token)
+      .then(() => {
+        notify('successfully logged in')
+        window.close()
+      })
+    }
+  })
+}
+
 const init = () => {
   bindEvents()
+  bindSocialLoginEvent()
   initContextMenus()
 
   API.getUserSettings()
