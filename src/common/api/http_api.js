@@ -9,7 +9,7 @@ import { decodeBridge } from '../api/backend_bridge_adaptor'
 import { decodeNote } from '../api/backend_note_adaptor'
 import { withCache } from '../function_cache';
 
-const apiUrl = (path) => `${config.api.base}${/^\//.test(path) ? path : ('/' + path)}`
+export const apiUrl = (path) => `${config.api.base}${/^\//.test(path) ? path : ('/' + path)}`
 
 const onApiError = (e) => {
   let errMessage
@@ -83,6 +83,11 @@ const ensureLoggedIn = (fn) => {
       return fn(...args, user)
     })
   }
+}
+
+export const saveAccessToken = (token) => {
+  jwtRequest.saveToken(token)
+  return true
 }
 
 export const login = ({ email, password }) => {

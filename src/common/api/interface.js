@@ -12,6 +12,7 @@ export const methods = [
   'startAnnotationOnCurrentTab',
   'captureScreenInSelection',
   'showElementInNewTab',
+  'openSocialLogin',
 
   // http API
   'login',
@@ -20,6 +21,7 @@ export const methods = [
   'signInWithGoogle',
   'checkUser',
   'loadRelations',
+  'saveAccessToken',
 
   // backend API
   'createContentElement',

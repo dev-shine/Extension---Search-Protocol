@@ -193,6 +193,22 @@ const API = {
       log('showElementInNewTab got ipc', ipc)
       return ipc.ask('HIGHLIGHT_ELEMENT', { element })
     })
+  },
+  openSocialLogin: (provider) => {
+    const w   = 500
+    const h   = 600
+    const sw  = window.screen.width
+    const sh  = window.screen.height
+
+    return Ext.windows.create({
+      type:   'popup',
+      url:    httpAPI.apiUrl(`/login/${provider}`),
+      width:  w,
+      height: h,
+      left:   (sw - w) / 2,
+      top:    (sh - h) / 2
+    })
+    .then(() => true)
   }
 }
 

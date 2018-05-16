@@ -201,7 +201,7 @@ class __RegisterForm extends React.Component {
                 type="primary"
                 size="large"
                 className="sign-in-with-google"
-                onClick={() => API.createTab({ url: Ext.extension.getURL('sign_in_google.html') })}
+                onClick={() => API.openSocialLogin('google')}
               >
                 Sign in with Google
               </Button>
