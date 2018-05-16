@@ -5,6 +5,7 @@ import { flatten } from '../common/utils'
 import API from '../common/api/cs_api'
 import log from '../common/log'
 import { TARGET_TYPE } from '../common/models/local_annotation_model'
+import ClampPre from '../components/clamp_pre'
 import './app.scss'
 
 const ipc = ipcForIframe()
@@ -56,7 +57,7 @@ class App extends Component {
     return (
       <div className="annotation-item" key={key}>
         <h4>{annotation.title}</h4>
-        <pre>{annotation.desc}</pre>
+        <ClampPre>{annotation.desc}</ClampPre>
         <div className="tags">
           {tags.map((tag, i) => (
             <span key={i} className="tag-item">{tag}</span>

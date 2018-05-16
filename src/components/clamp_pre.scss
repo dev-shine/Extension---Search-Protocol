@@ -1,0 +1,26 @@
+@import '../styles/basic.scss';
+
+.clamp-pre {
+
+  &.fold {
+    pre {
+      display: -webkit-box;
+    }
+  }
+
+  pre {
+    display: block;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: pre-wrap;
+  }
+
+  .action-button {
+    display: block;
+    margin-top: 10px;
+    color: $primary-color;
+    cursor: pointer;
+  }
+}
+
