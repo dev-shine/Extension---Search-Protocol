@@ -69,7 +69,9 @@ const bindSocialLoginEvent = () => {
       API.saveAccessToken(tokenData.access_token)
       .then(() => {
         notify('successfully logged in')
-        window.close()
+        // Note: There are cases when oauth result page is redirected by providers (Google, Facebook)
+        // In those cases, `window.close()` won't work
+        ipc.ask('CLOSE_ME')
       })
     }
   })
