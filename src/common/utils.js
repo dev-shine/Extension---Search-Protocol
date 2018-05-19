@@ -299,3 +299,5 @@ export const reverseKeyValue = (obj) => {
     return prev
   }, {})
 }
+
+export const noop = () => {}

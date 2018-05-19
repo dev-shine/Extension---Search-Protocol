@@ -21,6 +21,8 @@ class App extends Component {
         target: this.state.linkData
       })
       .then(annotation => {
+        ipc.ask('DONE')
+
         // Note: record last annotation, it will add 'build bridge' menu item for further selection on text / image
         API.recordLastAnnotation({
           ...annotation,

@@ -18,7 +18,7 @@ import {
 import { MouseReveal } from './mouse_reveal'
 import { showLinks, showOneLink } from './show_bridges'
 import { parseRangeJSON } from '../../../common/selection'
-import { setIn, uid } from '../../../common/utils'
+import { setIn, uid, noop } from '../../../common/utils'
 
 let state = {
   nearDistanceInInch:   1,
@@ -96,6 +96,8 @@ let rectAPI
 let linksAPI
 
 const initLinks = (data, url) => {
+  if (linksAPI) linksAPI.destroy()
+
   const oldAPI = showLinks(data, url, (api) => addSubmenuForBadge(api))
   oldAPI.hide()
 
@@ -125,7 +127,6 @@ const onBgRequest = (cmd, args) => {
   switch (cmd) {
     case 'SHOW_LINKS': {
       log('got show links', args)
-      if (linksAPI) linksAPI.destroy()
 
       try {
         initLinks(args, window.location.href)
@@ -377,7 +378,7 @@ const addSubmenuForBadge = (link) => {
   return destroySubMenuEffect
 }
 
-const annotate = ({ linkData = {} } = {}) => {
+const annotate = ({ linkData = {}, onSuccess = tryShowBridges } = {}) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('annotate.html'),
     width:  600,
@@ -393,6 +394,10 @@ const annotate = ({ linkData = {} } = {}) => {
             tags: '',
             ...linkData
           }
+
+        case 'DONE':
+          tryShowBridges()
+          return true
 
         case 'CLOSE':
           iframeAPI.destroy()
@@ -516,7 +521,7 @@ const selectScreenshotArea = () => {
   })
 }
 
-const buildBridge = () => {
+const buildBridge = ({ onSuccess = tryShowBridges } = {}) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('build_bridge.html'),
     width:  600,
@@ -529,6 +534,10 @@ const buildBridge = () => {
             desc: '',
             tags: ''
           }
+
+        case 'DONE':
+          tryShowBridges()
+          return true
 
         case 'CLOSE':
           iframeAPI.destroy()
