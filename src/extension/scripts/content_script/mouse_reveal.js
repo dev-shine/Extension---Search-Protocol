@@ -1,19 +1,20 @@
 import throttle from 'lodash.throttle'
 import log from '../../../common/log'
-import { uid } from '../../../common/utils'
+import { uid, noop } from '../../../common/utils'
 import { scrollLeft, scrollTop, clientWidth, clientHeight, pageX, pageY } from '../../../common/dom_utils'
 import { POSITION_TYPE } from './position'
 
 const TROTTLE_INTERVAL = 200
 
 export class MouseReveal {
-  constructor ({ items, distance, duration = 2, doc = document }) {
+  constructor ({ items, distance, duration = 2, doc = document, onDestroy = noop }) {
     this.distance     = distance
     this.doc          = doc
     this.candidates   = []
     this.disabled     = false
     this.duration     = duration
     this.items        = items.map(item => this.createItemController(item, uid()))
+    this.onDestroy    = onDestroy
 
     this.init()
   }
@@ -145,5 +146,7 @@ export class MouseReveal {
 
     doc.removeEventListener('scroll', this.onScroll, true)
     doc.removeEventListener('mousemove', this.onMouseMove, true)
+
+    this.onDestroy()
   }
 }
