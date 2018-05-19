@@ -218,6 +218,11 @@ export const listBridgesWithElementIds = wrap((eids) => {
 // Relations
 export const listRelations = wrap(() => {
   return jwtRequest.get(apiUrl('/relations'))
+}, {
+  post: list => {
+    list.sort((a, b) => a.id - b.id)
+    return list
+  }
 })
 
 export const loadRelations = withCache(listRelations, 1000 * 60 * 5)
