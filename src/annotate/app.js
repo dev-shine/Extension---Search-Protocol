@@ -99,7 +99,7 @@ class App extends Component {
             {getFieldDecorator('tags', {
               validateTrigger: ['onBlur'],
               rules: [
-                { required: true, message: 'Please input title' }
+                { required: true, message: 'Please input tags' }
               ]
             })(
               <Input
