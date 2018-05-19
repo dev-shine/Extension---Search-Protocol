@@ -25,6 +25,7 @@ class App extends Component {
   onClickSubmit = (data) => {
     API.createBridge(data)
     .then(() => {
+      ipc.ask('DONE')
       notifySuccess('Successfully posted')
       setTimeout(() => {
         this.onClickCancel()
