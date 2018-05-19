@@ -130,11 +130,12 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge, onCrea
     getFuse: () => {
       const $img        = getElementByXPath(link.locator)
       const boundRect   = $img.getBoundingClientRect()
+      const ratio       = link.imageSize && link.imageSize.width ? (boundRect.width / link.imageSize.width) : 1
       const rect        = {
-        top:      link.rect.y + boundRect.top,
-        left:     link.rect.x + boundRect.left,
-        width:    link.rect.width,
-        height:   link.rect.height
+        top:      ratio * link.rect.y + boundRect.top,
+        left:     ratio * link.rect.x + boundRect.left,
+        width:    ratio * link.rect.width,
+        height:   ratio * link.rect.height
       }
       return rect
     },
