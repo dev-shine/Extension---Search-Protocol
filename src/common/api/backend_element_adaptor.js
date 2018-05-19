@@ -20,17 +20,23 @@ export const decodeElementType = (type) => {
   return value
 }
 
-export const encodeRect = (rect) => {
-  const list = [rect.x, rect.y, rect.width, rect.height]
+export const encodeRect = (rect, imageSize) => {
+  const list = [rect.x, rect.y, rect.width, rect.height, imageSize.width, imageSize.height]
   return list.join(',')
 }
 
 export const decodeRect = (str = '') => {
   const list = str.split(',')
-  if (list.length !== 4)  return null
+  if (list.length !== 4 && list.length !== 6)  return null
 
-  const [x, y, width, height] = list.map(n => parseFloat(n))
-  return { x, y, width, height }
+  const [x, y, width, height, imageWidth, imageHeight] = list.map(n => parseFloat(n))
+  return {
+    rect: { x, y, width, height },
+    imageSize: {
+      width:  imageWidth,
+      height: imageHeight
+    }
+  }
 }
 
 export const encodeElement = (element) => {
@@ -40,7 +46,7 @@ export const encodeElement = (element) => {
         return {
           ...pick(['url', 'image'], element),
           start_locator:  element.locator,
-          rect:           encodeRect(element.rect)
+          rect:           encodeRect(element.rect, element.imageSize)
         }
       }
 
@@ -75,7 +81,7 @@ export const decodeElement = (element) => {
         return {
           ...pick(['url', 'image'], element),
           locator:  element.start_locator,
-          rect:     decodeRect(element.rect)
+          ...decodeRect(element.rect)
         }
       }
 

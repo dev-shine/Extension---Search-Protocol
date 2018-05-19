@@ -607,6 +607,8 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage }) => {
 
       return dataUrlOfImage(e.target)
       .then(({ dataUrl }) => {
+        const size = imageSize(e.target)
+
         return showContextMenus({
           pos,
           menuOptions: menusOnImage,
@@ -619,8 +621,9 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage }) => {
               rect: {
                 x: 0,
                 y: 0,
-                ...imageSize(e.target)
+                ...size
               },
+              imageSize: size,
               image: dataUrl
             }
           }
