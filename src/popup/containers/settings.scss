@@ -1,3 +1,15 @@
-.settings-form {
-  padding: 30px 15px;
+.settings-page {
+  padding: 20px 20px 40px;
+
+  .logo-banner {
+    margin-bottom: 20px;
+    text-align: center;
+
+    img {
+      max-width: 100%;
+    }
+  }
+
+  .settings-form {
+  }
 }

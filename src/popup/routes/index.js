@@ -7,7 +7,7 @@ import CreateLinkPage from '../containers/create_link'
 import SettingsPage from '../containers/settings'
 
 const routes = [
-  { path: '/', component: HomePage, exact: true },
+  { path: '/', component: SettingsPage, exact: true },
   { path: '/login', component: LoginPage, exact: true },
   { path: '/user-inactive', component: UserInactivePage, exact: true },
   { path: '/annotate-step-1', component: AnnotateStepOnePage, exact: true },
