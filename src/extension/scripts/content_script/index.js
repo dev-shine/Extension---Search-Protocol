@@ -106,7 +106,8 @@ const initLinks = (data, url) => {
   linksAPI = new MouseReveal({
     items:    oldAPI.links,
     distance: state.nearDistanceInInch * state.pixelsPerInch,
-    duration: state.nearVisibleDuration
+    duration: state.nearVisibleDuration,
+    onDestroy: () => oldAPI.destroy()
   })
 }
 
