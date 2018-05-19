@@ -8,6 +8,7 @@ import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../common/shapes/box'
 import './app.scss'
 import { pixel, dataUrlFromImageElement } from '../common/dom_utils'
 import { LINK_PAIR_STATUS } from '../common/models/local_annotation_model'
+import config from '../config'
 
 const ipc = ipcForIframe()
 
@@ -31,6 +32,25 @@ class App extends Component {
   }
 
   prepareLinkData = () => {
+    const totalArea = this.state.image.width * this.state.image.height
+    const area      = this.state.cropRect.width * this.state.cropRect.height
+    let errMsg
+
+    log('prepareLinkData, area', area, totalArea)
+
+    if (area < config.settings.minImageArea) {
+      errMsg = `Selected area must be larger than ${config.settings.minImageArea} pixel^2`
+    }
+
+    // if (!errMsg && area < (config.settings.minImageAreaRatio * totalArea)) {
+    //   errMsg = `Selected area must be larger than ${config.settings.minImageAreaRatio * 100}% of the image area`
+    // }
+
+    if (errMsg) {
+      alert(errMsg)
+      throw new Error(errMsg)
+    }
+
     return dataUrlFromImageElement(this.$img, this.state.cropRect)
     .then(({ dataUrl }) => {
       return {
