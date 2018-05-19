@@ -248,7 +248,7 @@ const initContextMenus = () => {
     menusOnSelection: {
       ...commonMenuOptions,
       id: '__on_selection__',
-      menus: () => {
+      menus: (menuExtra) => {
         const decorateOnClick = (menuItem) => {
           return {
             ...menuItem,
@@ -293,7 +293,7 @@ const initContextMenus = () => {
     menusOnImage: {
       ...commonMenuOptions,
       id: '__on_image__',
-      menus: () => {
+      menus: (menuExtra) => {
         const menus = [
           commonMenuItems.selectImageArea,
           commonMenuItems.annotate,
@@ -345,7 +345,7 @@ const addSubmenuForBadge = (link) => {
           menuOptions: {
             ...commonMenuOptions,
             id: uid(),
-            menus: () => {
+            menus: (menuExtra) => {
               const menus = [
                 commonMenuItems.annotate,
                 commonMenuItems.createBridge
@@ -353,7 +353,15 @@ const addSubmenuForBadge = (link) => {
 
               // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
               if (linkPairStatus === LINK_PAIR_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
-                menus.push(commonMenuItems.buildBridge)
+                const currentItemId = menuExtra.linkData.id
+                const savedItem     = linkPairStatus === LINK_PAIR_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
+                const savedItemId   = savedItem.id
+
+                log('currentItem, savedItem', menuExtra.linkData, linkPairData.links)
+
+                if (!currentItemId || !savedItemId || currentItemId !== savedItemId) {
+                  menus.push(commonMenuItems.buildBridge)
+                }
               }
 
               return menus

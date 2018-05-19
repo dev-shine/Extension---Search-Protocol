@@ -462,7 +462,7 @@ export const renderContextMenus = (menuOptions, eventData) => {
     ...normalStyle
   }
   const $menu = createEl({ style: menuStyle })
-  const $menuList = menus().map(menu => {
+  const $menuList = menus(eventData).map(menu => {
     const $dom = createEl({
       text:  menu.text,
       style: menuItemStyle
