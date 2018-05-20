@@ -1,7 +1,7 @@
 import { BaseModel, createLocalBackend } from './base_model'
 import { TARGET_TYPE } from './local_annotation_model'
 import { ObjectWith } from '../type_check'
-import { unpick } from '../utils'
+import { unpick, and } from '../utils'
 import config from '../../config'
 import * as HttpAPI from '../api/http_api'
 import { encodeElement, decodeElement } from '../api/backend_element_adaptor'
@@ -70,4 +70,20 @@ export class ElementModel extends BaseModel {
   fetch (id) {
     return backend.fetch(id)
   }
+}
+
+export function isElementEqual (a, b) {
+  if (a.id && b.id && a.id === b.id)  return true
+  if (a.type !== b.type)  return false
+
+  const isEqual       = (x, y) => JSON.stringify(x) === JSON.stringify(y)
+  const commonKeys    = ['url']
+  const keysToCompare = {
+    [TARGET_TYPE.IMAGE]:      [...commonKeys, 'imageSize', 'offset', 'locator'],
+    [TARGET_TYPE.SELECTION]:  [...commonKeys, 'start', 'end', 'text']
+  }
+
+  return and(
+    ...keysToCompare[a.type].map(key => isEqual(a[key], b[key]))
+  )
 }

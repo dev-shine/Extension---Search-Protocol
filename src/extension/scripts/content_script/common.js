@@ -580,7 +580,7 @@ export const rightPosition = ({ size, cursor }) => {
   }
 }
 
-export const createContextMenus = ({ menusOnSelection, menusOnImage, isSelectionRangeValid, getSelectionLinkData }) => {
+export const createContextMenus = ({ menusOnSelection, menusOnImage, isSelectionRangeValid, processLinkData }) => {
   const isOnSelection = (e) => {
     const s = window.getSelection()
     if (s.isCollapsed)  return false
@@ -614,7 +614,7 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage, isSelection
           menuOptions: menusOnImage,
           eventData: {
             $img: e.target,
-            linkData: {
+            linkData: processLinkData({
               type:     TARGET_TYPE.IMAGE,
               url:      window.location.href,
               locator:  xpath(e.target),
@@ -625,7 +625,7 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage, isSelection
               },
               imageSize: size,
               image: dataUrl
-            }
+            })
           }
         })
       })
@@ -637,11 +637,11 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage, isSelection
         pos,
         menuOptions: menusOnSelection,
         eventData: {
-          linkData: getSelectionLinkData() || {
+          linkData: processLinkData({
             type: TARGET_TYPE.SELECTION,
             url:  window.location.href,
             ...selectionToJSON(window.getSelection())
-          }
+          })
         }
       })
     }

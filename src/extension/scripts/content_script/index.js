@@ -9,7 +9,7 @@ import {
   pageX, pageY, bindSelectionEnd
 } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
-import { rect2offset, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/local_annotation_model'
+import { rect2offset, isLinkEqual, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/local_annotation_model'
 import {
   createSelectionBox, createButtons, createRect,
   createContextMenus, createIframeWithMask,
@@ -19,6 +19,7 @@ import { MouseReveal } from './mouse_reveal'
 import { showLinks, showOneLink } from './show_bridges'
 import { parseRangeJSON } from '../../../common/selection'
 import { or, setIn, uid, noop, isTwoRangesIntersecting, isLatinCharacter } from '../../../common/utils'
+import { isElementEqual } from '../../../common/models/element_model'
 
 let state = {
   nearDistanceInInch:   1,
@@ -276,8 +277,10 @@ const initContextMenus = () => {
       const hasIntersect      = or(...selectionElements.map(item => isTwoRangesIntersecting(range, parseRangeJSON(item))))
       return !hasIntersect
     },
-    getSelectionLinkData: () => {
-      return null
+    processLinkData: (linkData) => {
+      const { elements = [] } = state.currentPage
+      const found = elements.find(el => isElementEqual(el, linkData))
+      return found || linkData
     },
     menusOnSelection: {
       ...commonMenuOptions,
@@ -318,7 +321,11 @@ const initContextMenus = () => {
 
         // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
         if (linkPairStatus === LINK_PAIR_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
-          menus.push(commonMenuItems.buildBridge)
+          const savedItem     = linkPairStatus === LINK_PAIR_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
+
+          if (!isElementEqual(savedItem, menuExtra.linkData)) {
+            menus.push(commonMenuItems.buildBridge)
+          }
         }
 
         return menus.map(decorateOnClick)
@@ -336,7 +343,11 @@ const initContextMenus = () => {
 
         // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
         if (linkPairStatus === LINK_PAIR_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
-          menus.push(commonMenuItems.buildBridge)
+          const savedItem     = linkPairStatus === LINK_PAIR_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
+
+          if (!isElementEqual(savedItem, menuExtra.linkData)) {
+            menus.push(commonMenuItems.buildBridge)
+          }
         }
 
         return menus
@@ -387,13 +398,9 @@ const addSubmenuForBadge = (link) => {
 
               // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
               if (linkPairStatus === LINK_PAIR_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
-                const currentItemId = menuExtra.linkData.id
                 const savedItem     = linkPairStatus === LINK_PAIR_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
-                const savedItemId   = savedItem.id
 
-                log('currentItem, savedItem', menuExtra.linkData, linkPairData.links)
-
-                if (!currentItemId || !savedItemId || currentItemId !== savedItemId) {
+                if (!isElementEqual(savedItem, menuExtra.linkData)) {
                   menus.push(commonMenuItems.buildBridge)
                 }
               }
