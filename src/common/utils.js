@@ -409,3 +409,15 @@ export const twoRectsRelation = (r1, r2) => {
 export const isTwoRectsIntersecting = (r1, r2) => {
   return twoRectsRelation(r1, r2) === TWO_DIMENSION_RELATION.INTERSECT
 }
+
+export const isLatinCharacter = (c) => {
+  if (!c) return false
+
+  const charCode = c.charCodeAt(0)
+
+  // reference: https://cs.stanford.edu/~miles/iso8859.html
+  return (charCode >= 48 && charCode <= 57) ||
+          (charCode >= 65 && charCode <= 90) ||
+          (charCode >= 97 && charCode <= 122) ||
+          (charCode >= 192 && charCode <= 255)
+}

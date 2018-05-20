@@ -6,7 +6,7 @@ import { createIframe } from '../../../common/ipc/cs_postmessage'
 import {
   setStyle, scrollLeft, scrollTop, clientWidth, clientHeight,
   pixel, dataUrlFromImageElement, getPPI, getElementByXPath,
-  pageX, pageY
+  pageX, pageY, bindSelectionEnd
 } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
 import { rect2offset, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/local_annotation_model'
@@ -18,7 +18,7 @@ import {
 import { MouseReveal } from './mouse_reveal'
 import { showLinks, showOneLink } from './show_bridges'
 import { parseRangeJSON } from '../../../common/selection'
-import { or, setIn, uid, noop, isTwoRangesIntersecting } from '../../../common/utils'
+import { or, setIn, uid, noop, isTwoRangesIntersecting, isLatinCharacter } from '../../../common/utils'
 
 let state = {
   nearDistanceInInch:   1,
@@ -82,8 +82,28 @@ const bindSocialLoginEvent = () => {
   })
 }
 
+const bindSelectionEvent = () => {
+  const nodeCharacterAt = (node, offset) => node.textContent && node.textContent.charAt(offset)
+  const hasPartialWords = (selection) => {
+    const isPartialAtStart = isLatinCharacter(nodeCharacterAt(selection.anchorNode, selection.anchorOffset - 1)) &&
+                             isLatinCharacter(nodeCharacterAt(selection.anchorNode, selection.anchorOffset))
+
+    const isPartialAtEnd   = isLatinCharacter(nodeCharacterAt(selection.focusNode, selection.focusOffset - 1)) &&
+                             isLatinCharacter(nodeCharacterAt(selection.focusNode, selection.focusOffset))
+
+    return isPartialAtStart || isPartialAtEnd
+  }
+
+  bindSelectionEnd((e, selection) => {
+    if (hasPartialWords(selection)) {
+      selection.collapse(null)
+    }
+  })
+}
+
 const init = () => {
   bindEvents()
+  bindSelectionEvent()
   bindSocialLoginEvent()
   initContextMenus()
 

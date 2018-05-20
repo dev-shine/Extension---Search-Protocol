@@ -236,3 +236,19 @@ export const getPPI = () => {
 
   return parseInt(width, 10)
 }
+
+export const bindSelectionEnd = (fn) => {
+  const secureTagName     = (node) => typeof node.tagName === 'string' ? node.tagName.toUpperCase() : null
+  const isTextAreaOrInput = (node) => ['INPUT', 'TEXTAREA'].indexOf(secureTagName(node)) !== -1
+  const handler = (e) => {
+    const s = window.getSelection()
+
+    if (s.isCollapsed)  return
+    if (isTextAreaOrInput(s.anchorNode) && isTextAreaOrInput(s.focusNode))  return
+
+    fn(e, s)
+  }
+
+  document.addEventListener('mouseup', handler)
+  return () => document.removeEventListener('mouseup', handler)
+}
