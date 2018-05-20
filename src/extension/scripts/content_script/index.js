@@ -446,7 +446,25 @@ const selectImageArea = ({ $img, linkData }) => {
   const showIframe  = ({ width, height, dataUrl }) => {
     const onAsk = (cmd, args) => {
       switch (cmd) {
-        case 'INIT':
+        case 'INIT': {
+          const { elements = [] }   = state.currentPage
+          const imageElements       = elements.filter(item => item.type === TARGET_TYPE.IMAGE)
+          const existingImageAreas  = imageElements.filter(item => {
+            if (item.locator !== linkData.locator) {
+              return false
+            }
+
+            const { rect, imageSize } = item
+            if (rect.x === 0 && rect.y === 0 &&
+                rect.width === imageSize.width &&
+                rect.height === imageSize.height) {
+              return false
+            }
+
+            return true
+          })
+
+          log('existing image areas', existingImageAreas)
           return API.getLinkPairStatus()
           .then(linkPair => {
             return {
@@ -454,9 +472,11 @@ const selectImageArea = ({ $img, linkData }) => {
               linkData,
               dataUrl,
               width,
-              height
+              height,
+              existingImageAreas
             }
           })
+        }
 
         case 'ANNOTATE':
           iframeAPI.destroy()

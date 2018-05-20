@@ -14,6 +14,11 @@ body {
     border: 1px solid #ccc;
     box-sizing: content-box;
 
+    .existing-image-area {
+      position: absolute;
+      border: 2px dashed red;
+    }
+
     .crop-area {
       position: absolute;
       border: 3px solid $primary-color;
