@@ -7,6 +7,7 @@ import log from '../common/log'
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../common/shapes/box'
 import './app.scss'
 import { pixel, dataUrlFromImageElement } from '../common/dom_utils'
+import { rectFromXyToLeftTop, isTwoRectsIntersecting, or, objMap } from '../common/utils'
 import { LINK_PAIR_STATUS } from '../common/models/local_annotation_model'
 import config from '../config'
 
@@ -22,7 +23,8 @@ class App extends Component {
       dataUrl: null,
       width: 0,
       height: 0
-    }
+    },
+    existingImageAreas: []
   }
 
   canBuildBridge = () => {
@@ -31,9 +33,14 @@ class App extends Component {
     return linkPair.status === LINK_PAIR_STATUS.ONE || linkPair.data.lastAnnotation
   }
 
+  getImageAreaRatio = (element, fullSize) => {
+    return element.imageSize && element.imageSize.width ? (fullSize.width / element.imageSize.width) : 1
+  }
+
   prepareLinkData = () => {
-    const totalArea = this.state.image.width * this.state.image.height
-    const area      = this.state.cropRect.width * this.state.cropRect.height
+    const { existingImageAreas, image, cropRect } = this.state
+    const totalArea = image.width * image.height
+    const area      = cropRect.width * cropRect.height
     let errMsg
 
     log('prepareLinkData, area', area, totalArea)
@@ -46,16 +53,38 @@ class App extends Component {
     //   errMsg = `Selected area must be larger than ${config.settings.minImageAreaRatio * 100}% of the image area`
     // }
 
+    if (!errMsg) {
+      const isIntersect = (rect1, rect2) => {
+        return isRectsIntersect(
+          rectFromXyToLeftTop(rect1),
+          rectFromXyToLeftTop(rect2)
+        )
+      }
+      const convertElementToRect = (element) => {
+        const ratio = this.getImageAreaRatio(element, image)
+        return objMap(val => val * ratio, element.rect)
+      }
+      const hasAnyIntersect = or(
+        ...existingImageAreas.map(element => {
+          return isTwoRectsIntersecting(cropRect, convertElementToRect(element))
+        })
+      )
+
+      if (hasAnyIntersect) {
+        errMsg = 'New area must not intersect with existing ones'
+      }
+    }
+
     if (errMsg) {
       alert(errMsg)
       throw new Error(errMsg)
     }
 
-    return dataUrlFromImageElement(this.$img, this.state.cropRect)
+    return dataUrlFromImageElement(this.$img, cropRect)
     .then(({ dataUrl }) => {
       return {
         ...this.state.linkData,
-        rect:   this.state.cropRect,
+        rect:   cropRect,
         image:  dataUrl
       }
     })
@@ -122,7 +151,7 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT')
-    .then(({ linkPair, linkData, dataUrl, width, height }) => {
+    .then(({ linkPair, linkData, dataUrl, width, height, existingImageAreas }) => {
       const box = new Box({
         width,
         height,
@@ -171,7 +200,8 @@ class App extends Component {
           dataUrl,
           width,
           height
-        }
+        },
+        existingImageAreas
       })
     })
   }
@@ -228,6 +258,33 @@ class App extends Component {
     )
   }
 
+  renderExistingImageAreas () {
+    const { existingImageAreas, image } = this.state
+    const getStyle = (element) => {
+      const ratio = this.getImageAreaRatio(element, image)
+
+      return {
+        top:    pixel(ratio * element.rect.y),
+        left:   pixel(ratio * element.rect.x),
+        width:  pixel(ratio * element.rect.width),
+        height: pixel(ratio * element.rect.height)
+      }
+    }
+
+    return (
+      <div>
+        {existingImageAreas.map((element, i) => (
+          <div
+            key={i}
+            className="existing-image-area"
+            style={getStyle(element)}
+          >
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   render () {
     return (
       <div
@@ -244,6 +301,7 @@ class App extends Component {
           }}
         >
           <img src={this.state.image.dataUrl} ref={r => { this.$img = r }}/>
+          {this.renderExistingImageAreas()}
           {this.renderCropArea()}
         </div>
         <div className="actions">

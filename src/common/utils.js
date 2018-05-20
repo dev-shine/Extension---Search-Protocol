@@ -195,6 +195,10 @@ export const liveBuild = ({ bindEvent, unbindEvent, getFuse, isEqual, onFuseChan
 }
 
 const fourPointsOfRect = (r) => {
+  if (r.x !== undefined && r.left === undefined) {
+    r = rectFromXyToLeftTop(r)
+  }
+
   return [
     { x: r.left, y: r.top },
     { x: r.left, y: r.top + r.height },
@@ -204,6 +208,10 @@ const fourPointsOfRect = (r) => {
 }
 
 export const isPointInRect = (x, y, r) => {
+  if (r.x !== undefined && r.left === undefined) {
+    r = rectFromXyToLeftTop(r)
+  }
+
   return y >= r.top && x >= r.left &&
           (y <= r.top + r.height) &&
           (x <= r.left + r.width)
@@ -302,7 +310,7 @@ export const reverseKeyValue = (obj) => {
 
 export const noop = () => {}
 
-export const RANGE_RELATION = {
+export const TWO_DIMENSION_RELATION = {
   CONTAINS:     'CONTAINS',
   CONTAINED_BY: 'CONTAINED_BY',
   INTERSECT:    'INTERSECT',
@@ -326,30 +334,78 @@ export const twoRangesRelation = (r1, r2) => {
 
   if ((results[0] === 0 && results[3] === 0) ||
       (results[1] === 0 && results[2] === 0)) {
-    return RANGE_RELATION.EQUAL
+    return TWO_DIMENSION_RELATION.EQUAL
   }
 
   const r1StartsInR2  = results[0] * results[1] <= 0
   const r1EndsInR2    = results[2] * results[3] <= 0
 
   if (r1StartsInR2 && r1EndsInR2) {
-    return RANGE_RELATION.CONTAINED_BY
+    return TWO_DIMENSION_RELATION.CONTAINED_BY
   }
 
   const r2StartsInR1  = results[0] * results[2] <= 0
   const r2EndsInR1    = results[1] * results[3] <= 0
 
   if (r2StartsInR1 && r2EndsInR1) {
-    return RANGE_RELATION.CONTAINS
+    return TWO_DIMENSION_RELATION.CONTAINS
   }
 
   if (noZeroMulti(results[0], results[1]) === noZeroMulti(results[2], results[3])) {
-    return RANGE_RELATION.APART
+    return TWO_DIMENSION_RELATION.APART
   }
 
-  return RANGE_RELATION.INTERSECT
+  return TWO_DIMENSION_RELATION.INTERSECT
 }
 
 export const isTwoRangesIntersecting = (r1, r2) => {
-  return twoRangesRelation(r1, r2) === RANGE_RELATION.INTERSECT
+  return twoRangesRelation(r1, r2) === TWO_DIMENSION_RELATION.INTERSECT
+}
+
+export const rectFromXyToLeftTop = (r) => {
+  return {
+    left:   r.x,
+    top:    r.y,
+    width:  r.width,
+    height: r.height
+  }
+}
+
+export const rectFromLeftTopToXy = (r) => {
+  return {
+    x:      r.left,
+    y:      r.top,
+    width:  r.width,
+    height: r.height
+  }
+}
+
+export const twoRectsRelation = (r1, r2) => {
+  if (and(...['x', 'y', 'width', 'height'].map(key => r1[key] === r2[key]))) {
+    return TWO_DIMENSION_RELATION.EQUAL
+  }
+
+  const r1PointsInR2 = fourPointsOfRect(r1).map(p => isPointInRect(p.x, p.y, r2))
+  const r2PointsInR1 = fourPointsOfRect(r2).map(p => isPointInRect(p.x, p.y, r1))
+
+  const r1Count = r1PointsInR2.filter(x => x).length
+  const r2Count = r2PointsInR1.filter(x => x).length
+
+  if (r1Count === 0 && r2Count === 4) {
+    return TWO_DIMENSION_RELATION.CONTAINS
+  }
+
+  if (r1Count === 4 && r2Count === 0) {
+    return TWO_DIMENSION_RELATION.CONTAINED_BY
+  }
+
+  if (r1Count === 0 && r2Count === 0) {
+    return TWO_DIMENSION_RELATION.APART
+  }
+
+  return TWO_DIMENSION_RELATION.INTERSECT
+}
+
+export const isTwoRectsIntersecting = (r1, r2) => {
+  return twoRectsRelation(r1, r2) === TWO_DIMENSION_RELATION.INTERSECT
 }
