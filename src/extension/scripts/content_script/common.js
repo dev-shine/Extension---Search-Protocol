@@ -580,7 +580,7 @@ export const rightPosition = ({ size, cursor }) => {
   }
 }
 
-export const createContextMenus = ({ menusOnSelection, menusOnImage }) => {
+export const createContextMenus = ({ menusOnSelection, menusOnImage, isSelectionRangeValid, getSelectionLinkData }) => {
   const isOnSelection = (e) => {
     const s = window.getSelection()
     if (s.isCollapsed)  return false
@@ -588,7 +588,7 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage }) => {
     const r = s.getRangeAt(0)
     const p = { x: e.pageX, y: e.pageY }
 
-    return isPointInRange(p, r)
+    return isPointInRange(p, r) && isSelectionRangeValid(r)
   }
   const isOnImage = (e) => {
     const dom = e.target
@@ -637,7 +637,7 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage }) => {
         pos,
         menuOptions: menusOnSelection,
         eventData: {
-          linkData: {
+          linkData: getSelectionLinkData() || {
             type: TARGET_TYPE.SELECTION,
             url:  window.location.href,
             ...selectionToJSON(window.getSelection())
