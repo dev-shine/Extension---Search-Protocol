@@ -18,12 +18,17 @@ import {
 import { MouseReveal } from './mouse_reveal'
 import { showLinks, showOneLink } from './show_bridges'
 import { parseRangeJSON } from '../../../common/selection'
-import { setIn, uid, noop } from '../../../common/utils'
+import { or, setIn, uid, noop, isTwoRangesIntersecting } from '../../../common/utils'
 
 let state = {
   nearDistanceInInch:   1,
   nearVisibleDuration:  2,
-  pixelsPerInch: 40
+  pixelsPerInch: 40,
+  currentPage: {
+    elements: [],
+    bridges: [],
+    annotations: []
+  }
 }
 
 const setState = (obj) => {
@@ -98,10 +103,10 @@ let linksAPI
 const initLinks = (data, url) => {
   if (linksAPI) linksAPI.destroy()
 
+  setState({ currentPage: data })
+
   const oldAPI = showLinks(data, url, (api) => addSubmenuForBadge(api))
   oldAPI.hide()
-
-  log('distance', state.nearDistanceInInch, state.pixelsPerInch)
 
   linksAPI = new MouseReveal({
     items:    oldAPI.links,
@@ -245,6 +250,15 @@ const commonMenuItems = {
 
 const initContextMenus = () => {
   const destroy = createContextMenus({
+    isSelectionRangeValid: (range) => {
+      const { elements = [] } = state.currentPage
+      const selectionElements = elements.filter(item => item.type === TARGET_TYPE.SELECTION)
+      const hasIntersect      = or(...selectionElements.map(item => isTwoRangesIntersecting(range, parseRangeJSON(item))))
+      return !hasIntersect
+    },
+    getSelectionLinkData: () => {
+      return null
+    },
     menusOnSelection: {
       ...commonMenuOptions,
       id: '__on_selection__',

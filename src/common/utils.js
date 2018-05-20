@@ -301,3 +301,55 @@ export const reverseKeyValue = (obj) => {
 }
 
 export const noop = () => {}
+
+export const RANGE_RELATION = {
+  CONTAINS:     'CONTAINS',
+  CONTAINED_BY: 'CONTAINED_BY',
+  INTERSECT:    'INTERSECT',
+  EQUAL:        'EQUAL',
+  APART:        'APART'
+}
+
+export const twoRangesRelation = (r1, r2) => {
+  const list = [
+    Range.START_TO_START,
+    Range.START_TO_END,
+    Range.END_TO_START,
+    Range.END_TO_END
+  ]
+  const results       = list.map(how => r1.compareBoundaryPoints(how, r2))
+  const noZeroMulti   = (x, y) => {
+    if (x === 0)  return y * y
+    if (y === 0)  return x * x
+    return x * y
+  }
+
+  if ((results[0] === 0 && results[3] === 0) ||
+      (results[1] === 0 && results[2] === 0)) {
+    return RANGE_RELATION.EQUAL
+  }
+
+  const r1StartsInR2  = results[0] * results[1] <= 0
+  const r1EndsInR2    = results[2] * results[3] <= 0
+
+  if (r1StartsInR2 && r1EndsInR2) {
+    return RANGE_RELATION.CONTAINED_BY
+  }
+
+  const r2StartsInR1  = results[0] * results[2] <= 0
+  const r2EndsInR1    = results[1] * results[3] <= 0
+
+  if (r2StartsInR1 && r2EndsInR1) {
+    return RANGE_RELATION.CONTAINS
+  }
+
+  if (noZeroMulti(results[0], results[1]) === noZeroMulti(results[2], results[3])) {
+    return RANGE_RELATION.APART
+  }
+
+  return RANGE_RELATION.INTERSECT
+}
+
+export const isTwoRangesIntersecting = (r1, r2) => {
+  return twoRangesRelation(r1, r2) === RANGE_RELATION.INTERSECT
+}
