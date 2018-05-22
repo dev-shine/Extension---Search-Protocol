@@ -1,0 +1,15 @@
+.msg-wrapper {
+  padding: 25px 25px 0;
+  font-size: 14px;
+
+  p {
+    margin-bottom: 20px;
+    line-height: 1.8em;
+
+    &.actions {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+}

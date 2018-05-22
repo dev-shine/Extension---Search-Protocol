@@ -32,6 +32,8 @@
     "image_area.js",
     "build_bridge.html",
     "build_bridge.js",
+    "after_create_bridge.html",
+    "after_crate_bridge.js",
     "vendor.js",
     "antd.css"
   ],

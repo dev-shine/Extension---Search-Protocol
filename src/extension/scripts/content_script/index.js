@@ -250,7 +250,7 @@ const commonMenuItems = {
     onClick: (e, { linkData }) => {
       API.clearLinks()
       .then(() => API.addLink(linkData))
-      .then(() => notify('Content selected. Please select another content and right click on it to build bridge'))
+      .then(showMsgAfterCreateBridge)
       .catch(e => log.error(e.stack))
     }
   },
@@ -519,7 +519,7 @@ const selectImageArea = ({ $img, linkData }) => {
           iframeAPI.destroy()
 
           API.createLink(args.linkData)
-          .then(() => notify('Content selected. Please select another content and right click on it to build bridge'))
+          .then(showMsgAfterCreateBridge)
           .catch(e => log.error(e.stack))
 
           return true
@@ -628,6 +628,35 @@ const buildBridge = ({ onSuccess = tryShowBridges } = {}) => {
     top: '50%',
     transform: 'translate(-50%, -50%)',
     border: '1px solid #ccc'
+  })
+}
+
+const showMsgAfterCreateBridge = () => {
+  return API.getUserSettings()
+  .then(settings => {
+    if (settings.hideAfterCreateMsg)  return true
+
+    const iframeAPI = createIframeWithMask({
+      url:    Ext.extension.getURL('after_create_bridge.html'),
+      width:  500,
+      height: 300,
+      onAsk:  (cmd, args) => {
+        switch (cmd) {
+          case 'CLOSE':
+            iframeAPI.destroy()
+            return true
+        }
+      }
+    })
+
+    setStyle(iframeAPI.$iframe, {
+      position: 'fixed',
+      zIndex: 110000,
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%, -50%)',
+      border: '1px solid #ccc'
+    })
   })
 }
 

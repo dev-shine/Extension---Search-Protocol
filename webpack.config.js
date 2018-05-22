@@ -17,7 +17,8 @@ module.exports = {
     links_modal:      './src/links_modal/index.js',
     annotate:         './src/annotate/index.js',
     build_bridge:     './src/build_bridge/index.js',
-    image_area:       './src/image_area/index.js'
+    image_area:       './src/image_area/index.js',
+    after_create_bridge: './src/after_create_bridge/index.js'
   },
   output: {
     path: path.join(__dirname, 'dist'),
