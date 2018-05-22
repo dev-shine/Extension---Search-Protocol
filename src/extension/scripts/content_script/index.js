@@ -6,7 +6,7 @@ import { createIframe } from '../../../common/ipc/cs_postmessage'
 import {
   setStyle, scrollLeft, scrollTop, clientWidth, clientHeight,
   pixel, dataUrlFromImageElement, getPPI, getElementByXPath,
-  pageX, pageY, bindSelectionEnd
+  pageX, pageY, bindSelectionEnd, imageSize
 } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
 import { rect2offset, isLinkEqual, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/local_annotation_model'
@@ -20,6 +20,7 @@ import { showLinks, showOneLink } from './show_bridges'
 import { parseRangeJSON } from '../../../common/selection'
 import { or, setIn, uid, noop, isTwoRangesIntersecting, isLatinCharacter } from '../../../common/utils'
 import { isElementEqual } from '../../../common/models/element_model'
+import config from '../../../config'
 
 let state = {
   nearDistanceInInch:   1,
@@ -276,6 +277,10 @@ const initContextMenus = () => {
       const selectionElements = elements.filter(item => item.type === TARGET_TYPE.SELECTION)
       const hasIntersect      = or(...selectionElements.map(item => isTwoRangesIntersecting(range, parseRangeJSON(item))))
       return !hasIntersect
+    },
+    isImageValid: ($img) => {
+      const { width, height } = imageSize($img)
+      return width * height > config.settings.minImageArea
     },
     processLinkData: (linkData) => {
       const { elements = [] } = state.currentPage

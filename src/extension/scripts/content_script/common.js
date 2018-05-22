@@ -580,7 +580,13 @@ export const rightPosition = ({ size, cursor }) => {
   }
 }
 
-export const createContextMenus = ({ menusOnSelection, menusOnImage, isSelectionRangeValid, processLinkData }) => {
+export const createContextMenus = ({
+  menusOnSelection,
+  menusOnImage,
+  isSelectionRangeValid,
+  isImageValid,
+  processLinkData
+}) => {
   const isOnSelection = (e) => {
     const s = window.getSelection()
     if (s.isCollapsed)  return false
@@ -592,7 +598,7 @@ export const createContextMenus = ({ menusOnSelection, menusOnImage, isSelection
   }
   const isOnImage = (e) => {
     const dom = e.target
-    return dom.tagName && dom.tagName.toLowerCase() === 'img'
+    return dom.tagName && dom.tagName.toLowerCase() === 'img' && isImageValid(dom)
   }
   const onContextMenu = (e) => {
     showContextMenus({ clear: true })
