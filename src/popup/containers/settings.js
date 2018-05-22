@@ -51,6 +51,14 @@ class Settings extends React.Component {
                   Enable Bridgit
                 </Checkbox>
               </Form.Item>
+              <Form.Item>
+                <Checkbox
+                  onChange={(e) => this.onChangeSettings('hideAfterCreateMsg', !e.target.checked)}
+                  checked={!this.state.settings.hideAfterCreateMsg}
+                >
+                  Show tips after 'create bridge'
+                </Checkbox>
+              </Form.Item>
               <Form.Item label="Show if cursor is within X inches">
                 <InputNumber
                   onChange={value => this.onChangeSettings('nearDistanceInInch', parseFloat(value))}
