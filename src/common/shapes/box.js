@@ -217,7 +217,7 @@ export class Box {
     const res     = calcRectAndAnchor(moving, fixed)
 
     this.__setLocal({ anchorPos: res.anchorPos })
-    this.__setState({ rect: this.normalizeRect(res.rect, 'moveAnchor') })
+    this.__setState({ rect: this.normalizeRect(res.rect, 'moveAnchor', old) })
   }
 
   moveAnchorEnd () {
@@ -242,7 +242,7 @@ export class Box {
       y: old.y + dy
     }
 
-    this.__setState({ rect: this.normalizeRect(upd, 'moveBox') })
+    this.__setState({ rect: this.normalizeRect(upd, 'moveBox', old) })
   }
 
   moveBoxEnd () {
