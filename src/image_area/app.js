@@ -54,12 +54,6 @@ class App extends Component {
     // }
 
     if (!errMsg) {
-      const isIntersect = (rect1, rect2) => {
-        return isRectsIntersect(
-          rectFromXyToLeftTop(rect1),
-          rectFromXyToLeftTop(rect2)
-        )
-      }
       const convertElementToRect = (element) => {
         const ratio = this.getImageAreaRatio(element, image)
         return objMap(val => val * ratio, element.rect)
@@ -162,14 +156,18 @@ class App extends Component {
           log('box onStateChange', rect)
           this.setState({ cropRect: rect })
         },
-        normalizeRect: (rect, action) => {
+        normalizeRect: (rect, action, old) => {
+          const guard = (rect) => {
+            return rect.width * rect.height <= config.settings.minImageArea ? old : rect
+          }
+
           if (action === 'moveAnchor') {
-            return {
+            return guard({
               x:      Math.max(0, rect.x),
               y:      Math.max(0, rect.y),
               width:  Math.min(rect.width, width - rect.x),
               height: Math.min(rect.height, height - rect.y)
-            }
+            })
           } else if (action === 'moveBox') {
             const dx = (function () {
               if (rect.x < 0)  return -1 * rect.x
@@ -182,12 +180,12 @@ class App extends Component {
               return 0
             })()
 
-            return {
+            return guard({
               x:      rect.x + dx,
               y:      rect.y + dy,
               width:  rect.width,
               height: rect.height
-            }
+            })
           }
         }
       })
