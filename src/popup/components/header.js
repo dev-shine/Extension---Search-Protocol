@@ -26,13 +26,14 @@ class Header extends React.Component {
         if (!userInfo)  return '/login'
         if (userInfo.user_activate === '0') return '/user-inactive'
 
-        switch (linkPair && linkPair.status) {
-          case LINK_PAIR_STATUS.EMPTY:      return '/'
-          case LINK_PAIR_STATUS.ONE:        return '/annotate-step-1'
-          case LINK_PAIR_STATUS.TWO:        return '/annotate-step-2'
-          case LINK_PAIR_STATUS.READY:      return '/create-link'
-          default:                          return 'Unknown status'
-        }
+        return '/'
+        // switch (linkPair && linkPair.status) {
+        //   case LINK_PAIR_STATUS.EMPTY:      return '/'
+        //   case LINK_PAIR_STATUS.ONE:        return '/annotate-step-1'
+        //   case LINK_PAIR_STATUS.TWO:        return '/annotate-step-2'
+        //   case LINK_PAIR_STATUS.READY:      return '/create-link'
+        //   default:                          return 'Unknown status'
+        // }
       })()
 
       this.navigate(nextRoute)
