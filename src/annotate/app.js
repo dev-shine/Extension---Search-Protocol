@@ -99,7 +99,22 @@ class App extends Component {
             {getFieldDecorator('tags', {
               validateTrigger: ['onBlur'],
               rules: [
-                { required: true, message: 'Please input tags' }
+                {
+                  required: true,
+                  message: 'Enter up to 5 tags separated by commas'
+                },
+                {
+                  validator: (rule, value, callback) => {
+                    const parts = value.split(',')
+
+                    if (parts.length > 5) {
+                      const msg = 'Enter up to 5 tags separated by commas'
+                      return callback(msg)
+                    }
+
+                    callback()
+                  }
+                }
               ]
             })(
               <Input
