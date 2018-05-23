@@ -101,7 +101,7 @@ class App extends Component {
               rules: [
                 {
                   required: true,
-                  message: 'Enter up to 5 tags separated by commas'
+                  message: 'Please input tags'
                 },
                 {
                   validator: (rule, value, callback) => {
@@ -118,7 +118,7 @@ class App extends Component {
               ]
             })(
               <Input
-                placeholder="Enter Title For This Content"
+                placeholder="Enter up to 5 tags separated by commas"
                 onChange={e => this.onUpdateField(e.target.value, 'tags')}
               />
             )}

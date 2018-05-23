@@ -126,7 +126,7 @@ class CreateLinkComp extends React.Component {
               rules: [
                 {
                   required: true,
-                  message: 'Enter up to 5 tags separated by commas'
+                  message: 'Please input tags'
                 },
                 {
                   validator: (rule, value, callback) => {
@@ -143,7 +143,7 @@ class CreateLinkComp extends React.Component {
               ]
             })(
               <Input
-                placeholder="Supporting information, opposing information, data, another perspective, etc."
+                placeholder="Enter up to 5 tags separated by commas"
                 onChange={e => this.props.onUpdateField(e.target.value, 'tags')}
               />
             )}
