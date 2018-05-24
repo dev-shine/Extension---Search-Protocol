@@ -776,3 +776,96 @@ export const submenuEffect = ({ main, sub }) => {
     controller.destroy()
   }
 }
+
+export const insertStyle = (css, id) => {
+  const $existed = document.getElementById(id)
+  if ($existed) return $existed
+
+  const $head  = document.head || document.getElementsByTagName('head')[0]
+  const $style = document.createElement('style')
+
+  $style.type = 'text/css'
+  $style.id   = id
+
+  if ($style.styleSheet) {
+    $style.styleSheet.cssText = css
+  } else {
+    $style.appendChild(document.createTextNode(css))
+  }
+
+  $head.appendChild($style)
+  return $style
+}
+
+export const showMessage = (text, options = {}) => {
+  const css = `
+    #__message_container__ {
+      pointer-events: none;
+      position: fixed;
+      z-index: 99999;
+      top: 30px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .__message__ {
+      position: relative;
+      margin-bottom: 15px;
+      padding: 5px 15px;
+      border-radius: 4px;
+      background-color: rgba(239, 93, 143);
+      color: #fff;
+      font-family: Arial;
+      font-size: 14px;
+      transition-timing-function: ease;
+      transition: all 0.3s;
+    }
+
+    .__message__.__before__ {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+
+    .__message__.__after__ {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+  `
+  const containerId   = '__message_container__'
+  const getContainer  = () => {
+    const $existed    = document.getElementById(containerId)
+    if ($existed) return $existed
+
+    const $container  = createEl({
+      attrs: {
+        id: containerId
+      }
+    })
+    document.body.appendChild($container)
+
+    return $container
+  }
+  const createMessage = (text, duration) => {
+    const animationDuration = 300
+    const $msg = createEl({ text, attrs: {'class': '__message__ __before__'} })
+    getContainer().appendChild($msg)
+
+    setTimeout(() => {
+      $msg.classList.remove('__before__')
+    }, 50)
+
+    setTimeout(() => {
+      $msg.classList.add('__after__')
+      setTimeout(() => {
+        $msg.remove()
+      }, animationDuration)
+    }, duration + animationDuration)
+  }
+
+  insertStyle(css, '__message_style__')
+  createMessage(text, 1000)
+}
