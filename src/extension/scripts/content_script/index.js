@@ -13,7 +13,8 @@ import { rect2offset, isLinkEqual, LINK_PAIR_STATUS, TARGET_TYPE } from '../../.
 import {
   createSelectionBox, createButtons, createRect,
   createContextMenus, createIframeWithMask,
-  dataUrlOfImage, notify, submenuEffect, showContextMenus
+  dataUrlOfImage, notify, submenuEffect, showContextMenus,
+  showMessage
 } from './common'
 import { MouseReveal } from './mouse_reveal'
 import { showLinks, showOneLink } from './show_bridges'
@@ -99,6 +100,13 @@ const bindSelectionEvent = () => {
   bindSelectionEnd((e, selection) => {
     if (hasPartialWords(selection)) {
       selection.collapse(null)
+    }
+
+    const range = selection.getRangeAt(0)
+
+    if (!isSelectionRangeValid(range)) {
+      selection.collapse(null)
+      showMessage('Invalid selection')
     }
   })
 }
@@ -270,14 +278,16 @@ const commonMenuItems = {
   }
 }
 
+const isSelectionRangeValid = (range) => {
+  const { elements = [] } = state.currentPage
+  const selectionElements = elements.filter(item => item.type === TARGET_TYPE.SELECTION)
+  const hasIntersect      = or(...selectionElements.map(item => isTwoRangesIntersecting(range, parseRangeJSON(item))))
+  return !hasIntersect
+}
+
 const initContextMenus = () => {
   const destroy = createContextMenus({
-    isSelectionRangeValid: (range) => {
-      const { elements = [] } = state.currentPage
-      const selectionElements = elements.filter(item => item.type === TARGET_TYPE.SELECTION)
-      const hasIntersect      = or(...selectionElements.map(item => isTwoRangesIntersecting(range, parseRangeJSON(item))))
-      return !hasIntersect
-    },
+    isSelectionRangeValid,
     isImageValid: ($img) => {
       const { width, height } = imageSize($img)
       return width * height > config.settings.minImageArea
