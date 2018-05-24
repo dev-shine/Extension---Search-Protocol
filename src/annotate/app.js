@@ -81,16 +81,16 @@ class App extends Component {
               />
             )}
           </Form.Item>
-          <Form.Item label="Description">
+          <Form.Item label="Note">
             {getFieldDecorator('desc', {
               validateTrigger: ['onBlur'],
               rules: [
-                { required: true, message: 'Please input description' }
+                { required: true, message: 'Please enter the text of your Note here' }
               ]
             })(
               <Input.TextArea
                 rows={4}
-                placeholder="Enter Description For This Content"
+                placeholder="Enter Note for this content"
                 onChange={e => this.onUpdateField(e.target.value, 'desc')}
               />
             )}
