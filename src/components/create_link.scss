@@ -27,6 +27,13 @@
     }
   }
 
+  .relation-form-item,
+  .desc-form-item {
+    label::after {
+      display: none;
+    }
+  }
+
   .image-box,
   .text-box {
     width: 160px;

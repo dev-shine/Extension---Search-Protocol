@@ -599,8 +599,8 @@ const selectScreenshotArea = () => {
 const buildBridge = ({ onSuccess = tryShowBridges } = {}) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('build_bridge.html'),
-    width:  600,
-    height: 480,
+    width:  630,
+    height: 490,
     onAsk: (cmd, args) => {
       switch (cmd) {
         case 'INIT':

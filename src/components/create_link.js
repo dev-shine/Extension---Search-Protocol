@@ -79,7 +79,7 @@ class CreateLinkComp extends React.Component {
       <div className="to-create-link">
         <h2>Build Bridge</h2>
         <Form onSubmit={this.handleSubmit} className="create-link-form">
-          <Form.Item label="How are these links related?">
+          <Form.Item label="How are these content elements related?" className="relation-form-item">
             <div className="relationship-row">
               {this.renderLinkPreview(pair.links[0])}
 
@@ -87,7 +87,7 @@ class CreateLinkComp extends React.Component {
                 {getFieldDecorator('relation', {
                   ...(pair.relation ? { initialValue: pair.relation } : {}),
                   rules: [
-                    { required: true, message: 'Please select relation' }
+                    { required: true, message: 'Please select a relationship between the two content elements' }
                   ]
                 })(
                   <Select
@@ -105,7 +105,7 @@ class CreateLinkComp extends React.Component {
             </div>
           </Form.Item>
 
-          <Form.Item label="What do you want to say about this link?">
+          <Form.Item label="What do you want to say about this bridge?" className="desc-form-item">
             {getFieldDecorator('desc', {
               initialValue: pair.desc,
               validateTrigger: ['onBlur'],
@@ -130,7 +130,7 @@ class CreateLinkComp extends React.Component {
                 },
                 {
                   validator: (rule, value, callback) => {
-                    const parts = value.split(',')
+                    const parts = (value || '').split(',')
 
                     if (parts.length > 5) {
                       const msg = 'Enter up to 5 tags separated by commas'
