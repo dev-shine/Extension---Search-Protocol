@@ -114,7 +114,7 @@ class CreateLinkComp extends React.Component {
               ]
             })(
               <Input.TextArea
-                placeholder="Enter Description For This Link"
+                placeholder="Enter the Description for this Bridge"
                 onChange={e => this.props.onUpdateField(e.target.value, 'desc')}
               />
             )}
