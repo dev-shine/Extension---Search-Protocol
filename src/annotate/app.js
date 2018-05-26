@@ -76,7 +76,7 @@ class App extends Component {
               ]
             })(
               <Input
-                placeholder="Enter Title For This Content"
+                placeholder="Enter Title for this content element"
                 onChange={e => this.onUpdateField(e.target.value, 'title')}
               />
             )}
