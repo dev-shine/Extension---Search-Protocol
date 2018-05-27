@@ -106,7 +106,7 @@ const bindSelectionEvent = () => {
 
     if (!isSelectionRangeValid(range)) {
       selection.collapse(null)
-      showMessage('Invalid selection')
+      showMessage('Invalid selection: Selection cannot include partial words')
     }
   })
 }
