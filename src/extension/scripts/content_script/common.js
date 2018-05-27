@@ -867,5 +867,5 @@ export const showMessage = (text, options = {}) => {
   }
 
   insertStyle(css, '__message_style__')
-  createMessage(text, 1000)
+  createMessage(text, 2000)
 }
