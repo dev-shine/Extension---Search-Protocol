@@ -1,4 +1,6 @@
 export default {
+  id: 'zh',
+  name: '中文',
   common: {
     welcome: '欢迎',
     logout: '退出',
@@ -57,6 +59,7 @@ export default {
   },
   settings: {
     settings: '设置',
+    language: '语言',
     enableBridgit: '启用 Bridgit',
     showTipsAfterCreateBridge: `在点击“开始关联”后显示提示`,
     showWithinInches: '鼠标距离元素 X 英寸时触发展现',

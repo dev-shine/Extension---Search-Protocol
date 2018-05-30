@@ -2,7 +2,7 @@ import React from 'react'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { bindActionCreators }  from 'redux'
-import { Checkbox, Form, InputNumber, Collapse } from 'antd'
+import { Checkbox, Form, InputNumber, Collapse, Select } from 'antd'
 import { translate } from 'react-i18next'
 
 import './settings.scss'
@@ -10,6 +10,7 @@ import * as actions from '../actions'
 import { compose, setIn, updateIn } from '../../common/utils'
 import API from '../../common/api/popup_api'
 import log from '../../common/log'
+import i18n, { languages } from '../../i18n'
 
 class Settings extends React.Component {
   state = {
@@ -61,6 +62,22 @@ class Settings extends React.Component {
                 >
                   {t('showTipsAfterCreateBridge')}
                 </Checkbox>
+              </Form.Item>
+              <Form.Item label={t('language')}>
+                <Select
+                  value={this.state.settings.language}
+                  onChange={lang => {
+                    this.onChangeSettings('language', lang)
+                    i18n.changeLanguage(lang)
+                    API.changeLanguage(lang)
+                  }}
+                >
+                  {languages.map(item => (
+                    <Select.Option value={item.id} key={item.id}>
+                      {item.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
               <Form.Item label={t('showWithinInches')}>
                 <InputNumber

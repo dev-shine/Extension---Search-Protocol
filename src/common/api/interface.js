@@ -13,6 +13,7 @@ export const methods = [
   'captureScreenInSelection',
   'showElementInNewTab',
   'openSocialLogin',
+  'changeLanguage',
 
   // http API
   'login',

@@ -8,7 +8,7 @@ i18n
   .use(LanguageDetector)
   .use(reactI18nextModule)
   .init({
-    lng: 'en',
+    lng: 'zh',
     fallbackLng: 'en',
     defaultNS: 'common',
     resources: {
@@ -18,3 +18,5 @@ i18n
   })
 
 export default i18n
+
+export const languages = [en, zh]

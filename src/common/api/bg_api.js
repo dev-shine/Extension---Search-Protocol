@@ -10,6 +10,7 @@ import * as httpAPI from './http_api'
 import * as backendAPI from './backend_api'
 import { objMap } from '../utils'
 import log from '../log'
+import i18n from '../../i18n'
 
 const tabIpcStore = getTabIpcstore()
 
@@ -168,7 +169,8 @@ const API = {
     const initial = {
       showOnLoad:           true,
       nearDistanceInInch:   3,
-      nearVisibleDuration:  2
+      nearVisibleDuration:  2,
+      language:             i18n.language
     }
 
     return storage.set('user_settings', initial)
@@ -209,6 +211,12 @@ const API = {
       top:    (sh - h) / 2
     })
     .then(() => true)
+  },
+  changeLanguage: (lang) => {
+    tabIpcStore.forEach(ipc => {
+      ipc.ask('CHANGE_LANGUAGE', lang)
+    })
+    return true
   }
 }
 
