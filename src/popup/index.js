@@ -6,6 +6,7 @@ import App from './app'
 import { Provider, createStore, reducer } from './redux'
 import { setUserInfo, setLoaded, setLinkPair } from './actions'
 import API from '../common/api/popup_api'
+import '../i18n'
 
 const store = createStore(
   reducer,

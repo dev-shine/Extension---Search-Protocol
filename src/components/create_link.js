@@ -1,10 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Alert, Button, Select, Form, Input } from 'antd'
+import { translate } from 'react-i18next'
+
 import { TARGET_TYPE } from '../common/models/local_annotation_model'
 import API from '../common/api/cs_api'
 import './create_link.scss'
 import log from '../common/log';
+import { compose } from '../common/utils';
 
 class CreateLinkComp extends React.Component {
   static propTypes = {
@@ -70,6 +73,7 @@ class CreateLinkComp extends React.Component {
   render () {
     if (!this.props.linkPair) return null
 
+    const { t } = this.props
     const { getFieldDecorator } = this.props.form
     const pair = this.props.linkPair.data
 
@@ -77,9 +81,9 @@ class CreateLinkComp extends React.Component {
 
     return (
       <div className="to-create-link">
-        <h2>Build Bridge</h2>
+        <h2>{t('buildBridge')}</h2>
         <Form onSubmit={this.handleSubmit} className="create-link-form">
-          <Form.Item label="How are these content elements related?" className="relation-form-item">
+          <Form.Item label={t('buildBridge:relationLabel')} className="relation-form-item">
             <div className="relationship-row">
               {this.renderLinkPreview(pair.links[0])}
 
@@ -87,11 +91,11 @@ class CreateLinkComp extends React.Component {
                 {getFieldDecorator('relation', {
                   ...(pair.relation ? { initialValue: pair.relation } : {}),
                   rules: [
-                    { required: true, message: 'Please select a relationship between the two content elements' }
+                    { required: true, message: t('buildBridge:relationErrMsg') }
                   ]
                 })(
                   <Select
-                    placeholder="Choose a relationship"
+                    placeholder={t('buildBridge:relationPlaceholder')}
                     onChange={val => this.props.onUpdateField(val, 'relation')}
                   >
                     {this.state.relations.map(r => (
@@ -105,35 +109,35 @@ class CreateLinkComp extends React.Component {
             </div>
           </Form.Item>
 
-          <Form.Item label="What do you want to say about this bridge?" className="desc-form-item">
+          <Form.Item label={t('buildBridge:descLabel')} className="desc-form-item">
             {getFieldDecorator('desc', {
               initialValue: pair.desc,
               validateTrigger: ['onBlur'],
               rules: [
-                { required: true, message: 'Please input description' }
+                { required: true, message: t('buildBridge:descErrMsg') }
               ]
             })(
               <Input.TextArea
-                placeholder="Enter the Description for this Bridge"
+                placeholder={t('buildBridge:descPlaceholder')}
                 onChange={e => this.props.onUpdateField(e.target.value, 'desc')}
               />
             )}
           </Form.Item>
-          <Form.Item label="Tags">
+          <Form.Item label={t('tags')}>
             {getFieldDecorator('tags', {
               initialValue: pair.tags,
               validateTrigger: ['onBlur'],
               rules: [
                 {
                   required: true,
-                  message: 'Please input tags'
+                  message: t('tagsRequiredErrMsg')
                 },
                 {
                   validator: (rule, value, callback) => {
                     const parts = (value || '').split(',')
 
                     if (parts.length > 5) {
-                      const msg = 'Enter up to 5 tags separated by commas'
+                      const msg = t('tagsCountErrMsg')
                       return callback(msg)
                     }
 
@@ -143,7 +147,7 @@ class CreateLinkComp extends React.Component {
               ]
             })(
               <Input
-                placeholder="Enter up to 5 tags separated by commas"
+                placeholder={t('tagsPlaceholder')}
                 onChange={e => this.props.onUpdateField(e.target.value, 'tags')}
               />
             )}
@@ -157,7 +161,7 @@ class CreateLinkComp extends React.Component {
             className="post-button"
             onClick={this.onSubmit}
           >
-            POST IT!
+            {t('buildBridge:postIt')}
           </Button>
           <Button
             type="danger"
@@ -165,7 +169,7 @@ class CreateLinkComp extends React.Component {
             className="cancel-button"
             onClick={this.props.onCancel}
           >
-            Cancel
+            {t('cancel')}
           </Button>
         </div>
       </div>
@@ -173,4 +177,7 @@ class CreateLinkComp extends React.Component {
   }
 }
 
-export default Form.create()(CreateLinkComp)
+export default compose(
+  Form.create(),
+  translate(['common', 'buildBridge'])
+)(CreateLinkComp)

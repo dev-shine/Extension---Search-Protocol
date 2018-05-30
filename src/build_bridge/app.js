@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { Modal, Select, Form, Input, Button } from 'antd'
+import { translate } from 'react-i18next'
+
 import { notifyError, notifySuccess } from '../components/notification'
 import ipc from '../common/ipc/ipc_dynamic'
 import API from '../common/api/cs_api'
@@ -23,10 +25,12 @@ class App extends Component {
   }
 
   onClickSubmit = (data) => {
+    const { t } = this.props
+
     API.createBridge(data)
     .then(() => {
       ipc.ask('DONE')
-      notifySuccess('Successfully posted')
+      notifySuccess(t('successfullyPosted'))
       setTimeout(() => {
         this.onClickCancel()
       }, 1500)
@@ -61,4 +65,4 @@ class App extends Component {
   }
 }
 
-export default App
+export default translate(['common', 'buildBridge'])(App)

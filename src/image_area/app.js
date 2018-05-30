@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { Button } from 'antd'
+import { translate } from 'react-i18next'
+
 import { notifyError, notifySuccess } from '../components/notification'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import API from '../common/api/cs_api'
@@ -38,6 +40,7 @@ class App extends Component {
   }
 
   prepareLinkData = () => {
+    const { t }     = this.props
     const { existingImageAreas, image, cropRect } = this.state
     const totalArea = image.width * image.height
     const area      = cropRect.width * cropRect.height
@@ -65,7 +68,7 @@ class App extends Component {
       )
 
       if (hasAnyIntersect) {
-        errMsg = 'New area must not intersect with existing ones'
+        errMsg = t('selecteImageArea:intersectExistingErrMsg')
       }
     }
 
@@ -284,6 +287,8 @@ class App extends Component {
   }
 
   render () {
+    const { t } = this.props
+
     return (
       <div
         className="select-area-wrapper"
@@ -309,7 +314,7 @@ class App extends Component {
             className="save-button"
             onClick={this.onClickAnnotate}
           >
-            Annotate
+            {t('annotate')}
           </Button>
           <Button
             type="primary"
@@ -317,7 +322,7 @@ class App extends Component {
             className="create-bridge-button"
             onClick={this.onClickCreateBridge}
           >
-            Create Bridge
+            {t('createBridge')}
           </Button>
           {this.canBuildBridge() ? (
             <Button
@@ -326,7 +331,7 @@ class App extends Component {
               className="build-bridge-button"
               onClick={this.onClickBuildBridge}
             >
-              Build Bridge
+              {t('buildBridge')}
             </Button>
           ) : null}
           <Button
@@ -335,7 +340,7 @@ class App extends Component {
             className="cancel-button"
             onClick={this.onClickCancel}
           >
-            Cancel
+            {t('cancel')}
           </Button>
         </div>
       </div>
@@ -343,4 +348,4 @@ class App extends Component {
   }
 }
 
-export default App
+export default translate(['common', 'selecteImageArea'])(App)
