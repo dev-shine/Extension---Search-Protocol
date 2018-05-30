@@ -73,7 +73,7 @@ class App extends Component {
     const { t }     = this.props
     const relation  = this.state.relations.find(r => '' + r.id === '' + bridge.relation)
     const relField  = bridge.from !== currentElementId ? 'active_name' : 'passive_name'
-    const relStr    = relation ? (relation[relField].toUpperCase() + ' this piece') : 'unknown'
+    const relStr    = relation ? (relation[relField].toUpperCase()) : 'unknown'
 
     const cpartId   = bridge.from !== currentElementId ? bridge.from : bridge.to
     const cpart     = this.state.elementDict[cpartId]
