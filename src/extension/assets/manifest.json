@@ -2,8 +2,9 @@
   "manifest_version": 2,
 
   "name": "Bridgit",
-  "description": "Bridgit enables the user to make annotations on web sites and present supporting and opposing information from other web pages.",
+  "description": "__MSG_description__",
   "version": "0.1.0.0",
+  "default_locale": "en",
 
   "icons": {
     "128": "logo.png"
