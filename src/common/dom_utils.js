@@ -56,11 +56,17 @@ export const pageHeight = function (document) {
 }
 
 export const scrollLeft = function (document) {
-  return document.documentElement.scrollLeft
+  return Math.max(...[
+    document.documentElement.scrollLeft,
+    document.body ? document.body.scrollLeft : 0
+  ])
 }
 
 export const scrollTop = function (document) {
-  return document.documentElement.scrollTop
+  return Math.max(...[
+    document.documentElement.scrollTop,
+    document.body ? document.body.scrollTop : 0
+  ])
 }
 
 export const offset = function (dom) {
