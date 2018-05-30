@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators }  from 'redux'
 import { withRouter } from 'react-router-dom'
 import { Button, Input, Form, Icon, Alert } from 'antd'
+import { translate } from 'react-i18next'
 
 import * as actions from '../actions'
 import { compose } from '../../common/utils'
@@ -19,6 +20,8 @@ class __LoginForm extends React.Component {
   }
 
   handleSubmit = (e) => {
+    const { t } = this.props
+
     if (e) e.preventDefault()
 
     this.props.form.validateFieldsAndScroll((err, values) => {
@@ -38,7 +41,7 @@ class __LoginForm extends React.Component {
           this.setState({ isSubmitting: false })
           this.props.setUserInfo(data)
 
-          notifySuccess(`Successfully signed in. Welcome back`)
+          notifySuccess(t('successfullyLoggedIn'))
           setTimeout(() => {
             this.props.history.push('/')
           }, 1000)
@@ -54,6 +57,7 @@ class __LoginForm extends React.Component {
   }
 
   render () {
+    const { t } = this.props
     const { getFieldDecorator } = this.props.form;
     const { errMsg } = this.state
 
@@ -70,18 +74,18 @@ class __LoginForm extends React.Component {
             {getFieldDecorator('email', {
               validateTrigger: ['onBlur'],
               rules: [
-                { required: true, message: 'Please input your email' },
-                { type: 'email', message: 'invalid email' }
+                { required: true, message: t('loginRegister:emailRequiredErrMsg') },
+                { type: 'email', message: t('loginRegister:emailFormatErrMsg') }
               ]
             })(
-              <Input prefix={<Icon type="mail" style={{ fontSize: 13 }} />} placeholder="Email" />
+              <Input prefix={<Icon type="mail" style={{ fontSize: 13 }} />} placeholder={t('loginRegister:emailPlaceholder')} />
             )}
           </Form.Item>
           <Form.Item hasFeedback>
             {getFieldDecorator('password', {
-              rules: [{ required: true, message: 'Please input your Password' }]
+              rules: [{ required: true, message: t('loginRegister:passwordErrMsg') }]
             })(
-              <Input prefix={<Icon type="lock" style={{ fontSize: 13 }} />} type="password" placeholder="Password" />
+              <Input prefix={<Icon type="lock" style={{ fontSize: 13 }} />} type="password" placeholder={t('loginRegister:passwordPlaceholder')} />
             )}
           </Form.Item>
           <Form.Item>
@@ -92,7 +96,7 @@ class __LoginForm extends React.Component {
               className="login-form-button"
               loading={this.state.isSubmitting}
             >
-              Sign In
+              {t('loginRegister:login')}
             </Button>
           </Form.Item>
         </Form>
@@ -108,6 +112,7 @@ class __RegisterForm extends React.Component {
   }
 
   handleSubmit = (e) => {
+    const { t } = this.props
     if (e) e.preventDefault()
 
     this.props.form.validateFieldsAndScroll((err, values) => {
@@ -129,7 +134,7 @@ class __RegisterForm extends React.Component {
           this.setState({ isSubmitting: false })
           this.props.setUserInfo(data)
 
-          notifySuccess(`Successfully registered`)
+          notifySuccess(t('successfullyRegistered'))
           setTimeout(() => {
             this.props.history.push('/')
           }, 1000)
@@ -145,12 +150,13 @@ class __RegisterForm extends React.Component {
   }
 
   render () {
+    const { t } = this.props
     const { getFieldDecorator } = this.props.form;
     const { errMsg } = this.state
 
     return (
       <div className="register-wrapper">
-        <p className="hint">To start sharing with Bridgit, give us a little info.</p>
+        <p className="hint">{t('loginRegister:registerHint')}</p>
 
         {errMsg && errMsg.length ? (
           <div className="error-message">
@@ -162,28 +168,28 @@ class __RegisterForm extends React.Component {
           <Form.Item hasFeedback>
             {getFieldDecorator('name', {
               rules: [
-                { required: true, message: 'Please input your full name' }
+                { required: true, message: t('loginRegister:nameErrMsg') }
               ]
             })(
-              <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder="Full name" />
+              <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder={t('loginRegister:namePlaceholder')} />
             )}
           </Form.Item>
           <Form.Item hasFeedback>
             {getFieldDecorator('email', {
               validateTrigger: ['onBlur'],
               rules: [
-                { required: true, message: 'Please input your email' },
-                { type: 'email', message: 'invalid email' }
+                { required: true, message: t('loginRegister:emailRequiredErrMsg') },
+                { type: 'email', message: t('loginRegister:emailFormatErrMsg') }
               ]
             })(
-              <Input prefix={<Icon type="mail" style={{ fontSize: 13 }} />} placeholder="Email" />
+              <Input prefix={<Icon type="mail" style={{ fontSize: 13 }} />} placeholder={t('loginRegister:emailPlaceholder')} />
             )}
           </Form.Item>
           <Form.Item hasFeedback>
             {getFieldDecorator('password', {
-              rules: [{ required: true, message: 'Please input your Password' }]
+              rules: [{ required: true, message: t('loginRegister:passwordErrMsg') }]
             })(
-              <Input prefix={<Icon type="lock" style={{ fontSize: 13 }} />} type="password" placeholder="Password" />
+              <Input prefix={<Icon type="lock" style={{ fontSize: 13 }} />} type="password" placeholder={t('loginRegister:passwordPlaceholder')} />
             )}
           </Form.Item>
           <Form.Item>
@@ -195,7 +201,7 @@ class __RegisterForm extends React.Component {
                 className="register-form-button"
                 loading={this.state.isSubmitting}
               >
-                Register
+                {t('loginRegister:register')}
               </Button>
               <Button
                 type="primary"
@@ -203,7 +209,7 @@ class __RegisterForm extends React.Component {
                 className="sign-in-with-google"
                 onClick={() => API.openSocialLogin('google')}
               >
-                Sign in with Google
+                {t('loginRegister:signInWithGoogle')}
               </Button>
             </div>
           </Form.Item>
@@ -218,6 +224,7 @@ const decorate = klass => compose(
     state => ({ userInfo: state.userInfo }),
     dispatch => bindActionCreators({...actions}, dispatch)
   ),
+  translate(['common', 'loginRegister']),
   withRouter,
   Form.create()
 )(klass)
@@ -255,6 +262,7 @@ class Login extends React.Component {
   }
 
   render () {
+    const { t } = this.props
     const { tabName } = this.state
 
     return (
@@ -264,10 +272,10 @@ class Login extends React.Component {
           activeName={tabName}
           onTabChange={name => {}}
         >
-          <Tab.Pane name="register" tab="Register">
+          <Tab.Pane name="register" tab={t('loginRegister:register')}>
             {this.renderRegisterForm()}
           </Tab.Pane>
-          <Tab.Pane name="login" tab="Sign In">
+          <Tab.Pane name="login" tab={t('loginRegister:login')}>
             {this.renderLoginForm()}
           </Tab.Pane>
         </Tab>
@@ -281,5 +289,6 @@ export default compose(
     state => ({ userInfo: state.userInfo }),
     dispatch => bindActionCreators({...actions}, dispatch)
   ),
+  translate(['common', 'loginRegister']),
   withRouter
 )(Login)

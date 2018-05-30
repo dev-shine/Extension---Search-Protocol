@@ -21,6 +21,7 @@ export default {
     successfullyPosted: '发布成功',
     successfullySaved: '保存成功',
     successfullyLoggedIn: '登录成功',
+    successfullyRegistered: '注册成功',
     tags: '标签',
     tagsRequiredErrMsg: '请输入标签',
     tagsCountErrMsg: '请以英文逗号分隔标签，最多输入5个',
@@ -64,5 +65,19 @@ export default {
     showTipsAfterCreateBridge: `在点击“开始关联”后显示提示`,
     showWithinInches: '鼠标距离元素 X 英寸时触发展现',
     showActiveItemsForSeconds: '默认展现元素 X 秒'
+  },
+  loginRegister: {
+    login: '登录',
+    register: '注册',
+    email: '邮箱',
+    emailRequiredErrMsg: '请输入邮箱',
+    emailFormatErrMsg: '邮箱格式错误',
+    emailPlaceholder: 'Email',
+    passwordErrMsg: '请输入密码',
+    passwordPlaceholder: '密码',
+    registerHint: '为了更好地使用 Bridgit，请让我们多了解您一些',
+    nameErrMsg: '请输入您的姓名',
+    namePlaceholder: '姓名',
+    signInWithGoogle: '用 Google 账号登录'
   }
 }

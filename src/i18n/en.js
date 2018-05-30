@@ -21,6 +21,7 @@ export default {
     successfullyPosted: 'Successfully posted',
     successfullySaved: 'Successfully saved',
     successfullyLoggedIn: 'successfully logged in',
+    successfullyRegistered: 'successfully registered',
     tags: 'Tags',
     tagsRequiredErrMsg: 'Please input tags',
     tagsCountErrMsg: 'Enter up to 5 tags separated by commas',
@@ -64,5 +65,19 @@ export default {
     showTipsAfterCreateBridge: `Show tips after 'create bridge'`,
     showWithinInches: 'Show if cursor is within X inches',
     showActiveItemsForSeconds: 'Display active items for Y seconds'
+  },
+  loginRegister: {
+    login: 'Sign In',
+    register: 'Register',
+    email: 'Email',
+    emailRequiredErrMsg: 'Please input email',
+    emailFormatErrMsg: 'invalid email',
+    emailPlaceholder: 'Email',
+    passwordErrMsg: 'Please input your Password',
+    passwordPlaceholder: 'Password',
+    registerHint: 'To start sharing with Bridgit, give us a little info.',
+    nameErrMsg: 'Please input your full name',
+    namePlaceholder: 'Full name',
+    signInWithGoogle: 'Sign in with Google'
   }
 }
