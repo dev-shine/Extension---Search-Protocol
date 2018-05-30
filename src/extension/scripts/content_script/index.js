@@ -120,6 +120,7 @@ const init = () => {
 
   API.getUserSettings()
   .then(settings => {
+    i18n.changeLanguage(settings.language)
     setStateWithSettings(settings)
 
     if (settings.showOnLoad) {
@@ -162,6 +163,11 @@ const onBgRequest = (cmd, args) => {
   log('onBgRequest', cmd, args)
 
   switch (cmd) {
+    case 'CHANGE_LANGUAGE': {
+      i18n.changeLanguage(args)
+      return true
+    }
+
     case 'SHOW_LINKS': {
       log('got show links', args)
 

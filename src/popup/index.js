@@ -6,7 +6,7 @@ import App from './app'
 import { Provider, createStore, reducer } from './redux'
 import { setUserInfo, setLoaded, setLinkPair } from './actions'
 import API from '../common/api/popup_api'
-import '../i18n'
+import i18n from '../i18n'
 
 const store = createStore(
   reducer,
@@ -23,6 +23,11 @@ const render = Component =>
     </Provider>,
     rootEl
   );
+
+API.getUserSettings()
+.then(settings => {
+  i18n.changeLanguage(settings.language)
+})
 
 // Note: have to delay the render on loading popup.html, there are chances that
 // popup window has a wrong size (could be a thin strip).

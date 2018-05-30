@@ -1,4 +1,6 @@
 export default {
+  id: 'en',
+  name: 'English',
   common: {
     welcome: 'Welcome',
     logout: 'Log out',
@@ -57,6 +59,7 @@ export default {
   },
   settings: {
     settings: 'Settings',
+    language: 'Language',
     enableBridgit: 'Enable Bridgit',
     showTipsAfterCreateBridge: `Show tips after 'create bridge'`,
     showWithinInches: 'Show if cursor is within X inches',
