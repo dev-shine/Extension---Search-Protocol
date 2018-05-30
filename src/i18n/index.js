@@ -8,7 +8,6 @@ i18n
   .use(LanguageDetector)
   .use(reactI18nextModule)
   .init({
-    lng: 'zh',
     fallbackLng: 'en',
     defaultNS: 'common',
     resources: {
