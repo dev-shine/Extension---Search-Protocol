@@ -1,0 +1,65 @@
+export default {
+  common: {
+    welcome: '欢迎',
+    logout: '退出',
+    allRightsReserved: '版权所有',
+    termsConditions: '隐私条款',
+    aboutUs: '关于我们',
+    relation: '关系',
+    link: '链接',
+    notes: '标注',
+    bridges: '关联',
+    close: '关闭',
+    save: '保存',
+    cancel: '取消',
+    annotate: '标注',
+    createBridge: '开始关联',
+    buildBridge: '完成关联',
+    selectImageArea: '选择图片区域',
+    successfullyPosted: '发布成功',
+    successfullySaved: '保存成功',
+    successfullyLoggedIn: '登录成功',
+    tags: '标签',
+    tagsRequiredErrMsg: '请输入标签',
+    tagsCountErrMsg: '请以英文逗号分隔标签，最多输入5个',
+    tagsPlaceholder: '请以英文逗号分隔标签，最多输入5个'
+  },
+  afterCreateBridge: {
+    awesomeText: `赞！你已选择了第一个关联项，接下来只需再选择另一个内容元素，即可完成关联`,
+    pleaseText: `请在以下操作中选择一个来完成:`,
+    callToAction1: `选择一个新的内容元素，点击鼠标右键，选择“完成关联”`,
+    callToAction2: `将鼠标移至已有内容元素的圆形数字标签上，在出现的菜单中，点击“完成关联”`,
+    hideThisMessage: `不再显示此提示`
+  },
+  buildBridge: {
+    relationLabel: '两者的关系是?',
+    relationErrMsg: '请选择这两个内容元素的关系',
+    relationPlaceholder: '请选择关系',
+    descLabel: '如何描述这组关联？',
+    descErrMsg: '请输入描述',
+    descPlaceholder: '输入对此关联的描述',
+    postIt: '发布！'
+  },
+  selecteImageArea: {
+    intersectExistingErrMsg: '新区域不能与现有区域存在部分交集，只可相互包含或完全独立'
+  },
+  createNote: {
+    title: '标题',
+    titleErrMsg: '请输入标题',
+    titlePlaceholder: '输入此内容元素的标题',
+    note: '笔记',
+    noteErrMsg: '请输入笔记',
+    notePlaceholder: '输入对此内容元素的笔记'
+  },
+  relatedElements: {
+    source: '来源',
+    relatedElements: '相关内容'
+  },
+  settings: {
+    settings: '设置',
+    enableBridgit: '启用 Bridgit',
+    showTipsAfterCreateBridge: `在点击“开始关联”后显示提示`,
+    showWithinInches: '鼠标距离元素 X 英寸时触发展现',
+    showActiveItemsForSeconds: '默认展现元素 X 秒'
+  }
+}
