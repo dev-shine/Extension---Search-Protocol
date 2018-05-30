@@ -22,6 +22,7 @@ import { parseRangeJSON } from '../../../common/selection'
 import { or, setIn, uid, noop, isTwoRangesIntersecting, isLatinCharacter } from '../../../common/utils'
 import { isElementEqual } from '../../../common/models/element_model'
 import config from '../../../config'
+import i18n from '../../../i18n'
 
 let state = {
   nearDistanceInInch:   1,
@@ -245,16 +246,16 @@ const commonMenuOptions = {
   }
 }
 
-const commonMenuItems = {
+const commonMenuItems = () => ({
   annotate: {
-    text: 'Annotate',
+    text: i18n.t('annotate'),
     onClick: (e, { linkData }) => {
       log('annotate menu clicked', linkData)
       annotate({ linkData })
     }
   },
   createBridge: {
-    text: 'Create Bridge',
+    text: i18n.t('createBridge'),
     onClick: (e, { linkData }) => {
       API.clearLinks()
       .then(() => API.addLink(linkData))
@@ -263,7 +264,7 @@ const commonMenuItems = {
     }
   },
   buildBridge: {
-    text: 'Build Bridge',
+    text: i18n.t('buildBridge'),
     onClick: (e, { linkData }) => {
       API.buildLink(linkData)
       .then(() => buildBridge())
@@ -271,12 +272,12 @@ const commonMenuItems = {
     }
   },
   selectImageArea: {
-    text: 'Select Area',
+    text: i18n.t('selectImageArea'),
     onClick: (e, { linkData, $img }) => {
       selectImageArea({ linkData, $img })
     }
   }
-}
+})
 
 const isSelectionRangeValid = (range) => {
   const { elements = [] } = state.currentPage
@@ -330,8 +331,8 @@ const initContextMenus = () => {
         }
 
         const menus = [
-          commonMenuItems.annotate,
-          commonMenuItems.createBridge
+          commonMenuItems().annotate,
+          commonMenuItems().createBridge
         ]
 
         // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
@@ -339,7 +340,7 @@ const initContextMenus = () => {
           const savedItem     = linkPairStatus === LINK_PAIR_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
 
           if (!isElementEqual(savedItem, menuExtra.linkData)) {
-            menus.push(commonMenuItems.buildBridge)
+            menus.push(commonMenuItems().buildBridge)
           }
         }
 
@@ -351,9 +352,9 @@ const initContextMenus = () => {
       id: '__on_image__',
       menus: (menuExtra) => {
         const menus = [
-          commonMenuItems.selectImageArea,
-          commonMenuItems.annotate,
-          commonMenuItems.createBridge
+          commonMenuItems().selectImageArea,
+          commonMenuItems().annotate,
+          commonMenuItems().createBridge
         ]
 
         // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
@@ -361,7 +362,7 @@ const initContextMenus = () => {
           const savedItem     = linkPairStatus === LINK_PAIR_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
 
           if (!isElementEqual(savedItem, menuExtra.linkData)) {
-            menus.push(commonMenuItems.buildBridge)
+            menus.push(commonMenuItems().buildBridge)
           }
         }
 
@@ -407,8 +408,8 @@ const addSubmenuForBadge = (link) => {
             id: uid(),
             menus: (menuExtra) => {
               const menus = [
-                commonMenuItems.annotate,
-                commonMenuItems.createBridge
+                commonMenuItems().annotate,
+                commonMenuItems().createBridge
               ]
 
               // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
@@ -416,7 +417,7 @@ const addSubmenuForBadge = (link) => {
                 const savedItem     = linkPairStatus === LINK_PAIR_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
 
                 if (!isElementEqual(savedItem, menuExtra.linkData)) {
-                  menus.push(commonMenuItems.buildBridge)
+                  menus.push(commonMenuItems().buildBridge)
                 }
               }
 

@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { Modal, Select, Form, Input, Collapse } from 'antd'
+import { translate } from 'react-i18next'
+
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import { flatten } from '../common/utils'
 import API from '../common/api/cs_api'
@@ -68,6 +70,7 @@ class App extends Component {
   }
 
   renderBridge (bridge, currentElementId, key) {
+    const { t }     = this.props
     const relation  = this.state.relations.find(r => '' + r.id === '' + bridge.relation)
     const relField  = bridge.from !== currentElementId ? 'active_name' : 'passive_name'
     const relStr    = relation ? (relation[relField].toUpperCase() + ' this piece') : 'unknown'
@@ -100,15 +103,15 @@ class App extends Component {
           <table className="the-table">
             <tbody>
               <tr>
-                <td>Relation</td>
+                <td>{t('relation')}</td>
                 <td>{relStr}</td>
               </tr>
               <tr>
-                <td>Source</td>
+                <td>{t('relatedElements:source')}</td>
                 <td>{source}</td>
               </tr>
               <tr>
-                <td>Link</td>
+                <td>{t('link')}</td>
                 <td>
                   <a target="_blank" href={cpart.url} onClick={onClickLink}>
                     {cpart.url || '[URL deleted]'}
@@ -163,13 +166,14 @@ class App extends Component {
   }
 
   renderB () {
+    const { t } = this.props
     const { bridges, annotations, elementId } = this.state
 
     return (
       <Collapse defaultActiveKey={['notes', 'bridges']}>
         <Collapse.Panel
           key="notes"
-          header={`Notes (${annotations.length})`}
+          header={`${t('notes')} (${annotations.length})`}
           disabled={annotations.length === 0}
         >
           {annotations.map((item, index) => (
@@ -178,7 +182,7 @@ class App extends Component {
         </Collapse.Panel>
         <Collapse.Panel
           key="bridges"
-          header={`Bridges (${bridges.length})`}
+          header={`${t('bridges')} (${bridges.length})`}
           disabled={bridges.length === 0}
         >
           {bridges.map((item, index) => (
@@ -190,11 +194,13 @@ class App extends Component {
   }
 
   render () {
+    const { t } = this.props
+
     if (!this.state.ready)  return <div>Loading...</div>
 
     return (
       <Modal
-        title="Related Elements"
+        title={t('relatedElements:relatedElements')}
         visible={true}
         width={700}
         className="links-modal"
@@ -207,4 +213,4 @@ class App extends Component {
   }
 }
 
-export default App
+export default translate(['common', 'relatedElements'])(App)

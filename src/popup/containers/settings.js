@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { bindActionCreators }  from 'redux'
 import { Checkbox, Form, InputNumber, Collapse } from 'antd'
+import { translate } from 'react-i18next'
 
 import './settings.scss'
 import * as actions from '../actions'
@@ -35,20 +36,22 @@ class Settings extends React.Component {
   }
 
   render () {
+    const { t } = this.props
+
     return (
       <div className="settings-page">
         <div className="logo-banner">
           <img src="./img/logo_banner.jpg" />
         </div>
         <Collapse>
-          <Collapse.Panel key="settings" header="Settings">
+          <Collapse.Panel key="settings" header={t('settings')}>
             <Form className="settings-form">
               <Form.Item>
                 <Checkbox
                   onChange={(e) => this.onChangeSettings('showOnLoad', e.target.checked)}
                   checked={this.state.settings.showOnLoad}
                 >
-                  Enable Bridgit
+                  {t('enableBridgit')}
                 </Checkbox>
               </Form.Item>
               <Form.Item>
@@ -56,10 +59,10 @@ class Settings extends React.Component {
                   onChange={(e) => this.onChangeSettings('hideAfterCreateMsg', !e.target.checked)}
                   checked={!this.state.settings.hideAfterCreateMsg}
                 >
-                  Show tips after 'create bridge'
+                  {t('showTipsAfterCreateBridge')}
                 </Checkbox>
               </Form.Item>
-              <Form.Item label="Show if cursor is within X inches">
+              <Form.Item label={t('showWithinInches')}>
                 <InputNumber
                   onChange={value => this.onChangeSettings('nearDistanceInInch', parseFloat(value))}
                   value={this.state.settings.nearDistanceInInch || 0}
@@ -68,7 +71,7 @@ class Settings extends React.Component {
                   step={0.1}
                 />
               </Form.Item>
-              <Form.Item label="Display active items for Y seconds">
+              <Form.Item label={t('showActiveItemsForSeconds')}>
                 <InputNumber
                   onChange={value => this.onChangeSettings('nearVisibleDuration', parseFloat(value))}
                   value={this.state.settings.nearVisibleDuration || 0}
@@ -84,4 +87,4 @@ class Settings extends React.Component {
   }
 }
 
-export default Settings
+export default translate('settings')(Settings)

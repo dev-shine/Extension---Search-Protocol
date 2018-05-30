@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { Checkbox, Button } from 'antd'
+import { translate } from 'react-i18next'
+
 import ipc from '../common/ipc/ipc_dynamic'
 import API from '../common/api/cs_api'
 import log from '../common/log'
@@ -11,16 +13,18 @@ class App extends Component {
   }
 
   render () {
+    const { t } = this.props
+
     return (
       <div className="msg-wrapper">
         <p>
-          Awesome! You've selected the content element that is one side of the bridge. Now you need to select the content element that will be the other side of the bridge.
+          {t('afterCreateBridge:awesomeText')}
         </p>
 
         <p>
-          <b>Please do one of the following:</b>
-          <br/>a) Select a new content element, right click, and select "Build Bridge"
-          <br/>b) Move to the circular indicator associated with an existing content element and select "Build Bridge"
+          <b>{t('afterCreateBridge:pleaseText')}</b>
+          <br/>a) {t('afterCreateBridge:callToAction1')}
+          <br/>b) {t('afterCreateBridge:callToAction2')}
         </p>
 
         <p className="actions">
@@ -35,11 +39,11 @@ class App extends Component {
             }}
             checked={this.state.hideAfterCreateMsg}
           >
-            Do not show this message again
+            {t('afterCreateBridge:hideThisMessage')}
           </Checkbox>
 
           <Button type="primary" size="large" onClick={() => ipc.ask('CLOSE')}>
-            Close
+            {t('close')}
           </Button>
         </p>
       </div>
@@ -47,4 +51,4 @@ class App extends Component {
   }
 }
 
-export default App
+export default translate(['common', 'afterCreateBridge'])(App)

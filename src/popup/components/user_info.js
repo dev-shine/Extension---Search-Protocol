@@ -3,6 +3,7 @@ import { withRouter, Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { bindActionCreators }  from 'redux'
 import { Icon } from 'antd'
+import { translate } from 'react-i18next'
 
 import * as actions from '../actions'
 import { compose } from '../../common/utils'
@@ -16,13 +17,13 @@ class UserInfo extends React.Component {
   }
 
   render () {
-    const { userInfo } = this.props
+    const { userInfo, t } = this.props
     if (!userInfo)  return null
 
     return (
       <div className="user-info">
         <div className="user-name-box">
-          <span className="welcome">Welcome:</span>
+          <span className="welcome">{t('welcome')}:</span>
           <span className="user-name">{userInfo.name}</span>
         </div>
         <div className="actions">
@@ -34,7 +35,7 @@ class UserInfo extends React.Component {
             role="button"
             onClick={this.onClickLogout}
           >
-            Logout
+            {t('logout')}
           </div>
         </div>
 
@@ -48,5 +49,6 @@ export default compose(
     state => ({ userInfo: state.userInfo }),
     dispatch => bindActionCreators({...actions}, dispatch)
   ),
+  translate('common'),
   withRouter
 )(UserInfo)

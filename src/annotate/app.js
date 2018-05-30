@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
 import { Modal, Select, Form, Input, Button } from 'antd'
+import { translate } from 'react-i18next'
+
 import { notifyError, notifySuccess } from '../components/notification'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import API from '../common/api/cs_iframe_api'
+import { compose } from '../common/utils'
 import './app.scss'
 
 const ipc = ipcForIframe()
@@ -13,6 +16,8 @@ class App extends Component {
   }
 
   onClickSubmit = () => {
+    const { t } = this.props
+
     this.props.form.validateFields((err, values) => {
       if (err)  return
 
@@ -31,7 +36,7 @@ class App extends Component {
             id: annotation.target
           }
         })
-        notifySuccess('Successfully saved')
+        notifySuccess(t('successfullySaved'))
         setTimeout(() => this.onClickCancel(), 1500)
       })
       .catch(e => {
@@ -63,52 +68,53 @@ class App extends Component {
   }
 
   render () {
+    const { t } = this.props
     const { getFieldDecorator } = this.props.form
 
     return (
       <div className="annotation-wrapper">
         <Form>
-          <Form.Item label="Title">
+          <Form.Item label={t('createNote:title')}>
             {getFieldDecorator('title', {
               validateTrigger: ['onBlur'],
               rules: [
-                { required: true, message: 'Please input title' }
+                { required: true, message: t('createNote:titleErrMsg') }
               ]
             })(
               <Input
-                placeholder="Enter Title for this content element"
+                placeholder={t('createNote:titlePlaceholder')}
                 onChange={e => this.onUpdateField(e.target.value, 'title')}
               />
             )}
           </Form.Item>
-          <Form.Item label="Note">
+          <Form.Item label={t('createNote:note')}>
             {getFieldDecorator('desc', {
               validateTrigger: ['onBlur'],
               rules: [
-                { required: true, message: 'Please enter the text of your Note here' }
+                { required: true, message: t('createNote:noteErrMsg') }
               ]
             })(
               <Input.TextArea
                 rows={4}
-                placeholder="Enter Note for this content"
+                placeholder={t('createNote:notePlaceholder')}
                 onChange={e => this.onUpdateField(e.target.value, 'desc')}
               />
             )}
           </Form.Item>
-          <Form.Item label="Tags">
+          <Form.Item label={t('tags')}>
             {getFieldDecorator('tags', {
               validateTrigger: ['onBlur'],
               rules: [
                 {
                   required: true,
-                  message: 'Please input tags'
+                  message: t('tagsRequiredErrMsg')
                 },
                 {
                   validator: (rule, value, callback) => {
                     const parts = value.split(',')
 
                     if (parts.length > 5) {
-                      const msg = 'Enter up to 5 tags separated by commas'
+                      const msg = t('tagsCountErrMsg')
                       return callback(msg)
                     }
 
@@ -118,7 +124,7 @@ class App extends Component {
               ]
             })(
               <Input
-                placeholder="Enter up to 5 tags separated by commas"
+                placeholder={t('tagsPlaceholder')}
                 onChange={e => this.onUpdateField(e.target.value, 'tags')}
               />
             )}
@@ -130,7 +136,7 @@ class App extends Component {
               className="save-button"
               onClick={this.onClickSubmit}
             >
-              Save
+              {t('save')}
             </Button>
             <Button
               type="danger"
@@ -138,7 +144,7 @@ class App extends Component {
               className="cancel-button"
               onClick={this.onClickCancel}
             >
-              Cancel
+              {t('cancel')}
             </Button>
           </div>
         </Form>
@@ -147,4 +153,7 @@ class App extends Component {
   }
 }
 
-export default Form.create()(App)
+export default compose(
+  Form.create(),
+  translate(['common', 'createNote'])
+)(App)
