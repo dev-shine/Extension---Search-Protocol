@@ -93,7 +93,13 @@ module.exports = {
           return JSON.stringify(manifest, null, 2)
         }
       }
-    ])
+    ]),
+    new webpack.DefinePlugin({
+      '__DEVELOPMENT__': JSON.stringify(process.env.NODE_ENV !== 'production'),
+      'process.env': {
+        NODE_ENV: process.env.NODE_ENV === 'production' ? '"production"' : '"development"'
+      }
+    })
   ],
   devtool: 'inline-source-map'
 };
@@ -101,11 +107,6 @@ module.exports = {
 if (process.env.NODE_ENV === 'production') {
   delete module.exports.devtool
   module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
-    }),
     new webpack.LoaderOptionsPlugin({
       minimize: true
     })
