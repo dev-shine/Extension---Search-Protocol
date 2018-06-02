@@ -19,7 +19,7 @@ import {
 import { MouseReveal } from './mouse_reveal'
 import { showLinks, showOneLink, showBridgeCount, showHyperLinkBadge } from './show_bridges'
 import { parseRangeJSON } from '../../../common/selection'
-import { or, setIn, uid, noop, isTwoRangesIntersecting, isLatinCharacter, unique, normalizeUrl, objMap } from '../../../common/utils'
+import { or, setIn, uid, noop, isTwoRangesIntersecting, isLatinCharacter, unique, normalizeUrl, objMap, until } from '../../../common/utils'
 import { isElementEqual } from '../../../common/models/element_model'
 import config from '../../../config'
 import i18n from '../../../i18n'
@@ -240,25 +240,34 @@ const onBgRequest = (cmd, args) => {
 
     case 'HIGHLIGHT_ELEMENT': {
       const { element } = args
-      let $el = getElementByXPath(element.locator || element.start.locator)
 
-      if ($el.nodeType === 3) {
-        $el = $el.parentNode
-      }
+      until('element', () => {
+        let $el = getElementByXPath(element.locator || element.start.locator)
 
-      $el.scrollIntoView({ block: 'center' })
+        if ($el && $el.nodeType === 3) {
+          $el = $el.parentNode
+        }
 
-      setTimeout(() => {
-        const linkAPI = showOneLink({
-          link:       element,
-          color:      'green',
-          needBadge:  false
-        })
+        return {
+          pass: $el,
+          result: $el
+        }
+      }, 500, 10000)
+      .then($el => {
+        $el.scrollIntoView({ block: 'center' })
 
         setTimeout(() => {
-          linkAPI.destroy()
-        }, 2000)
-      }, 1000)
+          const linkAPI = showOneLink({
+            link:       element,
+            color:      'green',
+            needBadge:  false
+          })
+
+          setTimeout(() => {
+            linkAPI.destroy()
+          }, 2000)
+        }, 1000)
+      })
 
       return true
     }

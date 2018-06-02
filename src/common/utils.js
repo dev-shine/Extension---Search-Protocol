@@ -198,11 +198,13 @@ export const liveBuild = ({ bindEvent, unbindEvent, getFuse, isEqual, onFuseChan
   let api  = initial ? onFuseChange(fuse) : null
 
   const listener = throttle(e => {
-    const newFuse = getFuse()
-    if (isEqual(newFuse, fuse)) return
+    try {
+      const newFuse = getFuse()
+      if (isEqual(newFuse, fuse)) return
 
-    fuse  = newFuse
-    api   = onFuseChange(fuse, api)
+      fuse  = newFuse
+      api   = onFuseChange(fuse, api)
+    } catch (e) {}
   }, 200)
 
   bindEvent(listener)
