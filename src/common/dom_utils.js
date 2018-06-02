@@ -22,11 +22,13 @@ export const pixel = function (num) {
 
 // Reference: http://ryanve.com/lab/dimensions/
 export const clientWidth = function (document) {
-  return document.documentElement.clientWidth
+  return window.innerWidth
+  // return document.documentElement.clientWidth
 }
 
 export const clientHeight = function (document) {
-  return document.documentElement.clientHeight
+  return window.innerHeight
+  // return document.documentElement.clientHeight
 }
 
 export const pageWidth = function (document) {
