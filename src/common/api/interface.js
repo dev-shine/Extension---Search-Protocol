@@ -29,6 +29,7 @@ export const methods = [
   'createAnnotation',
   'createBridge',
   'annotationsAndBridgesByUrl',
+  'annotationsAndBridgesByUrls',
   'loadElementsByIds',
   'clearAllData',
 

@@ -1,6 +1,6 @@
 import storage from '../storage'
 import { encodePair, decodePair } from '../models/local_annotation_model'
-import { pick, unpick, dataURItoBlob } from '../utils'
+import { pick, unpick, dataURItoBlob, objMap } from '../utils'
 import log from '../log'
 import config from '../../config'
 import jwtRequest from '../jwt_request'
@@ -12,6 +12,8 @@ import { withCache } from '../function_cache';
 export const apiUrl = (path) => `${config.api.base}${/^\//.test(path) ? path : ('/' + path)}`
 
 const onApiError = (e) => {
+  log.error(e.stack)
+  debugger
   let errMessage
 
   if (!errMessage && e.response && e.response.body && e.response.body.message) {
@@ -237,4 +239,15 @@ export const annotationsAndBridgesByUrl = wrap((url) => {
     bridges:      data.bridges.map(decodeBridge),
     annotations:  data.notes.map(decodeNote)
   })
+})
+
+export const annotationsAndBridgesByUrls = wrap((urls) => {
+  return jwtRequest.post(apiUrl('/search/pages'))
+  .send({ 'urls': urls })
+}, {
+  post: (pages) => objMap(data => ({
+    elements:     data.elements.map(decodeElement),
+    bridges:      data.bridges.map(decodeBridge),
+    annotations:  data.notes.map(decodeNote)
+  }), pages)
 })

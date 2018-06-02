@@ -172,6 +172,27 @@ export const objMap = (fn, obj) => {
   }, {})
 }
 
+export const unique = (list) => {
+  const cache   = {}
+  const result  = []
+
+  for (let i = 0, len = list.length; i < len; i++) {
+    if (!cache[list[i]]) {
+      result.push(list[i])
+      cache[list[i]] = true
+    }
+  }
+
+  return result
+}
+
+export const normalizeUrl = (url, base) => {
+  if (/https?:\/\//.test(url))  return url
+
+  const urlObj = new URL(url, base)
+  return urlObj.href
+}
+
 export const liveBuild = ({ bindEvent, unbindEvent, getFuse, isEqual, onFuseChange, initial = true }) => {
   let fuse = initial ? getFuse() : null
   let api  = initial ? onFuseChange(fuse) : null

@@ -17,9 +17,9 @@ import {
   showMessage
 } from './common'
 import { MouseReveal } from './mouse_reveal'
-import { showLinks, showOneLink } from './show_bridges'
+import { showLinks, showOneLink, showBridgeCount, showHyperLinkBadge } from './show_bridges'
 import { parseRangeJSON } from '../../../common/selection'
-import { or, setIn, uid, noop, isTwoRangesIntersecting, isLatinCharacter } from '../../../common/utils'
+import { or, setIn, uid, noop, isTwoRangesIntersecting, isLatinCharacter, unique, normalizeUrl, objMap } from '../../../common/utils'
 import { isElementEqual } from '../../../common/models/element_model'
 import config from '../../../config'
 import i18n from '../../../i18n'
@@ -155,6 +155,38 @@ const tryShowBridges = () => {
   .then(data => {
     log('tryShowBridges got links', data)
     initLinks(data, url)
+  })
+  .catch(e => log.error(e.stack))
+
+  showHyperLinkBadges()
+}
+
+const showHyperLinkBadges = () => {
+  const $links  = Array.from(document.getElementsByTagName('a'))
+  const urlsObj = $links.reduce((prev, $el) => {
+    const url = normalizeUrl($el.getAttribute('href'), window.location.href)
+    if (!/https?/.test(url))  return prev
+
+    prev[url] = prev[url] || []
+    prev[url].push($el)
+    return prev
+  }, {})
+  const urls    = Object.keys(urlsObj)
+
+  API.annotationsAndBridgesByUrls(urls)
+  .then(result => {
+    objMap((data, url) => {
+      const count = data.bridges.length + data.annotations.length
+      if (count === 0)  return
+
+      return urlsObj[url].map($el => {
+        return showHyperLinkBadge({
+          $el,
+          url,
+          totalCount: '' + count
+        })
+      })
+    }, result)
   })
   .catch(e => log.error(e.stack))
 }
