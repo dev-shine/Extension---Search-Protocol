@@ -111,6 +111,75 @@ const commonShowAPI = ({ rects }) => {
   }
 }
 
+export const showHyperLinkBadge = ({ totalCount, url, $el }) => {
+  let timer
+
+  const liveBuildAPI = liveBuild({
+    bindEvent: (fn) => {
+      window.addEventListener('resize', fn)
+      window.addEventListener('scroll', fn)
+      timer = setInterval(fn, 2000)
+    },
+    unbindEvent: (fn) => {
+      window.removeEventListener('resize', fn)
+      window.removeEventListener('scroll', fn)
+      clearInterval(timer)
+    },
+    getFuse: () => {
+      const rect = $el.getBoundingClientRect()
+      return rect
+    },
+    isEqual: (r1, r2) => {
+      const encode = (r) => JSON.stringify(r)
+      return encode(r1) === encode(r2)
+    },
+    onFuseChange: (rect, oldAPI) => {
+      if (oldAPI) oldAPI.destroy()
+
+      const topRight  = {
+        top:  pixel(pageY(rect.top)),
+        left: pixel(pageX(rect.left + rect.width))
+      }
+      const badgeAPI  = showBridgeCount({
+        text:     totalCount,
+        position: topRight,
+        onClick:  () => { window.location.href = url }
+      })
+
+      const api = {
+        getBadgeContainer: () => {
+          return badgeAPI.$dom
+        },
+        show: () => {
+          badgeAPI.show()
+        },
+        hide: () => {
+          badgeAPI.hide()
+        },
+        destroy: () => {
+          badgeAPI.destroy()
+        }
+      }
+
+      return api
+    }
+  })
+
+  const api = ['getOverlayContainer', 'getBadgeContainer', 'getElement', 'show', 'hide', 'isInView', 'pointPosition'].reduce((prev, key) => {
+    prev[key] = (...args) => {
+      return liveBuildAPI.getAPI()[key](...args)
+    }
+    return prev
+  }, {})
+
+  api.destroy = () => {
+    liveBuildAPI.getAPI().destroy()
+    liveBuildAPI.destroy()
+  }
+
+  return api
+}
+
 export const showImage = ({ link, getLinksAPI, color, opacity, needBadge, onCreate }) => {
   const { bridges = [], annotations = [] } = link
   const totalCount  = bridges.length + annotations.length
