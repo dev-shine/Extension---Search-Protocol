@@ -595,6 +595,7 @@ const selectImageArea = ({ $img, linkData }) => {
     }
     const totalWidth  = Math.max(minWidth, width + extraWidth)
     const totalHeight = height + extraHeight
+
     const iframeAPI   = createIframeWithMask({
       onAsk,
       url:    Ext.extension.getURL('image_area.html'),

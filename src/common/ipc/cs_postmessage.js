@@ -131,6 +131,8 @@ export const createIframe = ({ url, width, height, onLoad, onAsk, onMsg, ipcTime
       resolve()
     })
     $iframe.src = url
+    $iframe.style.width   = width + 'px'
+    $iframe.style.height  = height + 'px'
     document.body.appendChild($iframe)
   })
   const removeOnMsg = onMessage(window, ({ cmd, args }) => {
