@@ -189,7 +189,7 @@ const API = {
     return Ext.tabs.create({ url: element.url })
     .then(tab => {
       log('showElementInNewTab got tab', tab)
-      return tabIpcStore.get(tab.id)
+      return tabIpcStore.get(tab.id, 10000)
     })
     .then(ipc => {
       log('showElementInNewTab got ipc', ipc)
