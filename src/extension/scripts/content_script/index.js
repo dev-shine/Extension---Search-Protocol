@@ -101,13 +101,15 @@ const bindSelectionEvent = () => {
   bindSelectionEnd((e, selection) => {
     if (hasPartialWords(selection)) {
       selection.collapse(null)
+      showMessage('Invalid Selection: Selection cannot include a partial word')
+      return
     }
 
     const range = selection.getRangeAt(0)
 
     if (!isSelectionRangeValid(range)) {
       selection.collapse(null)
-      showMessage('Invalid selection: Selection cannot include partial words')
+      showMessage(i18n.t('invalidSelectionCross'))
     }
   })
 }

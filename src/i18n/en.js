@@ -25,7 +25,8 @@ export default {
     tags: 'Tags',
     tagsRequiredErrMsg: 'Please input tags',
     tagsCountErrMsg: 'Enter up to 5 tags separated by commas',
-    tagsPlaceholder: 'Enter up to 5 tags separated by commas'
+    tagsPlaceholder: 'Enter up to 5 tags separated by commas',
+    invalidSelectionCross: 'Invalid Selection: Selection cannot cross content element boundaries'
   },
   afterCreateBridge: {
     awesomeText: `Awesome! You've selected the content element that is one side of the bridge. Now you need to select the content element that will be the other side of the bridge.`,

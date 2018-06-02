@@ -25,7 +25,8 @@ export default {
     tags: '标签',
     tagsRequiredErrMsg: '请输入标签',
     tagsCountErrMsg: '请以英文逗号分隔标签，最多输入5个',
-    tagsPlaceholder: '请以英文逗号分隔标签，最多输入5个'
+    tagsPlaceholder: '请以英文逗号分隔标签，最多输入5个',
+    invalidSelectionCross: '无效的选区：选区不能与已有选区交叉'
   },
   afterCreateBridge: {
     awesomeText: `赞！你已选择了第一个关联项，接下来只需再选择另一个内容元素，即可完成关联`,
