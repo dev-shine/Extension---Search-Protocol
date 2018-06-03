@@ -128,7 +128,8 @@ const bindSelectionEvent = () => {
 const getCsAPI = () => ({
   annotate,
   buildBridge,
-  selectImageArea
+  selectImageArea,
+  tryShowBridges
 })
 
 const init = () => {
@@ -532,7 +533,7 @@ const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}
           }
 
         case 'DONE':
-          tryShowBridges()
+          onSuccess(args)
           return true
 
         case 'CLOSE':
@@ -544,7 +545,6 @@ const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}
 
   setStyle(iframeAPI.$iframe, {
     position: 'fixed',
-    zIndex: 110000,
     left: '50%',
     top: '50%',
     transform: 'translate(-50%, -50%)',
@@ -637,7 +637,6 @@ const selectImageArea = ({ $img, linkData }) => {
 
     setStyle(iframeAPI.$iframe, {
       position:   'absolute',
-      zIndex:     110000,
       top:        pixel(scrollTop(document) + (clientHeight(document) - totalHeight) / 2),
       left:       pixel(scrollLeft(document) + (clientWidth(document) - totalWidth) / 2),
       border:     '1px solid #ccc'
@@ -705,7 +704,6 @@ const buildBridge = ({ onSuccess = tryShowBridges } = {}) => {
 
   setStyle(iframeAPI.$iframe, {
     position: 'fixed',
-    zIndex: 110000,
     left: '50%',
     top: '50%',
     transform: 'translate(-50%, -50%)',
@@ -733,7 +731,6 @@ const showMsgAfterCreateBridge = () => {
 
     setStyle(iframeAPI.$iframe, {
       position: 'fixed',
-      zIndex: 110000,
       left: '50%',
       top: '50%',
       transform: 'translate(-50%, -50%)',

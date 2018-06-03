@@ -413,7 +413,7 @@ export const showBridgeCount = ({ position, text, onClick }) => {
 }
 
 export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) => {
-  const iframeAPI = createIframe({
+  const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('related_elements.html'),
     width:  clientWidth(document),
     height: clientHeight(document),
@@ -421,7 +421,7 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
       log('showBridgesModal onAsk', cmd, args)
 
       switch (cmd) {
-        case 'INIT':
+        case 'INIT_RELATED_ELEMENTS':
           return Promise.all([
             API.loadRelations(),
             API.checkUser()
@@ -429,22 +429,27 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
           .then(([relations, userInfo]) => ({ userInfo, relations, bridges, annotations, elementId }))
 
         case 'RELOAD_BRIDGES_AND_NOTES': {
-          window.postMessage({
-            type: 'RELOAD_BRIDGES_AND_NOTES'
-          }, '*')
+          getCsAPI().tryShowBridges()
           return true
         }
 
         case 'EDIT_ANNOTATION': {
-          getCsAPI().annotate({
+          const csAPI = getCsAPI()
+
+          csAPI.annotate({
             mode:           C.UPSERT_MODE.EDIT,
             linkData:       args.annotation.target,
-            annotationData: args.annotation
+            annotationData: args.annotation,
+            onSuccess: ({ annotation }) => {
+              log('EDIT_ANNOTATION onSuccess', annotation)
+              iframeAPI.ask('UPDATE_ANNOTATION', { annotation })
+              csAPI.tryShowBridges()
+            }
           })
           return true
         }
 
-        case 'CLOSE':
+        case 'CLOSE_RELATED_ELEMENTS':
           modalAPI.destroy()
           return true
       }
@@ -461,7 +466,6 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
 
   setStyle(iframeAPI.$iframe, {
     position: 'fixed',
-    zIndex: 110000,
     left: '0',
     top: '0',
     right: '0',
