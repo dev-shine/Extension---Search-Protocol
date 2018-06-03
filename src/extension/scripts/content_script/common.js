@@ -663,32 +663,42 @@ export const createContextMenus = ({
   }
 }
 
-export const createIframeWithMask = (...args) => {
-  const iframeAPI = createIframe(...args)
-  const $mask = createEl({
-    style: {
-      position: 'fixed',
-      zIndex: 100000,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0
-    }
-  })
+export const createIframeWithMask = (function () {
+  let curZIndex = 110000
 
-  document.body.appendChild($mask)
+  return (...args) => {
+    const iframeAPI = createIframe(...args)
+    const $mask = createEl({
+      style: {
+        position: 'fixed',
+        zIndex: curZIndex,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0
+      }
+    })
 
-  const newAPI = {
-    ...iframeAPI,
-    destroy: () => {
-      $mask.remove()
-      iframeAPI.destroy()
+    document.body.appendChild($mask)
+
+    setStyle(iframeAPI.$iframe, {
+      zIndex: curZIndex + 1
+    })
+
+    curZIndex += 2
+
+    const newAPI = {
+      ...iframeAPI,
+      destroy: () => {
+        $mask.remove()
+        iframeAPI.destroy()
+      }
     }
+
+    return newAPI
   }
-
-  return newAPI
-}
+})()
 
 export const dataUrlOfImage = ($img) => {
   const p = /^http/.test($img.src)
