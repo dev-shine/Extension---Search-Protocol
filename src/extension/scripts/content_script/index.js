@@ -1,3 +1,4 @@
+import * as C from '../../../common/constant'
 import ipc from '../../../common/ipc/ipc_cs'
 import log from '../../../common/log'
 import Ext from '../../../common/web_extension'
@@ -493,7 +494,7 @@ const addSubmenuForBadge = (link) => {
   return destroySubMenuEffect
 }
 
-const annotate = ({ linkData = {}, onSuccess = tryShowBridges } = {}) => {
+const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, onSuccess = tryShowBridges } = {}) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('annotate.html'),
     width:  600,
@@ -504,10 +505,13 @@ const annotate = ({ linkData = {}, onSuccess = tryShowBridges } = {}) => {
       switch (cmd) {
         case 'INIT':
           return {
-            title: '',
-            desc: '',
-            tags: '',
-            ...linkData
+            mode,
+            linkData: {
+              title: '',
+              desc: '',
+              tags: '',
+              ...linkData
+            }
           }
 
         case 'DONE':

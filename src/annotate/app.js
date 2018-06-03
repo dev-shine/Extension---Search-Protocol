@@ -6,42 +6,70 @@ import { notifyError, notifySuccess } from '../components/notification'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import API from '../common/api/cs_iframe_api'
 import { compose } from '../common/utils'
+import * as C from '../common/constant'
 import './app.scss'
 
 const ipc = ipcForIframe()
 
 class App extends Component {
   state = {
-    linkData: null
+    mode:       C.UPSERT_MODE.ADD,
+    linkData:   null
+  }
+
+  onSubmitAdd = (values) => {
+    const { t } = this.props
+
+    API.createAnnotation({
+      ...values,
+      target: this.state.linkData
+    })
+    .then(annotation => {
+      ipc.ask('DONE')
+
+      // Note: record last annotation, it will add 'build bridge' menu item for further selection on text / image
+      API.recordLastAnnotation({
+        ...annotation,
+        target: {
+          ...this.state.linkData,
+          id: annotation.target
+        }
+      })
+      notifySuccess(t('successfullySaved'))
+      setTimeout(() => this.onClickCancel(), 1500)
+    })
+    .catch(e => {
+      notifyError(e.message)
+    })
+  }
+
+  onSubmitEdit = (values) => {
+    const { t } = this.props
+
+    API.updateAnnotation({
+      ...values,
+      target: this.state.linkData
+    })
+    .then(() => {
+      notifySuccess(t('successfullySaved'))
+      setTimeout(() => this.onClickCancel(), 1500)
+    })
+    .catch(e => {
+      notifyError(e.message)
+    })
   }
 
   onClickSubmit = () => {
-    const { t } = this.props
-
     this.props.form.validateFields((err, values) => {
       if (err)  return
 
-      API.createAnnotation({
-        ...values,
-        target: this.state.linkData
-      })
-      .then(annotation => {
-        ipc.ask('DONE')
+      switch (this.state.mode) {
+        case C.UPSERT_MODE.ADD:
+          return this.onSubmitAdd(values)
 
-        // Note: record last annotation, it will add 'build bridge' menu item for further selection on text / image
-        API.recordLastAnnotation({
-          ...annotation,
-          target: {
-            ...this.state.linkData,
-            id: annotation.target
-          }
-        })
-        notifySuccess(t('successfullySaved'))
-        setTimeout(() => this.onClickCancel(), 1500)
-      })
-      .catch(e => {
-        notifyError(e.message)
-      })
+        case C.UPSERT_MODE.EDIT:
+          return this.onSubmitEdit(values)
+      }
     })
   }
 
@@ -55,14 +83,14 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT')
-    .then(linkData => {
-      console.log('init got annotation', linkData)
+    .then(({ annotationData = {}, linkData, mode }) => {
+      console.log('init got annotation', linkData, mode)
       this.setState({ linkData })
 
       this.props.form.setFieldsValue({
-        title:  linkData.title || '',
-        desc:   linkData.desc || '',
-        tags:   linkData.desc || ''
+        title:  annotationData.title || '',
+        desc:   annotationData.desc || '',
+        tags:   annotationData.tags || ''
       })
     })
   }

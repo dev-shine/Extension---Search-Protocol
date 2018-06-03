@@ -10,3 +10,8 @@ export const URL_STATUS = mk([
   'DONE',
   'ONGOING'
 ])
+
+export const UPSERT_MODE = mk([
+  'EDIT',
+  'ADD'
+])
