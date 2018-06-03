@@ -408,7 +408,7 @@ export const showBridgeCount = ({ position, text, onClick }) => {
 
 export const showBridgesModal = ({ bridges, annotations, elementId }) => {
   const iframeAPI = createIframe({
-    url:    Ext.extension.getURL('links_modal.html'),
+    url:    Ext.extension.getURL('related_elements.html'),
     width:  clientWidth(document),
     height: clientHeight(document),
     onAsk: (cmd, args) => {
