@@ -12,6 +12,8 @@ export default {
     notes: 'Notes',
     bridges: 'Bridges',
     close: 'Close',
+    edit: 'Edit',
+    delete: 'Delete',
     save: 'Save',
     cancel: 'Cancel',
     annotate: 'Annotate',
@@ -22,6 +24,7 @@ export default {
     successfullySaved: 'Successfully saved',
     successfullyLoggedIn: 'successfully logged in',
     successfullyRegistered: 'successfully registered',
+    successfullyDeleted: 'successfully deleted',
     tags: 'Tags',
     tagsRequiredErrMsg: 'Please input tags',
     tagsCountErrMsg: 'Enter up to 5 tags separated by commas',
@@ -57,7 +60,8 @@ export default {
   },
   relatedElements: {
     source: 'Source',
-    relatedElements: 'Related Elements'
+    relatedElements: 'Related Elements',
+    sureToDeleteNote: 'Are you sure you want to Permanently delete this note?'
   },
   settings: {
     settings: 'Settings',

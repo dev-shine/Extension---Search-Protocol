@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Modal, Select, Form, Input, Collapse } from 'antd'
+import { Modal, Select, Form, Input, Collapse, Button, Popconfirm } from 'antd'
 import { translate } from 'react-i18next'
 
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
@@ -8,6 +8,7 @@ import API from '../common/api/cs_api'
 import log from '../common/log'
 import { TARGET_TYPE } from '../common/models/local_annotation_model'
 import ClampPre from '../components/clamp_pre'
+import { notifyError, notifySuccess } from '../components/notification'
 import './app.scss'
 
 const ipc = ipcForIframe()
@@ -23,13 +24,16 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT')
-    .then(({ relations, bridges, annotations, elementId }) => {
+    .then(({ relations, bridges, annotations, elementId, userInfo }) => {
+      log('INIT WITH', { relations, bridges, annotations, elementId, userInfo })
+
       const elementIds = [
         ...flatten(bridges.map(b => [b.from, b.to])),
         ...annotations.map(a => a.target)
       ]
 
       this.setState({
+        userInfo,
         relations,
         bridges,
         annotations,
@@ -53,18 +57,61 @@ class App extends Component {
     })
   }
 
-  renderAnnotation (annotation, key) {
-    const tags = annotation.tags.split(',').map(s => s.trim())
+  renderAnnotation (annotation, key, isEditable) {
+    const { t } = this.props
+    const tags  = annotation.tags.split(',').map(s => s.trim())
 
     return (
-      <div className="annotation-item" key={key}>
-        <h4>{annotation.title}</h4>
-        <ClampPre>{annotation.desc}</ClampPre>
-        <div className="tags">
-          {tags.map((tag, i) => (
-            <span key={i} className="tag-item">{tag}</span>
-          ))}
+      <div className="annotation-item base-item" key={key}>
+        <div className="item-content">
+          <h4>{annotation.title}</h4>
+          <ClampPre>{annotation.desc}</ClampPre>
+          <div className="tags">
+            {tags.map((tag, i) => (
+              <span key={i} className="tag-item">{tag}</span>
+            ))}
+          </div>
         </div>
+        {isEditable ? (
+          <div className="actions">
+            <Button
+              type="default"
+              onClick={e => {
+                ipc.ask('EDIT_ANNOTATION', { annotation })
+              }}
+            >
+              {t('edit')}
+            </Button>
+            <Popconfirm
+              onConfirm={() => {
+                API.deleteNote(annotation.id)
+                .then(() => {
+                  notifySuccess(t('successfullyDeleted'))
+
+                  // Note: tell page to reload bridges and notes
+                  ipc.ask('RELOAD_BRIDGES_AND_NOTES')
+
+                  // Note: update local data
+                  this.setState({
+                    annotations: this.state.annotations.filter(item => item.id !== annotation.id)
+                  })
+                })
+                .catch(e => {
+                  notifyError(e.message)
+                })
+              }}
+              title={t('relatedElements:sureToDeleteNote')}
+              okText={t('delete')}
+              cancelText={t('cancel')}
+            >
+              <Button
+                type="danger"
+              >
+                {t('delete')}
+              </Button>
+            </Popconfirm>
+          </div>
+        ) : null}
       </div>
     )
   }
@@ -95,7 +142,7 @@ class App extends Component {
     }
 
     return (
-      <div className="bridge-item" key={key}>
+      <div className="bridge-item base-item" key={key}>
         <a className="bridge-image" href={cpart.url} onClick={onClickLink}>
           <img src={cpart.image} />
         </a>
@@ -129,7 +176,7 @@ class App extends Component {
   }
 
   renderA () {
-    const { bridges, annotations, elementId } = this.state
+    const { bridges, annotations, elementId, userInfo } = this.state
     const sortList = (list) => {
       const getCreated = (item) => (item && item.created) ? parseInt(item.created, 10) : 0
       const compare = (a, b) => {
@@ -167,7 +214,8 @@ class App extends Component {
 
   renderB () {
     const { t } = this.props
-    const { bridges, annotations, elementId } = this.state
+    const { bridges, annotations, elementId, userInfo } = this.state
+    const canEdit = (item, userInfo) => userInfo.admin || item.created_by === userInfo.id
 
     return (
       <Collapse defaultActiveKey={['notes', 'bridges']}>
@@ -177,7 +225,7 @@ class App extends Component {
           disabled={annotations.length === 0}
         >
           {annotations.map((item, index) => (
-            this.renderAnnotation(item, index)
+            this.renderAnnotation(item, index, canEdit(item, userInfo))
           ))}
         </Collapse.Panel>
         <Collapse.Panel
@@ -186,7 +234,7 @@ class App extends Component {
           disabled={bridges.length === 0}
         >
           {bridges.map((item, index) => (
-            this.renderBridge(item, elementId, index)
+            this.renderBridge(item, elementId, index, canEdit(item, userInfo))
           ))}
         </Collapse.Panel>
       </Collapse>

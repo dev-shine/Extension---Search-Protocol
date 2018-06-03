@@ -6,6 +6,7 @@ import { notifyError, notifySuccess } from '../components/notification'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import API from '../common/api/cs_iframe_api'
 import { compose } from '../common/utils'
+import log from '../common/log'
 import * as C from '../common/constant'
 import './app.scss'
 
@@ -46,7 +47,12 @@ class App extends Component {
   onSubmitEdit = (values) => {
     const { t } = this.props
 
-    API.updateAnnotation({
+    log('onSubmitEdit', {
+      ...values,
+      target: this.state.linkData
+    })
+
+    API.updateNote(this.state.annotationData.id, {
       ...values,
       target: this.state.linkData
     })
@@ -84,8 +90,8 @@ class App extends Component {
   componentDidMount () {
     ipc.ask('INIT')
     .then(({ annotationData = {}, linkData, mode }) => {
-      console.log('init got annotation', linkData, mode)
-      this.setState({ linkData })
+      log('init got annotation', linkData, annotationData, mode)
+      this.setState({ linkData, annotationData, mode })
 
       this.props.form.setFieldsValue({
         title:  annotationData.title || '',
