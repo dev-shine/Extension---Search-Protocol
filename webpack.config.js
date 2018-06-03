@@ -14,7 +14,7 @@ module.exports = {
     inject:           './src/extension/scripts/inject.js',
     background:       './src/extension/scripts/bg.js',
     sign_in_google:   './src/extension/scripts/sign_in_google.js',
-    links_modal:      './src/links_modal/index.js',
+    related_elements: './src/related_elements/index.js',
     annotate:         './src/annotate/index.js',
     build_bridge:     './src/build_bridge/index.js',
     image_area:       './src/image_area/index.js',
