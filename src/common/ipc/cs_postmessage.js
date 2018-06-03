@@ -135,10 +135,15 @@ export const createIframe = ({ url, width, height, onLoad, onAsk, onMsg, ipcTime
     $iframe.style.height  = height + 'px'
     document.body.appendChild($iframe)
   })
+  const secret = Math.random()
+  const wrappedOnAsk = (cmd, args) => {
+    if (args.secret !== secret) return
+    if (!onAsk) return
+
+    onAsk(cmd, args.args)
+  }
   const removeOnMsg = onMessage(window, ({ cmd, args }) => {
-    if (onAsk) {
-      return onAsk(cmd, args)
-    }
+    return wrappedOnAsk(cmd, args)
   })
   const removeListener = (function () {
     if (!onMsg) return () => {}
@@ -153,9 +158,14 @@ export const createIframe = ({ url, width, height, onLoad, onAsk, onMsg, ipcTime
       removeOnMsg()
       removeListener()
     },
-    ask: (cmd, args) => {
+    ask: (cmd, args = {}) => {
       return pLoad.then(() => {
-        return postMessage($iframe.contentWindow, window, { cmd, args }, '*', ipcTimeout)
+        return postMessage(
+          $iframe.contentWindow, window,
+          { cmd, args: {args, secret} },
+          '*',
+          ipcTimeout
+        )
       })
     }
   }
