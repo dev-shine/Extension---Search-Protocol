@@ -1,3 +1,4 @@
+import * as C from '../../../common/constant'
 import log from '../../../common/log'
 import API from '../../../common/api/cs_api'
 import Ext from '../../../common/web_extension'
@@ -40,7 +41,7 @@ export const linksFromPairs = (pairs, url) => {
   }, [])
 }
 
-export const showLinks = ({ elements, bridges, annotations }, url, onCreate) => {
+export const showLinks = ({ elements, bridges, annotations, url, onCreate, getCsAPI }) => {
   const links = elements.map(item => {
     return {
       ...item,
@@ -48,7 +49,12 @@ export const showLinks = ({ elements, bridges, annotations }, url, onCreate) => 
       annotations:  annotations.filter(b => b.target === item.id)
     }
   })
-  const allLinks  = links.map(link => showOneLink({ link, onCreate, getLinksAPI: () => linksAPI }))
+  const allLinks  = links.map(link => showOneLink({
+    link,
+    onCreate,
+    getCsAPI,
+    getLinksAPI:  () => linksAPI
+  }))
 
   const linksAPI = {
     links: allLinks,
@@ -63,15 +69,15 @@ export const showLinks = ({ elements, bridges, annotations }, url, onCreate) => 
   return linksAPI
 }
 
-export const showOneLink = ({ link, getLinksAPI, color, opacity, needBadge = true, onCreate = () => {} }) => {
+export const showOneLink = ({ link, getLinksAPI, getCsAPI, color, opacity, needBadge = true, onCreate = () => {} }) => {
   log('showOneLink', link.type, link)
 
   switch (link.type) {
     case TARGET_TYPE.IMAGE:
-      return showImage({ link, getLinksAPI, color, opacity, needBadge, onCreate })
+      return showImage({ link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate })
 
     case TARGET_TYPE.SELECTION:
-      return showSelection({ link, getLinksAPI, color, opacity, needBadge, onCreate })
+      return showSelection({ link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate })
 
     default:
       throw new Error(`Unsupported type '${link.type}'`)
@@ -180,7 +186,7 @@ export const showHyperLinkBadge = ({ totalCount, url, $el }) => {
   return api
 }
 
-export const showImage = ({ link, getLinksAPI, color, opacity, needBadge, onCreate }) => {
+export const showImage = ({ link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate }) => {
   const { bridges = [], annotations = [] } = link
   const totalCount  = bridges.length + annotations.length
   let timer
@@ -223,7 +229,7 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge, onCrea
       const badgeAPI    = needBadge ? showBridgeCount({
         text:     '' + totalCount,
         position: topRight,
-        onClick:  () => showBridgesModal({ bridges, annotations, elementId: link.id })
+        onClick:  () => showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id })
       }) : {
         show: () => {},
         hide: () => {},
@@ -275,7 +281,7 @@ export const showImage = ({ link, getLinksAPI, color, opacity, needBadge, onCrea
   return api
 }
 
-export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge, onCreate }) => {
+export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate }) => {
   const { bridges = [], annotations = [] } = link
   const totalCount  = bridges.length + annotations.length
   let timer
@@ -311,7 +317,7 @@ export const showSelection = ({ link, getLinksAPI, color, opacity, needBadge, on
       const badgeAPI    = needBadge ? showBridgeCount({
         text:     '' + totalCount,
         position: topRight,
-        onClick:  () => showBridgesModal({ bridges, annotations, elementId: link.id })
+        onClick:  () => showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id })
       }) : {
         show: () => {},
         hide: () => {},
@@ -406,16 +412,37 @@ export const showBridgeCount = ({ position, text, onClick }) => {
   }
 }
 
-export const showBridgesModal = ({ bridges, annotations, elementId }) => {
+export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) => {
   const iframeAPI = createIframe({
     url:    Ext.extension.getURL('related_elements.html'),
     width:  clientWidth(document),
     height: clientHeight(document),
     onAsk: (cmd, args) => {
+      log('showBridgesModal onAsk', cmd, args)
+
       switch (cmd) {
         case 'INIT':
-          return API.loadRelations()
-          .then(relations => ({ relations, bridges, annotations, elementId }))
+          return Promise.all([
+            API.loadRelations(),
+            API.checkUser()
+          ])
+          .then(([relations, userInfo]) => ({ userInfo, relations, bridges, annotations, elementId }))
+
+        case 'RELOAD_BRIDGES_AND_NOTES': {
+          window.postMessage({
+            type: 'RELOAD_BRIDGES_AND_NOTES'
+          }, '*')
+          return true
+        }
+
+        case 'EDIT_ANNOTATION': {
+          getCsAPI().annotate({
+            mode:           C.UPSERT_MODE.EDIT,
+            linkData:       args.annotation.target,
+            annotationData: args.annotation
+          })
+          return true
+        }
 
         case 'CLOSE':
           modalAPI.destroy()

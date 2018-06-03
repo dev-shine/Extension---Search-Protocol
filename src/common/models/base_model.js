@@ -173,7 +173,7 @@ export class BaseModel {
 }
 
 export const createModelData = (data) => {
-  if (typeof data === 'string') {
+  if (typeof data === 'string' || typeof data === 'number') {
     return { id: data }
   }
 
@@ -185,6 +185,7 @@ export const createModelData = (data) => {
     }
   }
 
+  log('createModelData error, data is', data)
   throw new Error('not able to create data')
 }
 

@@ -68,6 +68,16 @@ const setStateWithSettings = (settings) => {
 
 const bindEvents = () => {
   ipc.onAsk(onBgRequest)
+  window.addEventListener('message', (e) => {
+    if (!e.data)  return
+
+    switch (e.data.type) {
+      case 'RELOAD_BRIDGES_AND_NOTES': {
+        tryShowBridges()
+        return true
+      }
+    }
+  })
 }
 
 const bindSocialLoginEvent = () => {
@@ -115,6 +125,12 @@ const bindSelectionEvent = () => {
   })
 }
 
+const getCsAPI = () => ({
+  annotate,
+  buildBridge,
+  selectImageArea
+})
+
 const init = () => {
   bindEvents()
   bindSelectionEvent()
@@ -140,7 +156,12 @@ const initLinks = (data, url) => {
 
   setState({ currentPage: data })
 
-  const oldAPI = showLinks(data, url, (api) => addSubmenuForBadge(api))
+  const oldAPI = showLinks({
+    ...data,
+    url,
+    getCsAPI,
+    onCreate: (api) => addSubmenuForBadge(api)
+  })
   oldAPI.hide()
 
   linksAPI = new MouseReveal({
@@ -494,7 +515,7 @@ const addSubmenuForBadge = (link) => {
   return destroySubMenuEffect
 }
 
-const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, onSuccess = tryShowBridges } = {}) => {
+const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}, onSuccess = tryShowBridges } = {}) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('annotate.html'),
     width:  600,
@@ -506,12 +527,8 @@ const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, onSuccess = tryShow
         case 'INIT':
           return {
             mode,
-            linkData: {
-              title: '',
-              desc: '',
-              tags: '',
-              ...linkData
-            }
+            annotationData,
+            linkData
           }
 
         case 'DONE':

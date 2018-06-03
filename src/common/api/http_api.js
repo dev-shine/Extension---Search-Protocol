@@ -181,9 +181,14 @@ export const createNote = wrap((data) => {
   .send(data)
 })
 
-export const updateNote = (id, data) => {
-  throw new Error('todo')
-}
+export const updateNote = wrap((id, data) => {
+  return jwtRequest.put(apiUrl(`/notes/${id}`))
+  .send(data)
+})
+
+export const deleteNote = wrap((id) => {
+  return jwtRequest.delete(apiUrl(`/notes/${id}`))
+})
 
 export const listNotes = wrap((where) => {
   return jwtRequest.get(apiUrl('/notes'))

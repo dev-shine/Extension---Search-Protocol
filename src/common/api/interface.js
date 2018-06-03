@@ -23,6 +23,8 @@ export const methods = [
   'checkUser',
   'loadRelations',
   'saveAccessToken',
+  'updateNote',
+  'deleteNote',
 
   // backend API
   'createContentElement',

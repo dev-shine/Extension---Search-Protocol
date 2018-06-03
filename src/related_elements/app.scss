@@ -59,6 +59,30 @@ body {
     }
   }
 
+  .base-item {
+    display: flex;
+    flex-direction: row;
+
+    & > * {
+      flex: 1;
+    }
+
+    .actions {
+      margin-left: 30px;
+      flex: 0;
+      width: 120px;
+
+      button {
+        width: 100%;
+        margin-bottom: 10px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
   .bridge-item {
     display: flex;
     flex-direction: row;
@@ -137,14 +161,16 @@ body {
     padding-bottom: 10px;
     border-bottom: 1px solid #eee;
 
-    &:last-child {
-      margin-bottom: 0;
-      padding-bottom: 0;
-      border-bottom: 0;
-    }
+    .item-content {
+      &:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: 0;
+      }
 
-    & > * {
-      margin-bottom: 10px;
+      & > * {
+        margin-bottom: 10px;
+      }
     }
 
     h4 {

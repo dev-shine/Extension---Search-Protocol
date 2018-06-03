@@ -12,6 +12,8 @@ export default {
     notes: '标注',
     bridges: '关联',
     close: '关闭',
+    edit: '编辑',
+    delete: '删除',
     save: '保存',
     cancel: '取消',
     annotate: '标注',
@@ -22,6 +24,7 @@ export default {
     successfullySaved: '保存成功',
     successfullyLoggedIn: '登录成功',
     successfullyRegistered: '注册成功',
+    successfullyDeleted: '删除成功',
     tags: '标签',
     tagsRequiredErrMsg: '请输入标签',
     tagsCountErrMsg: '请以英文逗号分隔标签，最多输入5个',
@@ -57,7 +60,8 @@ export default {
   },
   relatedElements: {
     source: '来源',
-    relatedElements: '相关内容'
+    relatedElements: '相关内容',
+    sureToDeleteNote: '确定要永久删除这个标注吗？'
   },
   settings: {
     settings: '设置',
