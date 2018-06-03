@@ -26,7 +26,7 @@ class App extends Component {
       target: this.state.linkData
     })
     .then(annotation => {
-      ipc.ask('DONE')
+      ipc.ask('DONE', { annotation })
 
       // Note: record last annotation, it will add 'build bridge' menu item for further selection on text / image
       API.recordLastAnnotation({
@@ -56,7 +56,8 @@ class App extends Component {
       ...values,
       target: this.state.linkData
     })
-    .then(() => {
+    .then(annotation => {
+      ipc.ask('DONE', { annotation })
       notifySuccess(t('successfullySaved'))
       setTimeout(() => this.onClickCancel(), 1500)
     })

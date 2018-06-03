@@ -3,7 +3,7 @@ import { Modal, Select, Form, Input, Collapse, Button, Popconfirm } from 'antd'
 import { translate } from 'react-i18next'
 
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
-import { flatten } from '../common/utils'
+import { flatten, setIn } from '../common/utils'
 import API from '../common/api/cs_api'
 import log from '../common/log'
 import { TARGET_TYPE } from '../common/models/local_annotation_model'
@@ -19,11 +19,11 @@ class App extends Component {
   }
 
   onClose = () => {
-    ipc.ask('CLOSE')
+    ipc.ask('CLOSE_RELATED_ELEMENTS')
   }
 
-  componentDidMount () {
-    ipc.ask('INIT')
+  init = () => {
+    ipc.ask('INIT_RELATED_ELEMENTS')
     .then(({ relations, bridges, annotations, elementId, userInfo }) => {
       log('INIT WITH', { relations, bridges, annotations, elementId, userInfo })
 
@@ -55,6 +55,30 @@ class App extends Component {
       })
       .catch(e => log.error(e.stack))
     })
+  }
+
+  bindIpcEvent = () => {
+    ipc.onAsk((cmd, args) => {
+      log('related elements onAsk', cmd, args)
+
+      switch (cmd) {
+        case 'UPDATE_ANNOTATION': {
+          const { annotations } = this.state
+          const index = annotations.findIndex(item => item.id === args.annotation.id)
+          if (index === -1) return
+
+          this.setState(
+            setIn(['annotations', index], args.annotation, this.state)
+          )
+          return true
+        }
+      }
+    })
+  }
+
+  componentDidMount () {
+    this.init()
+    this.bindIpcEvent()
   }
 
   renderAnnotation (annotation, key, isEditable) {
