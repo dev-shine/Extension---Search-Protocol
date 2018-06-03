@@ -25,6 +25,8 @@ export const methods = [
   'saveAccessToken',
   'updateNote',
   'deleteNote',
+  'updateBridge',
+  'deleteBridge',
 
   // backend API
   'createContentElement',

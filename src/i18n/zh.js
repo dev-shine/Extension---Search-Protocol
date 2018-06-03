@@ -61,7 +61,8 @@ export default {
   relatedElements: {
     source: '来源',
     relatedElements: '相关内容',
-    sureToDeleteNote: '确定要永久删除这个标注吗？'
+    sureToDeleteNote: '确定要永久删除这个标注吗？',
+    sureToDeleteBridge: '确定要永久删除这个关联吗？'
   },
   settings: {
     settings: '设置',

@@ -61,7 +61,8 @@ export default {
   relatedElements: {
     source: 'Source',
     relatedElements: 'Related Elements',
-    sureToDeleteNote: 'Are you sure you want to Permanently delete this note?'
+    sureToDeleteNote: 'Are you sure you want to Permanently delete this Note?',
+    sureToDeleteBridge: 'Are you sure you want to Permanently delete this Bridge?'
   },
   settings: {
     settings: 'Settings',

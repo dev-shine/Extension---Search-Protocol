@@ -205,9 +205,14 @@ export const createBridge = wrap((data) => {
   .send(data)
 })
 
-export const updateBridge = (id, data) => {
-  throw new Error('todo')
-}
+export const updateBridge = wrap((id, data) => {
+  return jwtRequest.put(apiUrl(`/bridges/${id}`))
+  .send(data)
+})
+
+export const deleteBridge = wrap((id) => {
+  return jwtRequest.delete(apiUrl(`/bridges/${id}`))
+})
 
 export const listBridges = wrap((where) => {
   return jwtRequest.get(apiUrl('/bridges'))
