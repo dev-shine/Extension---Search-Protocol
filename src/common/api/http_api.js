@@ -13,7 +13,6 @@ export const apiUrl = (path) => `${config.api.base}${/^\//.test(path) ? path : (
 
 const onApiError = (e) => {
   log.error(e.stack)
-  debugger
   let errMessage
 
   if (!errMessage && e.response && e.response.body && e.response.body.message) {
