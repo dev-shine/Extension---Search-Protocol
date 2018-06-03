@@ -140,7 +140,7 @@ class App extends Component {
     )
   }
 
-  renderBridge (bridge, currentElementId, key) {
+  renderBridge (bridge, currentElementId, key, isEditable) {
     const { t }     = this.props
     const relation  = this.state.relations.find(r => '' + r.id === '' + bridge.relation)
     const relField  = bridge.from !== currentElementId ? 'active_name' : 'passive_name'
@@ -167,34 +167,76 @@ class App extends Component {
 
     return (
       <div className="bridge-item base-item" key={key}>
-        <a className="bridge-image" href={cpart.url} onClick={onClickLink}>
-          <img src={cpart.image} />
-        </a>
-        <div className="bridge-detail">
-          <table className="the-table">
-            <tbody>
-              <tr>
-                <td>{t('relation')}</td>
-                <td>{relStr}</td>
-              </tr>
-              <tr>
-                <td>{t('relatedElements:source')}</td>
-                <td>{source}</td>
-              </tr>
-              <tr>
-                <td>{t('link')}</td>
-                <td>
-                  <a target="_blank" href={cpart.url} onClick={onClickLink}>
-                    {cpart.url || '[URL deleted]'}
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="item-content">
+          <a className="bridge-image" href={cpart.url} onClick={onClickLink}>
+            <img src={cpart.image} />
+          </a>
+          <div className="bridge-detail">
+            <table className="the-table">
+              <tbody>
+                <tr>
+                  <td>{t('relation')}</td>
+                  <td>{relStr}</td>
+                </tr>
+                <tr>
+                  <td>{t('relatedElements:source')}</td>
+                  <td>{source}</td>
+                </tr>
+                <tr>
+                  <td>{t('link')}</td>
+                  <td>
+                    <a target="_blank" href={cpart.url} onClick={onClickLink}>
+                      {cpart.url || '[URL deleted]'}
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="bridge-type">
+            {typeImage}
+          </div>
         </div>
-        <div className="bridge-type">
-          {typeImage}
-        </div>
+        {isEditable ? (
+          <div className="actions">
+            <Button
+              type="default"
+              onClick={e => {
+                ipc.ask('EDIT_BRIDGE', { bridge })
+              }}
+            >
+              {t('edit')}
+            </Button>
+            <Popconfirm
+              onConfirm={() => {
+                API.deleteBridge(bridge.id)
+                .then(() => {
+                  notifySuccess(t('successfullyDeleted'))
+
+                  // Note: tell page to reload bridges and notes
+                  ipc.ask('RELOAD_BRIDGES_AND_NOTES')
+
+                  // Note: update local data
+                  this.setState({
+                    bridges: this.state.bridges.filter(item => item.id !== bridge.id)
+                  })
+                })
+                .catch(e => {
+                  notifyError(e.message)
+                })
+              }}
+              title={t('relatedElements:sureToDeleteBridge')}
+              okText={t('delete')}
+              cancelText={t('cancel')}
+            >
+              <Button
+                type="danger"
+              >
+                {t('delete')}
+              </Button>
+            </Popconfirm>
+          </div>
+        ) : null}
       </div>
     )
   }

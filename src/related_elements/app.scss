@@ -68,7 +68,7 @@ body {
     }
 
     .actions {
-      margin-left: 30px;
+      margin-left: 20px;
       flex: 0;
       width: 120px;
 
@@ -95,6 +95,11 @@ body {
       margin-bottom: 0;
       padding-bottom: 0;
       border-bottom: 0;
+    }
+
+    .item-content {
+      display: flex;
+      flex-direction: row;
     }
 
     .bridge-image {
