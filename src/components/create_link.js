@@ -121,7 +121,7 @@ class CreateLinkComp extends React.Component {
                 API.showElementInNewTab(link)
               }}
             >
-              {t('update')}
+              {t('buildBridge:update')}
             </Button>
           </div>
         ) : null}
