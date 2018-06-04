@@ -8,7 +8,7 @@ import {
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../../../common/shapes/box'
 import { isPointInRange, selectionToJSON } from '../../../common/selection'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
-import { TARGET_TYPE } from '../../../common/models/local_model'
+import { ELEMENT_TYPE } from '../../../common/models/local_model'
 import API from '../../../common/api/cs_api'
 import log from '../../../common/log'
 
@@ -621,7 +621,7 @@ export const createContextMenus = ({
           eventData: {
             $img: e.target,
             linkData: processLinkData({
-              type:     TARGET_TYPE.IMAGE,
+              type:     ELEMENT_TYPE.IMAGE,
               url:      window.location.href,
               locator:  xpath(e.target),
               rect: {
@@ -644,7 +644,7 @@ export const createContextMenus = ({
         menuOptions: menusOnSelection,
         eventData: {
           linkData: processLinkData({
-            type: TARGET_TYPE.SELECTION,
+            type: ELEMENT_TYPE.SELECTION,
             url:  window.location.href,
             ...selectionToJSON(window.getSelection())
           })

@@ -10,7 +10,7 @@ import {
   pageX, pageY, bindSelectionEnd, imageSize
 } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
-import { rect2offset, isLinkEqual, LOCAL_BRIDGE_STATUS, TARGET_TYPE } from '../../../common/models/local_model'
+import { LOCAL_BRIDGE_STATUS, ELEMENT_TYPE } from '../../../common/models/local_model'
 import {
   createSelectionBox, createButtons, createRect,
   createContextMenus, createIframeWithMask,
@@ -370,7 +370,7 @@ const commonMenuItems = () => ({
 
 const isSelectionRangeValid = (range) => {
   const { elements = [] } = state.currentPage
-  const selectionElements = elements.filter(item => item.type === TARGET_TYPE.SELECTION)
+  const selectionElements = elements.filter(item => item.type === ELEMENT_TYPE.SELECTION)
   const hasIntersect      = or(...selectionElements.map(item => isTwoRangesIntersecting(range, parseRangeJSON(item))))
   return !hasIntersect
 }
@@ -578,7 +578,7 @@ const selectImageArea = ({ $img, linkData }) => {
       switch (cmd) {
         case 'INIT': {
           const { elements = [] }   = state.currentPage
-          const imageElements       = elements.filter(item => item.type === TARGET_TYPE.IMAGE)
+          const imageElements       = elements.filter(item => item.type === ELEMENT_TYPE.IMAGE)
           const existingImageAreas  = imageElements.filter(item => {
             if (item.locator !== linkData.locator) {
               return false
@@ -680,7 +680,7 @@ const selectScreenshotArea = () => {
         rectAPI.destroy()
         annotate({
           linkData: {
-            type:   TARGET_TYPE.SCREENSHOT,
+            type:   ELEMENT_TYPE.SCREENSHOT,
             url:    window.location.href,
             image:  image,
             rect:   boxRect

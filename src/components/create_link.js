@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Alert, Button, Select, Form, Input } from 'antd'
 import { translate } from 'react-i18next'
 
-import { TARGET_TYPE } from '../common/models/local_model'
+import { ELEMENT_TYPE } from '../common/models/local_model'
 import API from '../common/api/cs_api'
 import './create_link.scss'
 import log from '../common/log';
@@ -63,15 +63,15 @@ class CreateLinkComp extends React.Component {
 
   renderLinkPreview (link) {
     switch (link.type) {
-      case TARGET_TYPE.IMAGE:
-      case TARGET_TYPE.SCREENSHOT:
+      case ELEMENT_TYPE.IMAGE:
+      case ELEMENT_TYPE.SCREENSHOT:
         return (
           <div className="image-box">
             <img src={link.image} />
           </div>
         )
 
-      case TARGET_TYPE.SELECTION:
+      case ELEMENT_TYPE.SELECTION:
         if (link.image) {
           return (
             <div className="image-box">

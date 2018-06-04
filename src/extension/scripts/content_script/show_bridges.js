@@ -3,7 +3,8 @@ import log from '../../../common/log'
 import API from '../../../common/api/cs_api'
 import Ext from '../../../common/web_extension'
 import { parseRangeJSON } from '../../../common/selection'
-import { rect2offset, isLinkEqual, TARGET_TYPE } from '../../../common/models/local_model'
+import { ELEMENT_TYPE } from '../../../common/models/local_model'
+import { isElementEqual } from '../../../common/models/element_model'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
 import { liveBuild, isRectsIntersect, isPointInRect, or } from '../../../common/utils'
 import {
@@ -17,29 +18,6 @@ import {
   createOverlayForRange, createOverlayForRects
 } from './common'
 import { rectsPointPosition } from './position'
-
-export const linksFromPairs = (pairs, url) => {
-  return pairs.reduce((prev, pair) => {
-    pair.links.forEach(link => {
-      if (link.url !== url) return
-      const found = prev.find(l => isLinkEqual(l, link))
-
-      if (found) {
-        found.pairDict[pair.id] = pair
-      } else {
-        prev.push({
-          ...link,
-          pairDict: {
-            [pair.id]: pair
-          }
-        })
-      }
-
-      return prev
-    })
-    return prev
-  }, [])
-}
 
 export const showLinks = ({ elements, bridges, annotations, url, onCreate, getCsAPI }) => {
   const links = elements.map(item => {
@@ -75,10 +53,10 @@ export const showOneLink = ({ link, getLinksAPI, getCsAPI, color, opacity, needB
   log('showOneLink', link.type, link)
 
   switch (link.type) {
-    case TARGET_TYPE.IMAGE:
+    case ELEMENT_TYPE.IMAGE:
       return showImage({ link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate })
 
-    case TARGET_TYPE.SELECTION:
+    case ELEMENT_TYPE.SELECTION:
       return showSelection({ link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate })
 
     default:

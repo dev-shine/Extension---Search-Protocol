@@ -1,9 +1,9 @@
 import { reverseKeyValue, pick } from '../utils'
-import { TARGET_TYPE } from '../models/local_model'
+import { ELEMENT_TYPE } from '../models/local_model'
 
 export const ELEMENT_TYPES = {
-  [TARGET_TYPE.IMAGE]:      1,
-  [TARGET_TYPE.SELECTION]:  2
+  [ELEMENT_TYPE.IMAGE]:      1,
+  [ELEMENT_TYPE.SELECTION]:  2
 }
 
 export const REVERSED_ELEMENT_TYPES = reverseKeyValue(ELEMENT_TYPES)
@@ -42,7 +42,7 @@ export const decodeRect = (str = '') => {
 export const encodeElement = (element) => {
   const data = (function () {
     switch (element.type) {
-      case TARGET_TYPE.IMAGE: {
+      case ELEMENT_TYPE.IMAGE: {
         return {
           ...pick(['url', 'image'], element),
           start_locator:  element.locator,
@@ -50,7 +50,7 @@ export const encodeElement = (element) => {
         }
       }
 
-      case TARGET_TYPE.SELECTION: {
+      case ELEMENT_TYPE.SELECTION: {
         return {
           ...pick(['url', 'image', 'text'], element),
           start_locator:  element.start.locator,
@@ -77,7 +77,7 @@ export const decodeElement = (element) => {
 
   const data = (function () {
     switch (type) {
-      case TARGET_TYPE.IMAGE: {
+      case ELEMENT_TYPE.IMAGE: {
         return {
           ...pick(['url', 'image'], element),
           locator:  element.start_locator,
@@ -85,7 +85,7 @@ export const decodeElement = (element) => {
         }
       }
 
-      case TARGET_TYPE.SELECTION: {
+      case ELEMENT_TYPE.SELECTION: {
         return {
           ...pick(['url', 'image', 'text'], element),
           start: {
