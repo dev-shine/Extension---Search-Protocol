@@ -10,7 +10,8 @@ import {
   pageX, pageY, bindSelectionEnd, imageSize
 } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
-import { LOCAL_BRIDGE_STATUS, ELEMENT_TYPE } from '../../../common/models/local_model'
+import { LOCAL_BRIDGE_STATUS } from '../../../common/models/local_model'
+import { ELEMENT_TYPE, isElementEqual } from '../../../common/models/element_model'
 import {
   createSelectionBox, createButtons, createRect,
   createContextMenus, createIframeWithMask,
@@ -21,7 +22,6 @@ import { MouseReveal } from './mouse_reveal'
 import { showLinks, showOneLink, showBridgeCount, showHyperLinkBadge } from './show_bridges'
 import { parseRangeJSON } from '../../../common/selection'
 import { or, setIn, uid, noop, isTwoRangesIntersecting, isLatinCharacter, unique, normalizeUrl, objMap, until, compose, on, map } from '../../../common/utils'
-import { isElementEqual } from '../../../common/models/element_model'
 import config from '../../../config'
 import i18n from '../../../i18n'
 
