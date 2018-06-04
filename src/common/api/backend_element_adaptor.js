@@ -1,5 +1,5 @@
 import { reverseKeyValue, pick } from '../utils'
-import { TARGET_TYPE } from '../models/local_annotation_model'
+import { TARGET_TYPE } from '../models/local_model'
 
 export const ELEMENT_TYPES = {
   [TARGET_TYPE.IMAGE]:      1,

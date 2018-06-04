@@ -10,7 +10,7 @@ import { compose, setIn, updateIn } from '../../common/utils'
 import UserInfo from '../components/user_info'
 import ImageForm from '../components/image_form'
 import API from '../../common/api/popup_api'
-import { LINK_PAIR_STATUS } from '../../common/models/local_annotation_model'
+import { LINK_PAIR_STATUS } from '../../common/models/local_model'
 
 class AnnotateStepOne extends React.Component {
   componentDidMount () {
@@ -61,7 +61,7 @@ class AnnotateStepOne extends React.Component {
             onClick={() => {
               API.clearLinks()
               .then(() => {
-                this.props.resetLinkPair()
+                this.props.resetLocalBridge()
               })
             }}
           >

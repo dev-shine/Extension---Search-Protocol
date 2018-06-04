@@ -1,5 +1,5 @@
 import { BaseModel, createLocalBackend } from './base_model'
-import { TARGET_TYPE } from './local_annotation_model'
+import { TARGET_TYPE } from './local_model'
 import { ObjectWith } from '../type_check'
 import { unpick, and } from '../utils'
 import config from '../../config'
