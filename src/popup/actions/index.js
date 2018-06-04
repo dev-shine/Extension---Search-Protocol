@@ -1,6 +1,6 @@
 import { type3, types as T } from './action_types'
 import API from '../../common/api/popup_api'
-import { LINK_PAIR_STATUS } from '../../common/models/local_model'
+import { LOCAL_BRIDGE_STATUS } from '../../common/models/local_model'
 
 export function setRoute (data) {
   return {
@@ -40,7 +40,7 @@ export function setLocalBridge (data) {
 
 export function resetLocalBridge () {
   return setLocalBridge({
-    status: LINK_PAIR_STATUS.EMPTY,
+    status: LOCAL_BRIDGE_STATUS.EMPTY,
     data: { links: [], desc: null, tags: null }
   })
 }

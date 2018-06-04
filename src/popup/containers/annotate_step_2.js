@@ -10,7 +10,7 @@ import { compose, setIn, updateIn } from '../../common/utils'
 import UserInfo from '../components/user_info'
 import ImageForm from '../components/image_form'
 import API from '../../common/api/popup_api'
-import { LINK_PAIR_STATUS } from '../../common/models/local_model'
+import { LOCAL_BRIDGE_STATUS } from '../../common/models/local_model'
 
 const getValues = (comp, { validate = true } = {}) => {
   if (validate) {
@@ -84,7 +84,7 @@ class AnnotateStepTwo extends React.Component {
                         { ...links[1], ...tuple[1] }
                       ]
                     ),
-                    setIn(['status'], LINK_PAIR_STATUS.READY)
+                    setIn(['status'], LOCAL_BRIDGE_STATUS.READY)
                   )(this.props.linkPair)
                 )
 

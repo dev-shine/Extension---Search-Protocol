@@ -1,6 +1,6 @@
 import { and } from '../utils'
 
-export const LINK_PAIR_STATUS = {
+export const LOCAL_BRIDGE_STATUS = {
   EMPTY:    'EMPTY',
   ONE:      'ONE',
   TWO:      'TWO',
@@ -217,17 +217,17 @@ export class LinkPairModel {
 
   getStatus () {
     switch (this.pair.links.length) {
-      case 0:   return LINK_PAIR_STATUS.EMPTY
-      case 1:   return LINK_PAIR_STATUS.ONE
+      case 0:   return LOCAL_BRIDGE_STATUS.EMPTY
+      case 1:   return LOCAL_BRIDGE_STATUS.ONE
       case 2:   {
-        return LINK_PAIR_STATUS.READY
+        return LOCAL_BRIDGE_STATUS.READY
         // if (isLinkReady(this.pair.links[0]) && isLinkReady(this.pair.links[1])) {
-        //   return LINK_PAIR_STATUS.READY
+        //   return LOCAL_BRIDGE_STATUS.READY
         // } else {
-        //   return LINK_PAIR_STATUS.TWO
+        //   return LOCAL_BRIDGE_STATUS.TWO
         // }
       }
-      default:  return LINK_PAIR_STATUS.TOO_MANY
+      default:  return LOCAL_BRIDGE_STATUS.TOO_MANY
     }
   }
 }
