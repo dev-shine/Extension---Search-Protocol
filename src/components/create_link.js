@@ -22,7 +22,8 @@ class CreateLinkComp extends React.Component {
   }
 
   state = {
-    relations: []
+    relations: [],
+    exchangePosition: false
   }
 
   encodeData = (values) => {
@@ -40,8 +41,8 @@ class CreateLinkComp extends React.Component {
       const pair = this.props.linkPair.data
       const data = {
         ...this.encodeData(values),
-        from: pair.links[0],
-        to:   pair.links[1]
+        from: pair.links[this.state.exchangePosition ? 1 : 0],
+        to:   pair.links[this.state.exchangePosition ? 0 : 1]
       }
 
       this.props.onSubmit(data)
@@ -156,9 +157,12 @@ class CreateLinkComp extends React.Component {
         <Form onSubmit={this.handleSubmit} className="create-link-form">
           <Form.Item label={t('buildBridge:relationLabel')} className="relation-form-item">
             <div className="relationship-row">
-              {this.renderLinkPreview(pair.links[0], EDIT_BRIDGE_TARGET.FROM)}
+              {this.renderLinkPreview(
+                pair.links[this.state.exchangePosition ? 1 : 0],
+                this.state.exchangePosition ? EDIT_BRIDGE_TARGET.TO : EDIT_BRIDGE_TARGET.FROM
+              )}
 
-              <div>
+              <div style={{ textAlign: 'center' }}>
                 {getFieldDecorator('relation', {
                   ...(pair.relation ? { initialValue: '' + pair.relation } : {}),
                   rules: [
@@ -174,9 +178,20 @@ class CreateLinkComp extends React.Component {
                     ))}
                   </Select>
                 )}
+                <Button
+                  style={{ marginTop: '20px' }}
+                  onClick={() => {
+                    this.setState({ exchangePosition: !this.state.exchangePosition })
+                  }}
+                >
+                  &lt;==&gt;
+                </Button>
               </div>
 
-              {this.renderLinkPreview(pair.links[1], EDIT_BRIDGE_TARGET.TO)}
+              {this.renderLinkPreview(
+                pair.links[this.state.exchangePosition ? 0 : 1],
+                this.state.exchangePosition ? EDIT_BRIDGE_TARGET.FROM : EDIT_BRIDGE_TARGET.TO
+              )}
             </div>
           </Form.Item>
 
