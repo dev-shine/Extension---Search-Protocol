@@ -213,7 +213,13 @@ class App extends Component {
             <Button
               type="default"
               onClick={e => {
-                ipc.ask('EDIT_BRIDGE', { bridge })
+                ipc.ask('EDIT_BRIDGE', {
+                  bridge: {
+                    ...bridge,
+                    fromElement:  bridge.fromElement || this.state.elementDict[bridge.from],
+                    toElement:    bridge.toElement || this.state.elementDict[bridge.to]
+                  }
+                })
               }}
             >
               {t('edit')}

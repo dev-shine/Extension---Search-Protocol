@@ -134,6 +134,7 @@ const API = {
   },
   updateLocalBridge: (element) => {
     getLinkPair().setElementToLocalBridge(element)
+    return Promise.resolve(true)
   },
   createLocalBridge: (element) => {
     return API.addElementToLocalBridge(element)

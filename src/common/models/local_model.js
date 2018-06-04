@@ -1,4 +1,5 @@
 import { and, setIn, updateIn, compose } from '../utils'
+import log from '../log';
 
 export const LOCAL_BRIDGE_STATUS = {
   EMPTY:    'EMPTY',
@@ -100,7 +101,7 @@ export class LocalModel {
         return this.__setState(
           compose(
             setIn(['bridge', 'to'], element),
-            setIn(['editBridge', 'target'], EDIT_BRIDGE_TARGET.NIL)
+            setIn(['editBridge', 'target'], EDIT_BRIDGE_TARGET.FROM)
           )(this.state)
         )
 
@@ -132,12 +133,16 @@ export class LocalModel {
           from: null,
           to: null,
           id: null
+        },
+        editBridge: {
+          target: EDIT_BRIDGE_TARGET.FROM
         }
       })
     }
   }
 
   __setState (obj = {}) {
+    log('localModel: __setState', obj)
     this.state = {...this.state, ...obj}
   }
 }
