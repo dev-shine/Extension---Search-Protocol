@@ -10,7 +10,7 @@ import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../common/shapes/box'
 import './app.scss'
 import { pixel, dataUrlFromImageElement } from '../common/dom_utils'
 import { rectFromXyToLeftTop, isTwoRectsIntersecting, or, objMap } from '../common/utils'
-import { LINK_PAIR_STATUS } from '../common/models/local_annotation_model'
+import { LINK_PAIR_STATUS } from '../common/models/local_model'
 import config from '../config'
 
 const ipc = ipcForIframe()

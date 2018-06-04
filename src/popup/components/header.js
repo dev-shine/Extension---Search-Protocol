@@ -6,7 +6,7 @@ import { withRouter, Link } from 'react-router-dom'
 import './header.scss'
 import * as actions from '../actions'
 import { compose } from '../../common/utils'
-import { LINK_PAIR_STATUS } from '../../common/models/local_annotation_model'
+import { LINK_PAIR_STATUS } from '../../common/models/local_model'
 import UserInfo from '../components/user_info'
 
 class Header extends React.Component {

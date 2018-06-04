@@ -10,7 +10,7 @@ import {
   pageX, pageY, bindSelectionEnd, imageSize
 } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
-import { rect2offset, isLinkEqual, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/local_annotation_model'
+import { rect2offset, isLinkEqual, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/local_model'
 import {
   createSelectionBox, createButtons, createRect,
   createContextMenus, createIframeWithMask,

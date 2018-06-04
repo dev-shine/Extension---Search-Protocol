@@ -1,5 +1,5 @@
 import storage from '../storage'
-import { encodePair, decodePair } from '../models/local_annotation_model'
+import { encodePair, decodePair } from '../models/local_model'
 import { pick, unpick, dataURItoBlob, objMap } from '../utils'
 import log from '../log'
 import config from '../../config'
