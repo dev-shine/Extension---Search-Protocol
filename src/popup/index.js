@@ -4,7 +4,7 @@ import {HashRouter} from 'react-router-dom'
 
 import App from './app'
 import { Provider, createStore, reducer } from './redux'
-import { setUserInfo, setLoaded, setLinkPair } from './actions'
+import { setUserInfo, setLoaded, setLocalBridge } from './actions'
 import API from '../common/api/popup_api'
 import i18n from '../i18n'
 
@@ -49,7 +49,7 @@ setTimeout(() => {
       console.log('got userInfo', userInfo)
       console.log('got linkPair', linkPair)
       store.dispatch(setUserInfo(userInfo))
-      store.dispatch(setLinkPair(linkPair))
+      store.dispatch(setLocalBridge(linkPair))
     },
     e => {
       console.error(e)

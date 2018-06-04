@@ -74,7 +74,7 @@ class App extends Component {
   }
 
   onClickCancel = () => {
-    API.setLinkPair({ links: [], desc: null, tags: null })
+    API.setLocalBridge({ links: [], desc: null, tags: null })
     this.onClose()
   }
 

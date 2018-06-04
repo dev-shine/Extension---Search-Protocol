@@ -124,7 +124,7 @@ const API = {
       data:   lp.get()
     })
   },
-  setLinkPair: (data) => {
+  setLocalBridge: (data) => {
     getLinkPair().set(data)
     return Promise.resolve(true)
   },

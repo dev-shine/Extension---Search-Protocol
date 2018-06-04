@@ -30,7 +30,7 @@ class AnnotateStepOne extends React.Component {
               {...links[0]}
               onUpdateField={(val, key) => {
                 console.log('val, key', val, key)
-                this.props.setLinkPair(
+                this.props.setLocalBridge(
                   setIn(['data', 'links', 0, key], val, this.props.linkPair)
                 )
               }}

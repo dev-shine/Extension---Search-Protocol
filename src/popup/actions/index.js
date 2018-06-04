@@ -25,21 +25,21 @@ export function setLoaded (data) {
   }
 }
 
-export function setLinkPair (data) {
+export function setLocalBridge (data) {
   return {
     type: T.SET_LINK_PAIR,
     data,
     post: ({dispatch, getState}) => {
       // Note: linkPair in state contains two parts `data` and `status`
-      // while API.setLinkPair only accepts `data` part
+      // while API.setLocalBridge only accepts `data` part
       const { linkPair } = getState()
-      return API.setLinkPair(linkPair.data)
+      return API.setLocalBridge(linkPair.data)
     }
   }
 }
 
-export function resetLinkPair () {
-  return setLinkPair({
+export function resetLocalBridge () {
+  return setLocalBridge({
     status: LINK_PAIR_STATUS.EMPTY,
     data: { links: [], desc: null, tags: null }
   })
