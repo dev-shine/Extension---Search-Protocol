@@ -79,7 +79,7 @@ class App extends Component {
   }
 
   componentDidMount () {
-    API.getLinkPairStatus()
+    API.getLocalBridgeStatus()
     .then(linkPair => {
       log('got linkPair', linkPair)
       this.setState({ linkPair })
