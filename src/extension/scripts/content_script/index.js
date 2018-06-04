@@ -363,14 +363,12 @@ const commonMenuItems = () => ({
   updateElementInBridge: {
     text: i18n.t('updateElementForBridge'),
     onClick: (e, { linkData }) => {
-      API.updateLocalBridge(linkData)
+      API.updateElementInLocalBridge(linkData)
       .then(() => API.getLocalBridgeStatus())
       .then(res => {
-        debugger
         return res.data.bridge
       })
       .then(bridge => {
-        debugger
         buildBridge({
           mode:         C.UPSERT_MODE.EDIT,
           bridgeData:   bridge,

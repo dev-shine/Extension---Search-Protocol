@@ -41,6 +41,7 @@ export const methods = [
   'getLocalBridgeStatus',
   'setLocalBridge',
   'addElementToLocalBridge',
+  'updateElementInLocalBridge',
   'updateLocalBridge',
   'createLocalBridge',
   'buildLocalBridge',

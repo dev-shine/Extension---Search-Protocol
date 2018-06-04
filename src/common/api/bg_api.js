@@ -128,12 +128,16 @@ const API = {
     getLinkPair().setLocalBridge(data)
     return Promise.resolve(true)
   },
+  updateLocalBridge: (data) => {
+    getLinkPair().updateLocalBridge(data)
+    return Promise.resolve(true)
+  },
   addElementToLocalBridge: (element) => {
     getLinkPair().addElementToLocalBridge(element)
     return Promise.resolve(true)
   },
-  updateLocalBridge: (element) => {
-    getLinkPair().setElementToLocalBridge(element)
+  updateElementInLocalBridge: (element) => {
+    getLinkPair().setElementToLocalBridge(element, true)
     return Promise.resolve(true)
   },
   createLocalBridge: (element) => {
