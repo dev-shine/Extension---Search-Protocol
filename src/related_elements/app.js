@@ -6,7 +6,7 @@ import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import { flatten, setIn, updateIn } from '../common/utils'
 import API from '../common/api/cs_api'
 import log from '../common/log'
-import { TARGET_TYPE } from '../common/models/local_model'
+import { ELEMENT_TYPE } from '../common/models/local_model'
 import ClampPre from '../components/clamp_pre'
 import { notifyError, notifySuccess } from '../components/notification'
 import './app.scss'
@@ -162,10 +162,10 @@ class App extends Component {
     const source    = new URL(cpart.url).origin.replace(/^.*?:\/\//, '')
     const typeImage = (function () {
       switch (cpart.type) {
-        case TARGET_TYPE.IMAGE:
+        case ELEMENT_TYPE.IMAGE:
           return <img src="./svg/image.svg" />
 
-        case TARGET_TYPE.SELECTION:
+        case ELEMENT_TYPE.SELECTION:
           return <img src="./svg/text.svg" />
       }
     })()

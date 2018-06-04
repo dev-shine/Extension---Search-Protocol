@@ -1,5 +1,5 @@
 import { BaseModel, createLocalBackend } from './base_model'
-import { TARGET_TYPE } from './local_model'
+import { ELEMENT_TYPE } from './local_model'
 import { ObjectWith } from '../type_check'
 import { unpick, and } from '../utils'
 import config from '../../config'
@@ -56,8 +56,8 @@ const selectionShape = new ObjectWith({
 export class ElementModel extends BaseModel {
   shapeOfData (data) {
     switch (data.type) {
-      case TARGET_TYPE.IMAGE:       return imageShape
-      case TARGET_TYPE.SELECTION:   return selectionShape
+      case ELEMENT_TYPE.IMAGE:       return imageShape
+      case ELEMENT_TYPE.SELECTION:   return selectionShape
       default:
         throw new Error(`Element shapeOfData: unknow type - '${data.type}'`)
     }
@@ -79,8 +79,8 @@ export function isElementEqual (a, b) {
   const isEqual       = (x, y) => JSON.stringify(x) === JSON.stringify(y)
   const commonKeys    = ['url']
   const keysToCompare = {
-    [TARGET_TYPE.IMAGE]:      [...commonKeys, 'imageSize', 'offset', 'locator'],
-    [TARGET_TYPE.SELECTION]:  [...commonKeys, 'start', 'end', 'text']
+    [ELEMENT_TYPE.IMAGE]:      [...commonKeys, 'imageSize', 'offset', 'locator'],
+    [ELEMENT_TYPE.SELECTION]:  [...commonKeys, 'start', 'end', 'text']
   }
 
   return and(
