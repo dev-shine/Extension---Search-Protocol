@@ -120,23 +120,23 @@ const API = {
   getLocalBridgeStatus: () => {
     const lp = getLinkPair()
     return Promise.resolve({
-      status: lp.getStatus(),
-      data:   lp.get()
+      status: lp.getLocalBridgeStatus(),
+      data:   lp.getLocalBridge()
     })
   },
   setLocalBridge: (data) => {
-    getLinkPair().set(data)
+    getLinkPair().setLocalBridge(data)
     return Promise.resolve(true)
   },
   addElementToLocalBridge: (link) => {
-    getLinkPair().addLink(link)
+    getLinkPair().addElementToLocalBridge(link)
     return Promise.resolve(true)
   },
   createLink: (link) => {
     return API.addElementToLocalBridge(link)
   },
   buildLink: (link) => {
-    const linkPairData = getLinkPair().get()
+    const linkPairData = getLinkPair().getLocalBridge()
     const ps = []
 
     // Note: Here is the logic of build bridge with last annotation
@@ -154,7 +154,7 @@ const API = {
     return Promise.all(ps).then(() => true)
   },
   clearLinks: () => {
-    getLinkPair().clear()
+    getLinkPair().resetLocalBridge()
     return Promise.resolve(true)
   },
   recordLastAnnotation: (data) => {

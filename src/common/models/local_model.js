@@ -33,7 +33,7 @@ export class LocalModel {
     lastAnnotation: null
   }
 
-  getStatus () {
+  getLocalBridgeStatus () {
     const { bridge } = this.state
 
     if (bridge.from && bridge.to) {
@@ -47,7 +47,7 @@ export class LocalModel {
     return LOCAL_BRIDGE_STATUS.EMPTY
   }
 
-  get () {
+  getLocalBridge () {
     return {
       ...this.state,
       links: [
@@ -57,7 +57,7 @@ export class LocalModel {
     }
   }
 
-  clear () {
+  resetLocalBridge () {
     this.__setState({
       bridge: {
         from: null,
@@ -68,14 +68,14 @@ export class LocalModel {
     })
   }
 
-  set (bridge) {
+  setLocalBridge (bridge, lastAnnotation) {
     this.__setState({
       bridge,
-      lastAnnotation: null
+      lastAnnotation: lastAnnotation || null
     })
   }
 
-  addLink (element) {
+  addElementToLocalBridge (element) {
     const { target } = this.state.editBridge
 
     switch (target) {
@@ -96,7 +96,7 @@ export class LocalModel {
         )
 
       default:
-        throw new Error(`Invalid target status to addLink`, target)
+        throw new Error(`Invalid target status to addElementToLocalBridge`, target)
     }
   }
 
