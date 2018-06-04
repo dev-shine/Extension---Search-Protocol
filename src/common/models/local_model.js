@@ -1,4 +1,4 @@
-import { and } from '../utils'
+import { and, setIn, updateIn, compose } from '../utils'
 
 export const LOCAL_BRIDGE_STATUS = {
   EMPTY:    'EMPTY',
@@ -8,63 +8,111 @@ export const LOCAL_BRIDGE_STATUS = {
   TOO_MANY: 'TOO_MANY'
 }
 
-export class LocalModel {
-  state = {
-
-  }
+export const LOCAL_STATUS = {
+  NEW_BRIDGE:   'NEW_BRIDGE',
+  EDIT_BRIDGE:  'EDIT_BRIDGE'
 }
 
-export class LinkPairModel {
-  constructor () {
-    this.__resetPair()
+export const EDIT_BRIDGE_TARGET = {
+  FROM: 'FROM',
+  TO:   'TO',
+  NIL:  'NIL'
+}
+
+export class LocalModel {
+  state = {
+    status: LOCAL_STATUS.NEW_BRIDGE,
+    bridge: {
+      from: null,
+      to: null,
+      id: null
+    },
+    editBridge: {
+      target: EDIT_BRIDGE_TARGET.FROM
+    },
+    lastAnnotation: null
   }
 
-  __resetPair () {
-    this.pair = {
-      links: [],
-      desc: null,
-      tags: null,
-      relation: null
+  getStatus () {
+    const { bridge } = this.state
+
+    if (bridge.from && bridge.to) {
+      return LOCAL_BRIDGE_STATUS.READY
     }
-    this.lastAnnotation = null
-  }
 
-  addLink (link) {
-    this.pair.links.push(link)
-    // Note: any 'create bridge' or 'build bridge' actions should clear the state of last annotation
-    // Because at that point, link to last annotation doesn't make that much sense
-    this.setLastAnnotation(null)
-  }
+    if (bridge.from) {
+      return LOCAL_BRIDGE_STATUS.ONE
+    }
 
-  clear () {
-    this.__resetPair()
+    return LOCAL_BRIDGE_STATUS.EMPTY
   }
 
   get () {
     return {
-      ...this.pair,
-      lastAnnotation: this.lastAnnotation
+      ...this.state,
+      links: [
+        this.state.bridge.from,
+        this.state.bridge.to
+      ]
     }
   }
 
-  set (data) {
-    this.pair = data
-    this.setLastAnnotation(null)
+  clear () {
+    this.__setState({
+      bridge: {
+        from: null,
+        to: null,
+        id: null
+      },
+      lastAnnotation: null
+    })
+  }
+
+  set (bridge) {
+    this.__setState({
+      bridge,
+      lastAnnotation: null
+    })
+  }
+
+  addLink (element) {
+    const { target } = this.state.editBridge
+
+    switch (target) {
+      case EDIT_BRIDGE_TARGET.FROM:
+        return this.__setState(
+          compose(
+            setIn(['bridge', 'from'], element),
+            setIn(['editBridge', 'target'], EDIT_BRIDGE_TARGET.TO)
+          )(this.state)
+        )
+
+      case EDIT_BRIDGE_TARGET.TO:
+        return this.__setState(
+          compose(
+            setIn(['bridge', 'to'], element),
+            setIn(['editBridge', 'target'], EDIT_BRIDGE_TARGET.NIL)
+          )(this.state)
+        )
+
+      default:
+        throw new Error(`Invalid target status to addLink`, target)
+    }
   }
 
   setLastAnnotation (annotation) {
-    this.lastAnnotation = annotation
+    this.__setState({ lastAnnotation: annotation })
   }
 
-  getStatus () {
-    switch (this.pair.links.length) {
-      case 0:   return LOCAL_BRIDGE_STATUS.EMPTY
-      case 1:   return LOCAL_BRIDGE_STATUS.ONE
-      case 2:   {
-        return LOCAL_BRIDGE_STATUS.READY
-      }
-      default:  return LOCAL_BRIDGE_STATUS.TOO_MANY
-    }
+  editBridge (bridge, target) {
+    this.__setState({
+      bridge,
+      editBridge: { target }
+    })
+  }
+
+  __setState (obj = {}) {
+    this.state = {...this.state, ...obj}
   }
 }
 
@@ -72,6 +120,6 @@ let instance
 
 export function getLinkPair () {
   if (instance) return instance
-  instance = new LinkPairModel()
+  instance = new LocalModel()
   return instance
 }
