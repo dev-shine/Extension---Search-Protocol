@@ -216,8 +216,8 @@ class App extends Component {
                 ipc.ask('EDIT_BRIDGE', {
                   bridge: {
                     ...bridge,
-                    fromElement:  bridge.fromElement || this.state.elementDict[bridge.from],
-                    toElement:    bridge.toElement || this.state.elementDict[bridge.to]
+                    fromElement:  this.state.elementDict[bridge.from],
+                    toElement:    this.state.elementDict[bridge.to]
                   }
                 })
               }}
