@@ -20,6 +20,7 @@ export default {
     createBridge: 'Create Bridge',
     buildBridge: 'Build Bridge',
     selectImageArea: 'Select Area',
+    updateElementForBridge: 'Update Content Element for Bridge',
     successfullyPosted: 'Successfully posted',
     successfullySaved: 'Successfully saved',
     successfullyLoggedIn: 'successfully logged in',
