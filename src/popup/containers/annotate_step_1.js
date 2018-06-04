@@ -10,7 +10,7 @@ import { compose, setIn, updateIn } from '../../common/utils'
 import UserInfo from '../components/user_info'
 import ImageForm from '../components/image_form'
 import API from '../../common/api/popup_api'
-import { LINK_PAIR_STATUS } from '../../common/models/local_model'
+import { LOCAL_BRIDGE_STATUS } from '../../common/models/local_model'
 
 class AnnotateStepOne extends React.Component {
   componentDidMount () {

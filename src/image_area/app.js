@@ -10,7 +10,7 @@ import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../common/shapes/box'
 import './app.scss'
 import { pixel, dataUrlFromImageElement } from '../common/dom_utils'
 import { rectFromXyToLeftTop, isTwoRectsIntersecting, or, objMap } from '../common/utils'
-import { LINK_PAIR_STATUS } from '../common/models/local_model'
+import { LOCAL_BRIDGE_STATUS } from '../common/models/local_model'
 import config from '../config'
 
 const ipc = ipcForIframe()
@@ -32,7 +32,7 @@ class App extends Component {
   canBuildBridge = () => {
     const { linkPair } = this.state
     if (!linkPair)  return false
-    return linkPair.status === LINK_PAIR_STATUS.ONE || linkPair.data.lastAnnotation
+    return linkPair.status === LOCAL_BRIDGE_STATUS.ONE || linkPair.data.lastAnnotation
   }
 
   getImageAreaRatio = (element, fullSize) => {

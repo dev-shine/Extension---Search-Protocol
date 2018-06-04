@@ -6,7 +6,7 @@ import { withRouter, Link } from 'react-router-dom'
 import './header.scss'
 import * as actions from '../actions'
 import { compose } from '../../common/utils'
-import { LINK_PAIR_STATUS } from '../../common/models/local_model'
+import { LOCAL_BRIDGE_STATUS } from '../../common/models/local_model'
 import UserInfo from '../components/user_info'
 
 class Header extends React.Component {
@@ -28,10 +28,10 @@ class Header extends React.Component {
 
         return '/'
         // switch (linkPair && linkPair.status) {
-        //   case LINK_PAIR_STATUS.EMPTY:      return '/'
-        //   case LINK_PAIR_STATUS.ONE:        return '/annotate-step-1'
-        //   case LINK_PAIR_STATUS.TWO:        return '/annotate-step-2'
-        //   case LINK_PAIR_STATUS.READY:      return '/create-link'
+        //   case LOCAL_BRIDGE_STATUS.EMPTY:      return '/'
+        //   case LOCAL_BRIDGE_STATUS.ONE:        return '/annotate-step-1'
+        //   case LOCAL_BRIDGE_STATUS.TWO:        return '/annotate-step-2'
+        //   case LOCAL_BRIDGE_STATUS.READY:      return '/create-link'
         //   default:                          return 'Unknown status'
         // }
       })()

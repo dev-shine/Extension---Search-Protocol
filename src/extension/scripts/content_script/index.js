@@ -10,7 +10,7 @@ import {
   pageX, pageY, bindSelectionEnd, imageSize
 } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
-import { rect2offset, isLinkEqual, LINK_PAIR_STATUS, TARGET_TYPE } from '../../../common/models/local_model'
+import { rect2offset, isLinkEqual, LOCAL_BRIDGE_STATUS, TARGET_TYPE } from '../../../common/models/local_model'
 import {
   createSelectionBox, createButtons, createRect,
   createContextMenus, createIframeWithMask,
@@ -43,7 +43,7 @@ const setState = (obj) => {
   }
 }
 
-let linkPairStatus = LINK_PAIR_STATUS.EMPTY
+let linkPairStatus = LOCAL_BRIDGE_STATUS.EMPTY
 let linkPairData   = null
 
 const pullStatus = () => {
@@ -425,8 +425,8 @@ const initContextMenus = () => {
         ]
 
         // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
-        if (linkPairStatus === LINK_PAIR_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
-          const savedItem     = linkPairStatus === LINK_PAIR_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
+        if (linkPairStatus === LOCAL_BRIDGE_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
+          const savedItem     = linkPairStatus === LOCAL_BRIDGE_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
 
           if (!isElementEqual(savedItem, menuExtra.linkData)) {
             menus.push(commonMenuItems().buildBridge)
@@ -447,8 +447,8 @@ const initContextMenus = () => {
         ]
 
         // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
-        if (linkPairStatus === LINK_PAIR_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
-          const savedItem     = linkPairStatus === LINK_PAIR_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
+        if (linkPairStatus === LOCAL_BRIDGE_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
+          const savedItem     = linkPairStatus === LOCAL_BRIDGE_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
 
           if (!isElementEqual(savedItem, menuExtra.linkData)) {
             menus.push(commonMenuItems().buildBridge)
@@ -502,8 +502,8 @@ const addSubmenuForBadge = (link) => {
               ]
 
               // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
-              if (linkPairStatus === LINK_PAIR_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
-                const savedItem     = linkPairStatus === LINK_PAIR_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
+              if (linkPairStatus === LOCAL_BRIDGE_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
+                const savedItem     = linkPairStatus === LOCAL_BRIDGE_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
 
                 if (!isElementEqual(savedItem, menuExtra.linkData)) {
                   menus.push(commonMenuItems().buildBridge)
