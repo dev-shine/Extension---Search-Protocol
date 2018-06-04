@@ -39,6 +39,11 @@ module.exports = {
       }
     }
   },
+  resolve: {
+    alias: !isProduction ? {
+      'antd/dist/antd.less': 'antd/dist/antd.css'
+    } : {}
+  },
   module: {
     rules: (function () {
       const list = [
@@ -87,10 +92,10 @@ module.exports = {
     })()
   },
   plugins: [
-    new CleanWebpackPlugin(path.resolve(__dirname, 'dist')),
     isProduction
       ? new ExtractTextPlugin('antd.css')
       : null,
+    new CleanWebpackPlugin(path.resolve(__dirname, 'dist')),
     new CopyWebpackPlugin((function () {
       const list = [
         {
