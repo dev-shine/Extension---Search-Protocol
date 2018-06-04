@@ -9,6 +9,7 @@ import './create_link.scss'
 import log from '../common/log';
 import * as C from '../common/constant'
 import { compose, updateIn } from '../common/utils';
+import { EDIT_BRIDGE_TARGET } from '../common/models/local_model';
 
 class CreateLinkComp extends React.Component {
   static propTypes = {
@@ -26,6 +27,10 @@ class CreateLinkComp extends React.Component {
 
   encodeData = (values) => {
     return updateIn(['relation'], x => parseInt(x, 10), values)
+  }
+
+  decodeData = (values) => {
+    return updateIn(['relation'], x => x && ('' + x), values)
   }
 
   onSubmit = () => {
@@ -49,43 +54,79 @@ class CreateLinkComp extends React.Component {
       this.setState({ relations })
     })
     .catch(e => log.error(e))
+
+    if (this.props.bridge) {
+      setTimeout(() => {
+        this.props.form.setFieldsValue(this.decodeData({
+          desc:       this.props.bridge.desc,
+          tags:       this.props.bridge.tags,
+          relation:   this.props.bridge.relation
+        }))
+      }, 60)
+    }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.bridge && nextProps.bridge !== this.props.bridge) {
-      this.props.form.setFieldsValue({
+      this.props.form.setFieldsValue(this.decodeData({
         desc:       nextProps.bridge.desc,
         tags:       nextProps.bridge.tags,
         relation:   nextProps.bridge.relation
-      })
+      }))
     }
   }
 
-  renderLinkPreview (link) {
-    switch (link.type) {
-      case ELEMENT_TYPE.IMAGE:
-      case ELEMENT_TYPE.SCREENSHOT:
-        return (
-          <div className="image-box">
-            <img src={link.image} />
-          </div>
-        )
-
-      case ELEMENT_TYPE.SELECTION:
-        if (link.image) {
+  renderLinkPreview (link, editBridgetTarget) {
+    const { t, mode }   = this.props
+    const renderDetail  = () => {
+      switch (link.type) {
+        case ELEMENT_TYPE.IMAGE:
+        case ELEMENT_TYPE.SCREENSHOT:
           return (
             <div className="image-box">
               <img src={link.image} />
             </div>
           )
-        } else {
-          return (
-            <div className="text-box">
-              {link.text}
-            </div>
-          )
-        }
+
+        case ELEMENT_TYPE.SELECTION:
+          if (link.image) {
+            return (
+              <div className="image-box">
+                <img src={link.image} />
+              </div>
+            )
+          } else {
+            return (
+              <div className="text-box">
+                {link.text}
+              </div>
+            )
+          }
+      }
     }
+
+    return (
+      <div className="element-box">
+        {renderDetail()}
+        {mode === C.UPSERT_MODE.EDIT ? (
+          <div className="element-actions">
+            <Button
+              type="primary"
+              onClick={() => {
+                API.startEditBridge({
+                  ...this.props.bridge,
+                  from: this.props.bridge.fromElement,
+                  to:   this.props.bridge.toElement
+                }, editBridgetTarget)
+                API.showElementInNewTab(link)
+              }}
+            >
+              {t('update')}
+            </Button>
+          </div>
+        ) : null}
+      </div>
+    )
   }
 
   renderTitle () {
@@ -115,7 +156,7 @@ class CreateLinkComp extends React.Component {
         <Form onSubmit={this.handleSubmit} className="create-link-form">
           <Form.Item label={t('buildBridge:relationLabel')} className="relation-form-item">
             <div className="relationship-row">
-              {this.renderLinkPreview(pair.links[0])}
+              {this.renderLinkPreview(pair.links[0], EDIT_BRIDGE_TARGET.FROM)}
 
               <div>
                 {getFieldDecorator('relation', {
@@ -135,7 +176,7 @@ class CreateLinkComp extends React.Component {
                 )}
               </div>
 
-              {this.renderLinkPreview(pair.links[1])}
+              {this.renderLinkPreview(pair.links[1], EDIT_BRIDGE_TARGET.TO)}
             </div>
           </Form.Item>
 

@@ -432,10 +432,8 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
           const csAPI = getCsAPI()
 
           API.setLocalBridge({
-            links: [
-              args.bridge.fromElement,
-              args.bridge.toElement
-            ],
+            from:     args.bridge.fromElement,
+            to:       args.bridge.toElement,
             relation: args.bridge.relation,
             tags:     args.bridge.tags,
             desc:     args.bridge.desc
@@ -444,6 +442,14 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
             csAPI.buildBridge({
               mode:         C.UPSERT_MODE.EDIT,
               bridgeData:   args.bridge,
+              linkPair:     {
+                data: {
+                  links: [
+                    args.bridge.fromElement,
+                    args.bridge.toElement
+                  ]
+                }
+              },
               onSuccess: ({ bridge }) => {
                 log('EDIT_BRIDGE onSuccess', bridge)
                 iframeAPI.ask('UPDATE_BRIDGE', { bridge })

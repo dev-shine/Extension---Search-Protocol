@@ -364,7 +364,22 @@ const commonMenuItems = () => ({
     text: i18n.t('updateElementForBridge'),
     onClick: (e, { linkData }) => {
       API.updateLocalBridge(linkData)
-      .then(() => buildBridge())
+      .then(() => API.getLocalBridgeStatus())
+      .then(res => {
+        debugger
+        return res.data.bridge
+      })
+      .then(bridge => {
+        debugger
+        buildBridge({
+          mode:         C.UPSERT_MODE.EDIT,
+          bridgeData:   bridge,
+          onSuccess: ({ bridge }) => {
+            log('updateElementInBridge onSuccess', bridge)
+            tryShowBridges()
+          }
+        })
+      })
       .catch(e => log.error(e.stack))
     }
   },
@@ -484,10 +499,10 @@ const addSubmenuForBadge = (link) => {
       }
     }
   }
-  const menuPositionFromRect = (rect) => {
+  const menuPositionFromRect = ({ rect, width, height }) => {
     log('menuPositionFromRect', rect)
     return {
-      x: rect.x - 110,
+      x: rect.x - width - 10,
       y: rect.y
     }
   }
@@ -502,7 +517,7 @@ const addSubmenuForBadge = (link) => {
           menuOptions: {
             ...commonMenuOptions,
             id: uid(),
-            menus: createContextMenus([
+            menus: createGetMenus([
               commonMenuItems().annotate,
               commonMenuItems().createBridge
             ])
@@ -510,7 +525,11 @@ const addSubmenuForBadge = (link) => {
           eventData: {
             linkData: link.getElement()
           },
-          pos: menuPositionFromRect(rect)
+          pos: (menuObj) => menuPositionFromRect({
+            rect,
+            width:    menuObj.width,
+            height:   menuObj.height
+          })
         })
       },
       getContainer: () => {
@@ -688,17 +707,23 @@ const selectScreenshotArea = () => {
   })
 }
 
-const buildBridge = ({ bridgeData = {}, mode = C.UPSERT_MODE.ADD, onSuccess = tryShowBridges } = {}) => {
+const buildBridge = ({
+  bridgeData = {},
+  linkPair,
+  mode = C.UPSERT_MODE.ADD,
+  onSuccess = tryShowBridges } = {}
+) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('build_bridge.html'),
     width:  630,
-    height: 490,
+    height: 520,
     onAsk: (cmd, args) => {
       switch (cmd) {
         case 'INIT':
           return {
             mode,
-            bridgeData
+            bridgeData,
+            linkPair
           }
 
         case 'DONE':

@@ -74,21 +74,28 @@ class App extends Component {
   }
 
   onClickCancel = () => {
-    API.setLocalBridge({ links: [], desc: null, tags: null })
+    API.resetLocalBridge()
     this.onClose()
   }
 
   componentDidMount () {
-    API.getLocalBridgeStatus()
-    .then(linkPair => {
-      log('got linkPair', linkPair)
-      this.setState({ linkPair })
-    })
-
     ipc.ask('INIT')
-    .then(({ bridgeData, mode }) => {
-      log('buildBridge, INIT GOT', { bridgeData, mode })
-      this.setState({ mode, bridgeData })
+    .then(({ bridgeData, linkPair, mode }) => {
+      log('buildBridge, INIT GOT', { bridgeData, linkPair, mode })
+
+      this.setState({
+        mode,
+        bridgeData,
+        ...(linkPair ? { linkPair } : {})
+      })
+
+      if (!linkPair) {
+        API.getLocalBridgeStatus()
+        .then(linkPair => {
+          log('got linkPair', linkPair)
+          this.setState({ linkPair })
+        })
+      }
     })
   }
 
