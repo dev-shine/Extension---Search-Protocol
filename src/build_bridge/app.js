@@ -24,8 +24,12 @@ class App extends Component {
 
   onUpdateField = (val, field) => {
     this.setState(
-      setIn(['linkPair', 'data', field], val, this.state)
+      setIn(['bridgeData', field], val, this.state)
     )
+
+    // if (this.state.mode === C.UPSERT_MODE.EDIT) {
+    //   API.updateElementInLocalBridge({ [field]: val })
+    // }
   }
 
   onSubmitAdd = (data) => {

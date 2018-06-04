@@ -78,12 +78,21 @@ export class LocalModel {
     })
   }
 
+  updateLocalBridge (partialBridge) {
+    this.__setState({
+      bridge: {
+        ...this.state.bridge,
+        ...partialBridge
+      }
+    })
+  }
+
   addElementToLocalBridge (element) {
     this.__resetEditingBridge()
     this.setElementToLocalBridge(element)
   }
 
-  setElementToLocalBridge (element) {
+  setElementToLocalBridge (element, noMove) {
     const { target } = this.state.editBridge
 
     switch (target) {
@@ -91,7 +100,7 @@ export class LocalModel {
         return this.__setState(
           compose(
             setIn(['bridge', 'from'], element),
-            setIn(['editBridge', 'target'], EDIT_BRIDGE_TARGET.TO)
+            !noMove ? setIn(['editBridge', 'target'], EDIT_BRIDGE_TARGET.TO) : x => x
           )(this.state)
         )
 
@@ -101,7 +110,7 @@ export class LocalModel {
         return this.__setState(
           compose(
             setIn(['bridge', 'to'], element),
-            setIn(['editBridge', 'target'], EDIT_BRIDGE_TARGET.FROM)
+            !noMove ? setIn(['editBridge', 'target'], EDIT_BRIDGE_TARGET.FROM) : x => x
           )(this.state)
         )
 
