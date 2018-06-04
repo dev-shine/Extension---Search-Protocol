@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "start": "NODE_ENV=development webpack --watch --progress --hide-modules --mode development --config webpack.config.js",
+    "preview": "NODE_ENV=production webpack --watch --progress --hide-modules --mode development --config webpack.config.js",
     "build": "NODE_ENV=production webpack --mode production --config webpack.config.js"
   },
   "author": "",
