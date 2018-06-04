@@ -549,7 +549,7 @@ export const showContextMenus = (function () {
     const { width, height } = menuOptions
     const positionStyle     = rightPosition({
       size:   { width, height },
-      cursor: pos
+      cursor: typeof pos === 'function' ? pos(menuObj) : pos
     })
 
     setStyle(menuObj.$container, positionStyle)
