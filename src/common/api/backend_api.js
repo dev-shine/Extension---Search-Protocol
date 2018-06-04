@@ -29,6 +29,17 @@ export const createBridge = ({ from, to, ...data }) => {
   return bridge.sync()
 }
 
+export const updateBridge = (id, { from, to, ...data }) => {
+  const bridge = new BridgeModel({
+    data: {
+      ...data,
+      from: createModelData(from),
+      to:   createModelData(to)
+    }
+  })
+  return bridge.push()
+}
+
 export const clearAllData = () => {
   return Promise.all([
     elementBackend.clear(),

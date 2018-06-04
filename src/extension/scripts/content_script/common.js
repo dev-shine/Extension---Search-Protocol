@@ -683,7 +683,7 @@ export const createIframeWithMask = (function () {
     document.body.appendChild($mask)
 
     setStyle(iframeAPI.$iframe, {
-      zIndex: curZIndex + 1
+      zIndex:     curZIndex + 1
     })
 
     curZIndex += 2

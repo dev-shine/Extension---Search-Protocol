@@ -7,10 +7,13 @@ import { TARGET_TYPE } from '../common/models/local_annotation_model'
 import API from '../common/api/cs_api'
 import './create_link.scss'
 import log from '../common/log';
-import { compose } from '../common/utils';
+import * as C from '../common/constant'
+import { compose, updateIn } from '../common/utils';
 
 class CreateLinkComp extends React.Component {
   static propTypes = {
+    mode:           PropTypes.string.isRequired,
+    bridge:         PropTypes.object,
     linkPair:       PropTypes.object,
     onUpdateField:  PropTypes.func.isRequired,
     onSubmit:       PropTypes.func.isRequired,
@@ -21,12 +24,17 @@ class CreateLinkComp extends React.Component {
     relations: []
   }
 
+  encodeData = (values) => {
+    return updateIn(['relation'], x => parseInt(x, 10), values)
+  }
+
   onSubmit = () => {
     this.props.form.validateFields((err, values) => {
       if (err)  return
+
       const pair = this.props.linkPair.data
       const data = {
-        ...values,
+        ...this.encodeData(values),
         from: pair.links[0],
         to:   pair.links[1]
       }
@@ -41,6 +49,16 @@ class CreateLinkComp extends React.Component {
       this.setState({ relations })
     })
     .catch(e => log.error(e))
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.bridge && nextProps.bridge !== this.props.bridge) {
+      this.props.form.setFieldsValue({
+        desc:       nextProps.bridge.desc,
+        tags:       nextProps.bridge.tags,
+        relation:   nextProps.bridge.relation
+      })
+    }
   }
 
   renderLinkPreview (link) {
@@ -70,6 +88,18 @@ class CreateLinkComp extends React.Component {
     }
   }
 
+  renderTitle () {
+    const { t } = this.props
+
+    switch (this.props.mode) {
+      case C.UPSERT_MODE.ADD:
+        return t('buildBridge')
+
+      case C.UPSERT_MODE.EDIT:
+        return t('buildBridge:editBridge')
+    }
+  }
+
   render () {
     if (!this.props.linkPair) return null
 
@@ -81,7 +111,7 @@ class CreateLinkComp extends React.Component {
 
     return (
       <div className="to-create-link">
-        <h2>{t('buildBridge')}</h2>
+        <h2>{this.renderTitle()}</h2>
         <Form onSubmit={this.handleSubmit} className="create-link-form">
           <Form.Item label={t('buildBridge:relationLabel')} className="relation-form-item">
             <div className="relationship-row">
@@ -89,17 +119,17 @@ class CreateLinkComp extends React.Component {
 
               <div>
                 {getFieldDecorator('relation', {
-                  ...(pair.relation ? { initialValue: pair.relation } : {}),
+                  ...(pair.relation ? { initialValue: '' + pair.relation } : {}),
                   rules: [
                     { required: true, message: t('buildBridge:relationErrMsg') }
                   ]
                 })(
                   <Select
                     placeholder={t('buildBridge:relationPlaceholder')}
-                    onChange={val => this.props.onUpdateField(val, 'relation')}
+                    onChange={val => this.props.onUpdateField(parseInt(val, 10), 'relation')}
                   >
                     {this.state.relations.map(r => (
-                      <Select.Option key={r.id} value={r.id}>{r.active_name}</Select.Option>
+                      <Select.Option key={r.id} value={'' + r.id}>{r.active_name}</Select.Option>
                     ))}
                   </Select>
                 )}
