@@ -20,6 +20,7 @@ export default {
     createBridge: '开始关联',
     buildBridge: '完成关联',
     selectImageArea: '选择图片区域',
+    updateElementForBridge: '更新关联中的元素',
     successfullyPosted: '发布成功',
     successfullySaved: '保存成功',
     successfullyLoggedIn: '登录成功',

@@ -10,7 +10,7 @@ import {
   pageX, pageY, bindSelectionEnd, imageSize
 } from '../../../common/dom_utils'
 import { captureClientAPI } from '../../../common/capture_screenshot'
-import { LOCAL_BRIDGE_STATUS } from '../../../common/models/local_model'
+import { LOCAL_BRIDGE_STATUS, EDIT_BRIDGE_TARGET } from '../../../common/models/local_model'
 import { ELEMENT_TYPE, isElementEqual } from '../../../common/models/element_model'
 import {
   createSelectionBox, createButtons, createRect,
@@ -360,6 +360,14 @@ const commonMenuItems = () => ({
       .catch(e => log.error(e.stack))
     }
   },
+  updateElementInBridge: {
+    text: i18n.t('updateElementForBridge'),
+    onClick: (e, { linkData }) => {
+      API.updateLocalBridge(linkData)
+      .then(() => buildBridge())
+      .catch(e => log.error(e.stack))
+    }
+  },
   selectImageArea: {
     text: i18n.t('selectImageArea'),
     onClick: (e, { linkData, $img }) => {
@@ -367,6 +375,33 @@ const commonMenuItems = () => ({
     }
   }
 })
+
+const createGetMenus = (fixedMenus, decorate = x => x) => {
+  return (menuExtra) => {
+    const menus = [...fixedMenus]
+
+    // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
+    if (localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE || (localBridgeData && localBridgeData.lastAnnotation)) {
+      const savedItem     = localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE ? localBridgeData.links[0] : localBridgeData.lastAnnotation.target
+
+      if (!isElementEqual(savedItem, menuExtra.linkData)) {
+        menus.push(commonMenuItems().buildBridge)
+      }
+    }
+
+    if (localBridgeStatus === LOCAL_BRIDGE_STATUS.EDITING) {
+      const savedItem     = localBridgeData.editBridge.target === EDIT_BRIDGE_TARGET.FROM
+                              ? localBridgeData.links[1]
+                              : localBridgeData.links[0]
+
+      if (!isElementEqual(savedItem, menuExtra.linkData)) {
+        menus.push(commonMenuItems().updateElementInBridge)
+      }
+    }
+
+    return menus.map(decorate)
+  }
+}
 
 const isSelectionRangeValid = (range) => {
   const { elements = [] } = state.currentPage
@@ -390,73 +425,45 @@ const initContextMenus = () => {
     menusOnSelection: {
       ...commonMenuOptions,
       id: '__on_selection__',
-      menus: (menuExtra) => {
-        const decorateOnClick = (menuItem) => {
-          return {
-            ...menuItem,
-            onClick: (e, extra) => {
-              const range     = parseRangeJSON(extra.linkData)
-              const rawRect   = range.getBoundingClientRect()
-              const rect      = {
-                x:      pageX(rawRect.left),
-                y:      pageY(rawRect.top),
-                width:  rawRect.width,
-                height: rawRect.height
-              }
-
-              API.captureScreenInSelection({
-                rect,
-                devicePixelRatio: window.devicePixelRatio
-              })
-              .then(image => {
-                const updatedExtra = setIn(['linkData', 'image'], image, extra)
-                menuItem.onClick(e, updatedExtra)
-              })
-              .catch(e => {
-                log.error(e.stack)
-              })
+      menus: createGetMenus([
+        commonMenuItems().annotate,
+        commonMenuItems().createBridge
+      ], (menuItem) => {
+        return {
+          ...menuItem,
+          onClick: (e, extra) => {
+            const range     = parseRangeJSON(extra.linkData)
+            const rawRect   = range.getBoundingClientRect()
+            const rect      = {
+              x:      pageX(rawRect.left),
+              y:      pageY(rawRect.top),
+              width:  rawRect.width,
+              height: rawRect.height
             }
+
+            API.captureScreenInSelection({
+              rect,
+              devicePixelRatio: window.devicePixelRatio
+            })
+            .then(image => {
+              const updatedExtra = setIn(['linkData', 'image'], image, extra)
+              menuItem.onClick(e, updatedExtra)
+            })
+            .catch(e => {
+              log.error(e.stack)
+            })
           }
         }
-
-        const menus = [
-          commonMenuItems().annotate,
-          commonMenuItems().createBridge
-        ]
-
-        // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
-        if (localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE || (localBridgeData && localBridgeData.lastAnnotation)) {
-          const savedItem     = localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE ? localBridgeData.links[0] : localBridgeData.lastAnnotation.target
-
-          if (!isElementEqual(savedItem, menuExtra.linkData)) {
-            menus.push(commonMenuItems().buildBridge)
-          }
-        }
-
-        return menus.map(decorateOnClick)
-      }
+      })
     },
     menusOnImage: {
       ...commonMenuOptions,
       id: '__on_image__',
-      menus: (menuExtra) => {
-        const menus = [
-          commonMenuItems().selectImageArea,
-          commonMenuItems().annotate,
-          commonMenuItems().createBridge
-        ]
-
-        // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
-        if (localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE || (localBridgeData && localBridgeData.lastAnnotation)) {
-          const savedItem     = localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE ? localBridgeData.links[0] : localBridgeData.lastAnnotation.target
-
-          if (!isElementEqual(savedItem, menuExtra.linkData)) {
-            menus.push(commonMenuItems().buildBridge)
-          }
-        }
-
-        return menus
-      }
+      menus: createGetMenus([
+        commonMenuItems().selectImageArea,
+        commonMenuItems().annotate,
+        commonMenuItems().createBridge
+      ])
     }
   })
 
@@ -495,23 +502,10 @@ const addSubmenuForBadge = (link) => {
           menuOptions: {
             ...commonMenuOptions,
             id: uid(),
-            menus: (menuExtra) => {
-              const menus = [
-                commonMenuItems().annotate,
-                commonMenuItems().createBridge
-              ]
-
-              // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
-              if (localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE || (localBridgeData && localBridgeData.lastAnnotation)) {
-                const savedItem     = localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE ? localBridgeData.links[0] : localBridgeData.lastAnnotation.target
-
-                if (!isElementEqual(savedItem, menuExtra.linkData)) {
-                  menus.push(commonMenuItems().buildBridge)
-                }
-              }
-
-              return menus
-            }
+            menus: createContextMenus([
+              commonMenuItems().annotate,
+              commonMenuItems().createBridge
+            ])
           },
           eventData: {
             linkData: link.getElement()
