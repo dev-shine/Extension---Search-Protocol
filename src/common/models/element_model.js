@@ -1,10 +1,15 @@
 import { BaseModel, createLocalBackend } from './base_model'
-import { ELEMENT_TYPE } from './local_model'
 import { ObjectWith } from '../type_check'
 import { unpick, and } from '../utils'
 import config from '../../config'
 import * as HttpAPI from '../api/http_api'
 import { encodeElement, decodeElement } from '../api/backend_element_adaptor'
+
+export const ELEMENT_TYPE = {
+  SCREENSHOT: 'SCREENSHOT',
+  IMAGE:      'IMAGE',
+  SELECTION:  'SELECTION'
+}
 
 export const backend = config.localBackend ? createLocalBackend('elements') : {
   commit: (data) => {

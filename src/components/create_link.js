@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Alert, Button, Select, Form, Input } from 'antd'
 import { translate } from 'react-i18next'
 
-import { ELEMENT_TYPE } from '../common/models/local_model'
+import { ELEMENT_TYPE } from '../common/models/element_model'
 import API from '../common/api/cs_api'
 import './create_link.scss'
 import log from '../common/log';

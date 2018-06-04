@@ -1,5 +1,10 @@
 import { reverseKeyValue, pick } from '../utils'
-import { ELEMENT_TYPE } from '../models/local_model'
+
+const ELEMENT_TYPE = {
+  SCREENSHOT: 'SCREENSHOT',
+  IMAGE:      'IMAGE',
+  SELECTION:  'SELECTION'
+}
 
 export const ELEMENT_TYPES = {
   [ELEMENT_TYPE.IMAGE]:      1,

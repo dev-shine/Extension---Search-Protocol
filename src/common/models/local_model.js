@@ -8,12 +8,6 @@ export const LOCAL_BRIDGE_STATUS = {
   TOO_MANY: 'TOO_MANY'
 }
 
-export const ELEMENT_TYPE = {
-  SCREENSHOT: 'SCREENSHOT',
-  IMAGE:      'IMAGE',
-  SELECTION:  'SELECTION'
-}
-
 export class LocalModel {
   state = {
 
