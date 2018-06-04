@@ -43,16 +43,16 @@ const setState = (obj) => {
   }
 }
 
-let linkPairStatus = LOCAL_BRIDGE_STATUS.EMPTY
-let linkPairData   = null
+let localBridgeStatus = LOCAL_BRIDGE_STATUS.EMPTY
+let localBridgeData   = null
 
 const pullStatus = () => {
   API.getLocalBridgeStatus()
   .then(({ status, data }) => {
-    linkPairStatus = status
-    linkPairData   = data
+    localBridgeStatus = status
+    localBridgeData   = data
 
-    // log('getLocalBridgeStatus', linkPairData)
+    // log('getLocalBridgeStatus', localBridgeData)
   })
 }
 
@@ -425,8 +425,8 @@ const initContextMenus = () => {
         ]
 
         // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
-        if (linkPairStatus === LOCAL_BRIDGE_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
-          const savedItem     = linkPairStatus === LOCAL_BRIDGE_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
+        if (localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE || (localBridgeData && localBridgeData.lastAnnotation)) {
+          const savedItem     = localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE ? localBridgeData.links[0] : localBridgeData.lastAnnotation.target
 
           if (!isElementEqual(savedItem, menuExtra.linkData)) {
             menus.push(commonMenuItems().buildBridge)
@@ -447,8 +447,8 @@ const initContextMenus = () => {
         ]
 
         // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
-        if (linkPairStatus === LOCAL_BRIDGE_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
-          const savedItem     = linkPairStatus === LOCAL_BRIDGE_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
+        if (localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE || (localBridgeData && localBridgeData.lastAnnotation)) {
+          const savedItem     = localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE ? localBridgeData.links[0] : localBridgeData.lastAnnotation.target
 
           if (!isElementEqual(savedItem, menuExtra.linkData)) {
             menus.push(commonMenuItems().buildBridge)
@@ -502,8 +502,8 @@ const addSubmenuForBadge = (link) => {
               ]
 
               // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
-              if (linkPairStatus === LOCAL_BRIDGE_STATUS.ONE || (linkPairData && linkPairData.lastAnnotation)) {
-                const savedItem     = linkPairStatus === LOCAL_BRIDGE_STATUS.ONE ? linkPairData.links[0] : linkPairData.lastAnnotation.target
+              if (localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE || (localBridgeData && localBridgeData.lastAnnotation)) {
+                const savedItem     = localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE ? localBridgeData.links[0] : localBridgeData.lastAnnotation.target
 
                 if (!isElementEqual(savedItem, menuExtra.linkData)) {
                   menus.push(commonMenuItems().buildBridge)
