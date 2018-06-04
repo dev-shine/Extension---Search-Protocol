@@ -113,13 +113,45 @@ export class BaseModel {
 
   pull () {
     // Note: replace all id with an object of id
-    const deps    = this.getDependencies()
-    const changes = deps.map((d, i) => updateIn(d.paths, id => ({ id })))
-    const update  = compose(...changes)
+    const getInstanceData = (data, paths, Klass) => {
+        if (['string', 'number'].indexOf(typeof data) !== -1) {
+          return new Klass({ id: data }).pull()
+        }
 
-    return this.fetch(this.__id)
+        if (data.id) {
+          return new Klass({ data }).pull()
+        }
+
+        throw new Error('Invalid dependency value to pull', paths, data)
+    }
+    const deps        = this.getDependencies()
+    const makeChanges = (data, deps) => {
+      const pChanges = Promise.all(
+        deps.map((d, i) => {
+          return getInstanceData(data, d.paths, d.Klass)
+          .then(instanceData => setIn(d.paths, instanceData))
+        })
+      )
+
+      return pChanges.then(changes => compose(changes)(data))
+    }
+    const getData = () => {
+      switch (this.__status) {
+        case MODEL_STATUS.ID_ONLY:
+          return this.fetch(this.__id)
+
+        case MODEL_STATUS.SYNCED:
+          return Promise.resolve(this.__data)
+
+        default:
+          throw new Error('ONLY able to pull data when status is ID_ONLY or SYNCED')
+      }
+    }
+
+    return getData()
+    .then(data => makeChanges(data, deps))
     .then(data => {
-      this.__data   = update(data)
+      this.__data   = data
       this.__status = MODEL_STATUS.SYNCED
       return this.__data
     })
