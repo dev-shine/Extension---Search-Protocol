@@ -40,7 +40,7 @@ setTimeout(() => {
       console.error(e)
       return null
     }),
-    API.getLinkPairStatus().catch(e => console.error('getLinkPairStatus error', e))
+    API.getLocalBridgeStatus().catch(e => console.error('getLocalBridgeStatus error', e))
   ])
   .then(
     data => {

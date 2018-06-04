@@ -47,12 +47,12 @@ let linkPairStatus = LINK_PAIR_STATUS.EMPTY
 let linkPairData   = null
 
 const pullStatus = () => {
-  API.getLinkPairStatus()
+  API.getLocalBridgeStatus()
   .then(({ status, data }) => {
     linkPairStatus = status
     linkPairData   = data
 
-    // log('getLinkPairStatus', linkPairData)
+    // log('getLocalBridgeStatus', linkPairData)
   })
 }
 
@@ -595,7 +595,7 @@ const selectImageArea = ({ $img, linkData }) => {
           })
 
           log('existing image areas', existingImageAreas)
-          return API.getLinkPairStatus()
+          return API.getLocalBridgeStatus()
           .then(linkPair => {
             return {
               linkPair,

@@ -23,7 +23,7 @@ const onApiRequest = (cmd, args) => {
   if (cmd !== 'API_CALL') return
   const { method, params = [] } = args
 
-  if (method !== 'getLinkPairStatus') {
+  if (method !== 'getLocalBridgeStatus') {
     log('API_CALL', method, params)
   }
 
@@ -117,7 +117,7 @@ const API = {
       })
     })
   },
-  getLinkPairStatus: () => {
+  getLocalBridgeStatus: () => {
     const lp = getLinkPair()
     return Promise.resolve({
       status: lp.getStatus(),
