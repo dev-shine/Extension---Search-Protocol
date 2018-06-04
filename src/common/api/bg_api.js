@@ -128,14 +128,17 @@ const API = {
     getLinkPair().setLocalBridge(data)
     return Promise.resolve(true)
   },
-  addElementToLocalBridge: (link) => {
-    getLinkPair().addElementToLocalBridge(link)
+  addElementToLocalBridge: (element) => {
+    getLinkPair().addElementToLocalBridge(element)
     return Promise.resolve(true)
   },
-  createLink: (link) => {
-    return API.addElementToLocalBridge(link)
+  updateLocalBridge: (element) => {
+    getLinkPair().setElementToLocalBridge(element)
   },
-  buildLink: (link) => {
+  createLocalBridge: (element) => {
+    return API.addElementToLocalBridge(element)
+  },
+  buildLocalBridge: (element) => {
     const linkPairData = getLinkPair().getLocalBridge()
     const ps = []
 
@@ -148,17 +151,25 @@ const API = {
     }
 
     ps.push(
-      API.addElementToLocalBridge(link)
+      API.addElementToLocalBridge(element)
     )
 
     return Promise.all(ps).then(() => true)
   },
-  clearLinks: () => {
+  resetLocalBridge: () => {
     getLinkPair().resetLocalBridge()
     return Promise.resolve(true)
   },
   recordLastAnnotation: (data) => {
     getLinkPair().setLastAnnotation(data)
+    return Promise.resolve(true)
+  },
+  startEditBridge: (bridge, target) => {
+    getLinkPair().startEditBridge(bridge, target)
+    return Promise.resolve(true)
+  },
+  endEditBridge: () => {
+    getLinkPair().endEditBridge()
     return Promise.resolve(true)
   },
   hackHeader: ({ url, headers }) => {

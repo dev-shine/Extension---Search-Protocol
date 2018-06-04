@@ -5,12 +5,8 @@ export const LOCAL_BRIDGE_STATUS = {
   ONE:      'ONE',
   TWO:      'TWO',
   READY:    'READY',
+  EDITING:  'EDITING',
   TOO_MANY: 'TOO_MANY'
-}
-
-export const LOCAL_STATUS = {
-  NEW_BRIDGE:   'NEW_BRIDGE',
-  EDIT_BRIDGE:  'EDIT_BRIDGE'
 }
 
 export const EDIT_BRIDGE_TARGET = {
@@ -21,7 +17,6 @@ export const EDIT_BRIDGE_TARGET = {
 
 export class LocalModel {
   state = {
-    status: LOCAL_STATUS.NEW_BRIDGE,
     bridge: {
       from: null,
       to: null,
@@ -35,6 +30,10 @@ export class LocalModel {
 
   getLocalBridgeStatus () {
     const { bridge } = this.state
+
+    if (bridge.id) {
+      return LOCAL_BRIDGE_STATUS.EDITING
+    }
 
     if (bridge.from && bridge.to) {
       return LOCAL_BRIDGE_STATUS.READY
@@ -64,7 +63,10 @@ export class LocalModel {
         to: null,
         id: null
       },
-      lastAnnotation: null
+      lastAnnotation: null,
+      editBridge: {
+        target: EDIT_BRIDGE_TARGET.FROM
+      }
     })
   }
 
@@ -76,6 +78,11 @@ export class LocalModel {
   }
 
   addElementToLocalBridge (element) {
+    this.__resetEditingBridge()
+    this.setElementToLocalBridge(element)
+  }
+
+  setElementToLocalBridge (element) {
     const { target } = this.state.editBridge
 
     switch (target) {
@@ -87,6 +94,8 @@ export class LocalModel {
           )(this.state)
         )
 
+      // Note: Must manually resetLocalBridge, to set 'target' to valid value,
+      // Otherwise, after two `addElementToLocalBridge` it just throws error
       case EDIT_BRIDGE_TARGET.TO:
         return this.__setState(
           compose(
@@ -101,14 +110,31 @@ export class LocalModel {
   }
 
   setLastAnnotation (annotation) {
+    this.__resetEditingBridge()
     this.__setState({ lastAnnotation: annotation })
   }
 
-  editBridge (bridge, target) {
+  startEditBridge (bridge, target) {
     this.__setState({
       bridge,
       editBridge: { target }
     })
+  }
+
+  endEditBridge () {
+    this.resetLocalBridge()
+  }
+
+  __resetEditingBridge () {
+    if (this.getLocalBridgeStatus() === LOCAL_BRIDGE_STATUS.EDITING) {
+      this.__setState({
+        bridge: {
+          from: null,
+          to: null,
+          id: null
+        }
+      })
+    }
   }
 
   __setState (obj = {}) {
