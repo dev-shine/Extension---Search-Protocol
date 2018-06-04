@@ -59,7 +59,7 @@ class AnnotateStepOne extends React.Component {
             size="large"
             className="cancel-button"
             onClick={() => {
-              API.clearLinks()
+              API.resetLocalBridge()
               .then(() => {
                 this.props.resetLocalBridge()
               })

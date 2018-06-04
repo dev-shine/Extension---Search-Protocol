@@ -346,8 +346,8 @@ const commonMenuItems = () => ({
   createBridge: {
     text: i18n.t('createBridge'),
     onClick: (e, { linkData }) => {
-      API.clearLinks()
-      .then(() => API.addElementToLocalBridge(linkData))
+      API.resetLocalBridge()
+      .then(() => API.createLocalBridge(linkData))
       .then(showMsgAfterCreateBridge)
       .catch(e => log.error(e.stack))
     }
@@ -355,7 +355,7 @@ const commonMenuItems = () => ({
   buildBridge: {
     text: i18n.t('buildBridge'),
     onClick: (e, { linkData }) => {
-      API.buildLink(linkData)
+      API.buildLocalBridge(linkData)
       .then(() => buildBridge())
       .catch(e => log.error(e.stack))
     }
@@ -616,7 +616,7 @@ const selectImageArea = ({ $img, linkData }) => {
         case 'CREATE_BRIDGE': {
           iframeAPI.destroy()
 
-          API.createLink(args.linkData)
+          API.createLocalBridge(args.linkData)
           .then(showMsgAfterCreateBridge)
           .catch(e => log.error(e.stack))
 
@@ -626,7 +626,7 @@ const selectImageArea = ({ $img, linkData }) => {
         case 'BUILD_BRIDGE': {
           iframeAPI.destroy()
 
-          API.buildLink(args.linkData)
+          API.buildLocalBridge(args.linkData)
           .then(() => buildBridge())
           .catch(e => log.error(e.stack))
 
