@@ -128,12 +128,12 @@ const API = {
     getLinkPair().set(data)
     return Promise.resolve(true)
   },
-  addLink: (link) => {
+  addElementToLocalBridge: (link) => {
     getLinkPair().addLink(link)
     return Promise.resolve(true)
   },
   createLink: (link) => {
-    return API.addLink(link)
+    return API.addElementToLocalBridge(link)
   },
   buildLink: (link) => {
     const linkPairData = getLinkPair().get()
@@ -143,12 +143,12 @@ const API = {
     // we need to add element of last annotation to local annotation model.
     if (linkPairData.links.length === 0 && linkPairData.lastAnnotation) {
       ps.push(
-        API.addLink(linkPairData.lastAnnotation.target)
+        API.addElementToLocalBridge(linkPairData.lastAnnotation.target)
       )
     }
 
     ps.push(
-      API.addLink(link)
+      API.addElementToLocalBridge(link)
     )
 
     return Promise.all(ps).then(() => true)

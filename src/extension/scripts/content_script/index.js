@@ -347,7 +347,7 @@ const commonMenuItems = () => ({
     text: i18n.t('createBridge'),
     onClick: (e, { linkData }) => {
       API.clearLinks()
-      .then(() => API.addLink(linkData))
+      .then(() => API.addElementToLocalBridge(linkData))
       .then(showMsgAfterCreateBridge)
       .catch(e => log.error(e.stack))
     }

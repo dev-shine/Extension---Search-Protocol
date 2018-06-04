@@ -40,7 +40,7 @@ export const methods = [
   'loadLinksForCurrentPage',
   'getLocalBridgeStatus',
   'setLocalBridge',
-  'addLink',
+  'addElementToLocalBridge',
   'createLink',
   'buildLink',
   'clearLinks',
