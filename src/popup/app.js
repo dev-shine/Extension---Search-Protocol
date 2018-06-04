@@ -4,7 +4,7 @@ import { HashHistory as Router, Route, Link, Switch, Redirect } from 'react-rout
 import Header from './components/header'
 import Footer from './components/footer'
 import routes from './routes'
-import 'antd/dist/antd.less'
+import 'antd/dist/antd.css'
 import './app.scss'
 
 class App extends Component {

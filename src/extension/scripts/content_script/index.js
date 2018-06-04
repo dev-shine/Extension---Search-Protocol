@@ -20,7 +20,7 @@ import {
 import { MouseReveal } from './mouse_reveal'
 import { showLinks, showOneLink, showBridgeCount, showHyperLinkBadge } from './show_bridges'
 import { parseRangeJSON } from '../../../common/selection'
-import { or, setIn, uid, noop, isTwoRangesIntersecting, isLatinCharacter, unique, normalizeUrl, objMap, until } from '../../../common/utils'
+import { or, setIn, uid, noop, isTwoRangesIntersecting, isLatinCharacter, unique, normalizeUrl, objMap, until, compose, on, map } from '../../../common/utils'
 import { isElementEqual } from '../../../common/models/element_model'
 import config from '../../../config'
 import i18n from '../../../i18n'
@@ -175,8 +175,25 @@ const initLinks = (data, url) => {
 
 const tryShowBridges = () => {
   const url = window.location.href
+  const fullfilBridgeAndAnnotation = (data) => {
+    const findElement = (id) => data.elements.find(item => item.id === id)
+
+    return {
+      elements: data.elements,
+      bridges:  data.bridges.map(item => ({
+        ...item,
+        fromElement: findElement(item.from),
+        toElement:   findElement(item.to)
+      })),
+      annotations: data.annotations.map(item => ({
+        ...item,
+        targetElement: findElement(item.target)
+      }))
+    }
+  }
 
   API.annotationsAndBridgesByUrl(url)
+  .then(fullfilBridgeAndAnnotation)
   .then(data => {
     log('tryShowBridges got links', data)
     initLinks(data, url)
@@ -677,7 +694,7 @@ const selectScreenshotArea = () => {
   })
 }
 
-const buildBridge = ({ onSuccess = tryShowBridges } = {}) => {
+const buildBridge = ({ bridgeData = {}, mode = C.UPSERT_MODE.ADD, onSuccess = tryShowBridges } = {}) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('build_bridge.html'),
     width:  630,
@@ -686,13 +703,12 @@ const buildBridge = ({ onSuccess = tryShowBridges } = {}) => {
       switch (cmd) {
         case 'INIT':
           return {
-            title: '',
-            desc: '',
-            tags: ''
+            mode,
+            bridgeData
           }
 
         case 'DONE':
-          tryShowBridges()
+          onSuccess(args)
           return true
 
         case 'CLOSE':

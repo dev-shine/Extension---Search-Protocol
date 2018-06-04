@@ -49,12 +49,12 @@ class App extends Component {
 
     log('onSubmitEdit', {
       ...values,
-      target: this.state.linkData
+      target: this.state.linkData.id
     })
 
     API.updateNote(this.state.annotationData.id, {
       ...values,
-      target: this.state.linkData
+      target: this.state.linkData.id
     })
     .then(annotation => {
       ipc.ask('DONE', { annotation })

@@ -45,7 +45,8 @@ export default {
     descLabel: '如何描述这组关联？',
     descErrMsg: '请输入描述',
     descPlaceholder: '输入对此关联的描述',
-    postIt: '发布！'
+    postIt: '发布！',
+    editBridge: '编辑关联'
   },
   selecteImageArea: {
     intersectExistingErrMsg: '新区域不能与现有区域存在部分交集，只可相互包含或完全独立'

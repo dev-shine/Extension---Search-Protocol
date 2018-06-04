@@ -3,7 +3,7 @@ import { Modal, Select, Form, Input, Collapse, Button, Popconfirm } from 'antd'
 import { translate } from 'react-i18next'
 
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
-import { flatten, setIn } from '../common/utils'
+import { flatten, setIn, updateIn } from '../common/utils'
 import API from '../common/api/cs_api'
 import log from '../common/log'
 import { TARGET_TYPE } from '../common/models/local_annotation_model'
@@ -29,7 +29,7 @@ class App extends Component {
 
       const elementIds = [
         ...flatten(bridges.map(b => [b.from, b.to])),
-        ...annotations.map(a => a.target)
+        ...annotations.map(a => a.target.id)
       ]
 
       this.setState({
@@ -69,6 +69,17 @@ class App extends Component {
 
           this.setState(
             setIn(['annotations', index], args.annotation, this.state)
+          )
+          return true
+        }
+
+        case 'UPDATE_BRIDGE': {
+          const { bridges } = this.state
+          const index = bridges.findIndex(item => item.id === args.bridge.id)
+          if (index === -1) return
+
+          this.setState(
+            updateIn(['bridges', index], bridge => ({ ...bridge, ...args.bridge }), this.state)
           )
           return true
         }

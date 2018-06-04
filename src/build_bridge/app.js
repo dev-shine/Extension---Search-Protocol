@@ -5,13 +5,17 @@ import { translate } from 'react-i18next'
 import { notifyError, notifySuccess } from '../components/notification'
 import ipc from '../common/ipc/ipc_dynamic'
 import API from '../common/api/cs_api'
+import log from '../common/log'
+import * as C from '../common/constant'
 import { compose, setIn, updateIn } from '../common/utils'
 import CreateLinkComp from '../components/create_link'
 import './app.scss'
 
 class App extends Component {
   state = {
-    linkPair: null
+    mode:       null,
+    linkPair:   null,
+    bridgeData: null
   }
 
   onClose = () => {
@@ -24,12 +28,12 @@ class App extends Component {
     )
   }
 
-  onClickSubmit = (data) => {
+  onSubmitAdd = (data) => {
     const { t } = this.props
 
     API.createBridge(data)
-    .then(() => {
-      ipc.ask('DONE')
+    .then(bridge => {
+      ipc.ask('DONE', { bridge })
       notifySuccess(t('successfullyPosted'))
       setTimeout(() => {
         this.onClickCancel()
@@ -40,6 +44,35 @@ class App extends Component {
     })
   }
 
+  onSubmitEdit = (data) => {
+    const { t } = this.props
+
+    API.updateBridge(this.state.bridgeData.id, {
+      id: this.state.bridgeData.id,
+      ...data
+    })
+    .then(bridge => {
+      ipc.ask('DONE', { bridge })
+      notifySuccess(t('successfullyPosted'))
+      setTimeout(() => {
+        this.onClickCancel()
+      }, 1500)
+    })
+    .catch(e => {
+      notifyError(e.message)
+    })
+  }
+
+  onClickSubmit = (data) => {
+    switch (this.state.mode) {
+      case C.UPSERT_MODE.ADD:
+        return this.onSubmitAdd(data)
+
+      case C.UPSERT_MODE.EDIT:
+        return this.onSubmitEdit(data)
+    }
+  }
+
   onClickCancel = () => {
     API.setLinkPair({ links: [], desc: null, tags: null })
     this.onClose()
@@ -48,14 +81,24 @@ class App extends Component {
   componentDidMount () {
     API.getLinkPairStatus()
     .then(linkPair => {
-      console.log('got linkPair', linkPair)
+      log('got linkPair', linkPair)
       this.setState({ linkPair })
+    })
+
+    ipc.ask('INIT')
+    .then(({ bridgeData, mode }) => {
+      log('buildBridge, INIT GOT', { bridgeData, mode })
+      this.setState({ mode, bridgeData })
     })
   }
 
   render () {
+    if (!this.state.mode) return <div />
+
     return (
       <CreateLinkComp
+        mode={this.state.mode}
+        bridge={this.state.bridgeData}
         linkPair={this.state.linkPair}
         onUpdateField={this.onUpdateField}
         onSubmit={this.onClickSubmit}

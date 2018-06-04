@@ -451,6 +451,36 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
           return true
         }
 
+        case 'EDIT_BRIDGE': {
+          const csAPI = getCsAPI()
+
+          API.setLinkPair({
+            links: [
+              args.bridge.fromElement,
+              args.bridge.toElement
+            ],
+            relation: args.bridge.relation,
+            tags:     args.bridge.tags,
+            desc:     args.bridge.desc
+          })
+          .then(() => {
+            csAPI.buildBridge({
+              mode:         C.UPSERT_MODE.EDIT,
+              bridgeData:   args.bridge,
+              onSuccess: ({ bridge }) => {
+                log('EDIT_BRIDGE onSuccess', bridge)
+                iframeAPI.ask('UPDATE_BRIDGE', { bridge })
+                csAPI.tryShowBridges()
+              }
+            })
+          })
+          .catch(e => {
+            log.error(e.stack)
+          })
+
+          return true
+        }
+
         case 'CLOSE_RELATED_ELEMENTS':
           modalAPI.destroy()
           return true

@@ -45,7 +45,8 @@ export default {
     descLabel: 'What do you want to say about this bridge?',
     descErrMsg: 'Please input description',
     descPlaceholder: 'Enter the Description for this Bridge',
-    postIt: 'POST IT!'
+    postIt: 'POST IT!',
+    editBridge: 'Edit Bridge'
   },
   selecteImageArea: {
     intersectExistingErrMsg: 'New area must not intersect with existing ones'
