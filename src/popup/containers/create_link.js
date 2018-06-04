@@ -24,7 +24,7 @@ class CreateLink extends React.Component {
   }
 
   onUpdateField = (val, field) => {
-    this.props.setLinkPair(
+    this.props.setLocalBridge(
       setIn(['data', field], val, this.props.linkPair)
     )
   }

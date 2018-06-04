@@ -44,7 +44,7 @@ class AnnotateStepTwo extends React.Component {
               {...links[0]}
               onUpdateField={(val, key) => {
                 console.log('val, key', val, key)
-                this.props.setLinkPair(
+                this.props.setLocalBridge(
                   setIn(['data', 'links', 0, key], val, this.props.linkPair)
                 )
               }}
@@ -55,7 +55,7 @@ class AnnotateStepTwo extends React.Component {
               ref={ref => { this.linkForm2 = ref }}
               {...links[1]}
               onUpdateField={(val, key) => {
-                this.props.setLinkPair(
+                this.props.setLocalBridge(
                   setIn(['data', 'links', 1, key], val, this.props.linkPair)
                 )
               }}
@@ -75,7 +75,7 @@ class AnnotateStepTwo extends React.Component {
                 getValues(this.linkForm2)
               ])
               .then(tuple => {
-                this.props.setLinkPair(
+                this.props.setLocalBridge(
                   compose(
                     updateIn(
                       ['data', 'links'],

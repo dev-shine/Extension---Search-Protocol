@@ -454,7 +454,7 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
         case 'EDIT_BRIDGE': {
           const csAPI = getCsAPI()
 
-          API.setLinkPair({
+          API.setLocalBridge({
             links: [
               args.bridge.fromElement,
               args.bridge.toElement

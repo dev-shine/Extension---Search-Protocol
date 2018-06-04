@@ -39,7 +39,7 @@ export const methods = [
 
   'loadLinksForCurrentPage',
   'getLocalBridgeStatus',
-  'setLinkPair',
+  'setLocalBridge',
   'addLink',
   'createLink',
   'buildLink',
