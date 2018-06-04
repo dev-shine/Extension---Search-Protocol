@@ -7,6 +7,8 @@ var getTheme = require('./tools/customize_theme')
 
 var theme = getTheme(__dirname)
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 module.exports = {
   entry: {
     popup:            './src/popup/index.js',
@@ -38,73 +40,92 @@ module.exports = {
     }
   },
   module: {
-    rules: [
-      {
-        test: /\.(js|jsx)$/,
-        use: 'babel-loader',
-        exclude: /(node_modules|bower_components)/
-      },
-      {
-        test: /\.scss$/,
-        use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
-      },
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader']
-      },
-      {
-        test: /\.svg$/,
-        loader: 'svg-react-loader',
-        exclude: /(node_modules|bower_components)/
-      },
-      {
-        test: /\.less$/,
-        use: ExtractTextPlugin.extract([
-          {
-            loader: 'css-loader'
-          },
-          {
-            loader: 'postcss-loader'
-          },
-          {
-            loader: 'less-loader',
-            options: {
-              modifyVars: theme,
-              javascriptEnabled: true
+    rules: (function () {
+      const list = [
+        {
+          test: /\.(js|jsx)$/,
+          use: 'babel-loader',
+          exclude: /(node_modules|bower_components)/
+        },
+        {
+          test: /\.scss$/,
+          use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
+        },
+        {
+          test: /\.css$/,
+          use: ['style-loader', 'css-loader']
+        },
+        {
+          test: /\.svg$/,
+          loader: 'svg-react-loader',
+          exclude: /(node_modules|bower_components)/
+        }
+      ]
+
+      if (isProduction) {
+        list.push({
+          test: /\.less$/,
+          use: ExtractTextPlugin.extract([
+            {
+              loader: 'css-loader'
+            },
+            {
+              loader: 'postcss-loader'
+            },
+            {
+              loader: 'less-loader',
+              options: {
+                modifyVars: theme,
+                javascriptEnabled: true
+              }
             }
-          }
-        ])
+          ])
+        })
       }
-    ]
+
+      return list
+    })()
   },
   plugins: [
-    new ExtractTextPlugin('antd.css'),
     new CleanWebpackPlugin(path.resolve(__dirname, 'dist')),
-    new CopyWebpackPlugin([
-      {
-        from: 'src/extension/assets',
-        transform: function (content, filepath) {
-          if (process.env.NODE_ENV !== 'production')    return content
-          if (filepath.indexOf('manifest.json') === -1) return content
+    isProduction
+      ? new ExtractTextPlugin('antd.css')
+      : null,
+    new CopyWebpackPlugin((function () {
+      const list = [
+        {
+          from: 'src/extension/assets',
+          transform: function (content, filepath) {
+            if (process.env.NODE_ENV !== 'production')    return content
+            if (filepath.indexOf('manifest.json') === -1) return content
 
-          const manifest = JSON.parse('' + content)
-          delete manifest.content_security_policy
+            const manifest = JSON.parse('' + content)
+            delete manifest.content_security_policy
 
-          return JSON.stringify(manifest, null, 2)
+            return JSON.stringify(manifest, null, 2)
+          }
         }
+      ]
+
+      if (!isProduction) {
+        list.push({
+          from: 'node_modules/antd/dist/antd.css'
+        })
       }
-    ]),
+
+      return list
+    })()),
     new webpack.DefinePlugin({
-      '__DEVELOPMENT__': JSON.stringify(process.env.NODE_ENV !== 'production'),
+      '__DEVELOPMENT__': JSON.stringify(!isProduction),
       'process.env': {
-        NODE_ENV: process.env.NODE_ENV === 'production' ? '"production"' : '"development"'
+        NODE_ENV: isProduction ? '"production"' : '"development"'
       }
     })
-  ],
+  ].filter(x => x),
   devtool: 'inline-source-map'
 };
 
-if (process.env.NODE_ENV === 'production') {
+if (isProduction) {
   delete module.exports.devtool
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.LoaderOptionsPlugin({
