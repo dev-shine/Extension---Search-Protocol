@@ -112,7 +112,7 @@ class CreateLinkComp extends React.Component {
         {mode === C.UPSERT_MODE.EDIT ? (
           <div className="element-actions">
             <Button
-              type="primary"
+              type="default"
               onClick={() => {
                 API.startEditBridge({
                   ...this.props.bridge,
@@ -122,7 +122,7 @@ class CreateLinkComp extends React.Component {
                 API.showElementInNewTab(link)
               }}
             >
-              {t('buildBridge:update')}
+              <img src="./img/edit.png" style={{ height: '14px' }} />
             </Button>
           </div>
         ) : null}

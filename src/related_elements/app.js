@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Modal, Select, Form, Input, Collapse, Button, Popconfirm } from 'antd'
+import { Modal, Select, Form, Input, Collapse, Button, Popconfirm, Icon } from 'antd'
 import { translate } from 'react-i18next'
 
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
@@ -115,7 +115,7 @@ class App extends Component {
                 ipc.ask('EDIT_ANNOTATION', { annotation })
               }}
             >
-              {t('edit')}
+              <img src="./img/edit.png" style={{ height: '14px' }} />
             </Button>
             <Popconfirm
               onConfirm={() => {
@@ -140,9 +140,9 @@ class App extends Component {
               cancelText={t('cancel')}
             >
               <Button
-                type="danger"
+                type="default"
               >
-                {t('delete')}
+                <img src="./img/delete.png" style={{ height: '14px' }} />
               </Button>
             </Popconfirm>
           </div>
@@ -222,7 +222,7 @@ class App extends Component {
                 })
               }}
             >
-              {t('edit')}
+              <img src="./img/edit.png" style={{ height: '14px' }} />
             </Button>
             <Popconfirm
               onConfirm={() => {
@@ -249,7 +249,7 @@ class App extends Component {
               <Button
                 type="danger"
               >
-                {t('delete')}
+                <img src="./img/delete.png" style={{ height: '14px' }} />
               </Button>
             </Popconfirm>
           </div>
