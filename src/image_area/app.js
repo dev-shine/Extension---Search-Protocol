@@ -35,6 +35,12 @@ class App extends Component {
     return linkPair.status === LOCAL_BRIDGE_STATUS.ONE || linkPair.data.lastAnnotation
   }
 
+  canUpdateElementInBridge = () => {
+    const { linkPair } = this.state
+    if (!linkPair)  return false
+    return linkPair.status === LOCAL_BRIDGE_STATUS.EDITING
+  }
+
   getImageAreaRatio = (element, fullSize) => {
     return element.imageSize && element.imageSize.width ? (fullSize.width / element.imageSize.width) : 1
   }
@@ -104,6 +110,12 @@ class App extends Component {
   onClickBuildBridge = () => {
     this.prepareLinkData()
     .then(linkData => ipc.ask('BUILD_BRIDGE', { linkData }))
+    .catch(e => log.error(e.stack))
+  }
+
+  onClickUpdateElementInBridge = () => {
+    this.prepareLinkData()
+    .then(linkData => ipc.ask('UPDATE_ELEMENT_IN_BRIDGE', { linkData }))
     .catch(e => log.error(e.stack))
   }
 
@@ -332,6 +344,16 @@ class App extends Component {
               onClick={this.onClickBuildBridge}
             >
               {t('buildBridge')}
+            </Button>
+          ) : null}
+          {this.canUpdateElementInBridge() ? (
+            <Button
+              type="primary"
+              size="large"
+              className="update-element-in-bridge-button"
+              onClick={this.onClickUpdateElementInBridge}
+            >
+              {t('updateElementForBridge')}
             </Button>
           ) : null}
           <Button
