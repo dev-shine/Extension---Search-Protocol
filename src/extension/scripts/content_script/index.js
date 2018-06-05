@@ -204,10 +204,11 @@ const tryShowBridges = () => {
 }
 
 const showHyperLinkBadges = () => {
+  const pageUrl = window.location.href
   const $links  = Array.from(document.getElementsByTagName('a'))
   const urlsObj = $links.reduce((prev, $el) => {
     const url = normalizeUrl($el.getAttribute('href'), window.location.href)
-    if (!/https?/.test(url))  return prev
+    if (!/https?/.test(url) || url === pageUrl)  return prev
 
     prev[url] = prev[url] || []
     prev[url].push($el)
