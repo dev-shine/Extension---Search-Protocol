@@ -583,7 +583,7 @@ const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}
 
 const selectImageArea = ({ $img, linkData }) => {
   const extraWidth  = 40
-  const extraHeight = 100
+  const extraHeight = 130
   const minWidth    = 500
   const showIframe  = ({ width, height, dataUrl }) => {
     const onAsk = (cmd, args) => {
@@ -640,6 +640,27 @@ const selectImageArea = ({ $img, linkData }) => {
 
           API.buildLocalBridge(args.linkData)
           .then(() => buildBridge())
+          .catch(e => log.error(e.stack))
+
+          return true
+        }
+
+        case 'UPDATE_ELEMENT_IN_BRIDGE': {
+          iframeAPI.destroy()
+
+          API.updateElementInLocalBridge(args.linkData)
+          .then(() => API.getLocalBridgeStatus())
+          .then(res => res.data.bridge)
+          .then(bridge => {
+            buildBridge({
+              mode:         C.UPSERT_MODE.EDIT,
+              bridgeData:   bridge,
+              onSuccess: ({ bridge }) => {
+                log('updateElementInBridge onSuccess', bridge)
+                tryShowBridges()
+              }
+            })
+          })
           .catch(e => log.error(e.stack))
 
           return true
