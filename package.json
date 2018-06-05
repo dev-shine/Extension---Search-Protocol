@@ -56,7 +56,8 @@
     "svg-react-loader": "^0.4.4",
     "webpack": "^4.6.0",
     "webpack-cli": "^2.0.15",
-    "webpack-dev-server": "^2.5.1"
+    "webpack-dev-server": "^2.5.1",
+    "zip-webpack-plugin": "^3.0.0"
   },
   "theme": "./src/styles/antd_theme.js"
 }
