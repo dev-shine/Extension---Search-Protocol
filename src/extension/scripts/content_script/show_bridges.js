@@ -128,6 +128,10 @@ export const showHyperLinkBadge = ({ totalCount, url, $el }) => {
       const badgeAPI  = showBridgeCount({
         text:     totalCount,
         position: topRight,
+        style: {
+          background: '#ef5d8f',
+          color:      '#fff'
+        },
         onClick:  () => { window.location.href = url }
       })
 
@@ -348,7 +352,7 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
   return api
 }
 
-export const showBridgeCount = ({ position, text, onClick }) => {
+export const showBridgeCount = ({ position, text, onClick, style = {} }) => {
   const size  = 40
   const $el   = createEl({
     text,
@@ -369,7 +373,8 @@ export const showBridgeCount = ({ position, text, onClick }) => {
       color:      '#ef5d8f',
       cursor:     'pointer',
       textAlign:  'center',
-      boxShadow:  'rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px'
+      boxShadow:  'rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px',
+      ...style
     }
   })
 
