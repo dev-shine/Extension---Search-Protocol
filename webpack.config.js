@@ -3,6 +3,7 @@ var path = require('path');
 var CopyWebpackPlugin = require('copy-webpack-plugin')
 var CleanWebpackPlugin = require('clean-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
+var ZipPlugin = require('zip-webpack-plugin')
 var getTheme = require('./tools/customize_theme')
 
 var theme = getTheme(__dirname)
@@ -135,6 +136,10 @@ if (isProduction) {
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.LoaderOptionsPlugin({
       minimize: true
+    }),
+    new ZipPlugin({
+      path: '..',
+      filename: `chrome_ext.zip`
     })
   ])
 }
