@@ -240,6 +240,16 @@ export const listRelations = wrap(() => {
   }
 })
 
+export const listRelationsByIds = wrap((ids) => {
+  return jwtRequest.get(apiUrl('/relations'))
+  .query({ 'ids[]': ids })
+}, {
+  post: list => {
+    list.sort((a, b) => a.id - b.id)
+    return list
+  }
+})
+
 export const loadRelations = withCache(listRelations, 1000 * 5)
 
 // others
