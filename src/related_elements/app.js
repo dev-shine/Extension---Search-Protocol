@@ -247,7 +247,7 @@ class App extends Component {
               cancelText={t('cancel')}
             >
               <Button
-                type="danger"
+                type="default"
               >
                 <img src="./img/delete.png" style={{ height: '14px' }} />
               </Button>
