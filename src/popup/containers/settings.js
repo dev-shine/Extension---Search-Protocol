@@ -42,7 +42,7 @@ class Settings extends React.Component {
     return (
       <div className="settings-page">
         <div className="logo-banner">
-          <img src="./img/logo_banner.jpg" />
+          <img src="./img/banner_logo.png" />
         </div>
         <Collapse>
           <Collapse.Panel key="settings" header={t('settings')}>

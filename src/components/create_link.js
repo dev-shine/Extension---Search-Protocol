@@ -184,7 +184,7 @@ class CreateLinkComp extends React.Component {
                     this.setState({ exchangePosition: !this.state.exchangePosition })
                   }}
                 >
-                  &lt;==&gt;
+                  <img src="./img/exchange.png" style={{ height: '14px' }} />
                 </Button>
               </div>
 
