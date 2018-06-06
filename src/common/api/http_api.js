@@ -235,7 +235,7 @@ export const listRelations = wrap(() => {
   }
 })
 
-export const loadRelations = withCache(listRelations, 1000 * 60 * 5)
+export const loadRelations = withCache(listRelations, 1000 * 5)
 
 // others
 export const annotationsAndBridgesByUrl = wrap((url) => {
