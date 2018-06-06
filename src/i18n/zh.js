@@ -88,5 +88,14 @@ export default {
     nameErrMsg: '请输入您的姓名',
     namePlaceholder: '姓名',
     signInWithGoogle: '用 Google 账号登录'
+  },
+  upsertRelation: {
+    addRelation: '添加关系',
+    activeName: '主动名称',
+    activeNameErrMsg: '请输入主动名称',
+    activeNamePlaceholder: '主动名称',
+    passiveName: '被动名称',
+    passiveNameErrMsg: '请输入被动名称',
+    passiveNamePlaceholder: '被动名称'
   }
 }

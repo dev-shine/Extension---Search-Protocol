@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Alert, Button, Select, Form, Input } from 'antd'
+import { Alert, Button, Select, Form, Input, Icon } from 'antd'
 import { translate } from 'react-i18next'
 
 import { ELEMENT_TYPE } from '../common/models/element_model'
@@ -16,13 +16,15 @@ class CreateLinkComp extends React.Component {
     mode:           PropTypes.string.isRequired,
     bridge:         PropTypes.object,
     linkPair:       PropTypes.object,
+    relations:      PropTypes.array.isRequired,
+    selectedRelation: PropTypes.number,
     onUpdateField:  PropTypes.func.isRequired,
     onSubmit:       PropTypes.func.isRequired,
-    onCancel:       PropTypes.func.isRequired
+    onCancel:       PropTypes.func.isRequired,
+    onAddRelation:  PropTypes.func
   }
 
   state = {
-    relations: [],
     exchangePosition: false
   }
 
@@ -31,7 +33,7 @@ class CreateLinkComp extends React.Component {
   }
 
   decodeData = (values) => {
-    return updateIn(['relation'], x => x && ('' + x), values)
+    return updateIn(['relation'], x => '' + x, values)
   }
 
   onSubmit = () => {
@@ -50,19 +52,14 @@ class CreateLinkComp extends React.Component {
   }
 
   componentDidMount () {
-    API.loadRelations()
-    .then(relations => {
-      this.setState({ relations })
-    })
-    .catch(e => log.error(e))
-
     if (this.props.bridge) {
       setTimeout(() => {
-        this.props.form.setFieldsValue(this.decodeData({
+        const values = this.decodeData({
           desc:       this.props.bridge.desc,
           tags:       this.props.bridge.tags,
           relation:   this.props.bridge.relation
-        }))
+        })
+        this.props.form.setFieldsValue(values)
       }, 60)
     }
   }
@@ -73,6 +70,12 @@ class CreateLinkComp extends React.Component {
         desc:       nextProps.bridge.desc,
         tags:       nextProps.bridge.tags,
         relation:   nextProps.bridge.relation
+      }))
+    }
+
+    if (nextProps.selectedRelation && nextProps.selectedRelation !== this.props.selectedRelation) {
+      this.props.form.setFieldsValue(this.decodeData({
+        relation: nextProps.selectedRelation
       }))
     }
   }
@@ -163,21 +166,33 @@ class CreateLinkComp extends React.Component {
               )}
 
               <div style={{ textAlign: 'center' }}>
-                {getFieldDecorator('relation', {
-                  ...(pair.relation ? { initialValue: '' + pair.relation } : {}),
-                  rules: [
-                    { required: true, message: t('buildBridge:relationErrMsg') }
-                  ]
-                })(
-                  <Select
-                    placeholder={t('buildBridge:relationPlaceholder')}
-                    onChange={val => this.props.onUpdateField(parseInt(val, 10), 'relation')}
-                  >
-                    {this.state.relations.map(r => (
-                      <Select.Option key={r.id} value={'' + r.id}>{r.active_name}</Select.Option>
-                    ))}
-                  </Select>
-                )}
+                <div style={{ display: 'flex' }}>
+                  {getFieldDecorator('relation', {
+                    ...(pair.relation ? { initialValue: '' + pair.relation } : {}),
+                    rules: [
+                      { required: true, message: t('buildBridge:relationErrMsg') }
+                    ]
+                  })(
+                    <Select
+                      placeholder={t('buildBridge:relationPlaceholder')}
+                      onChange={val => this.props.onUpdateField(parseInt(val, 10), 'relation')}
+                    >
+                      {this.props.relations.map(r => (
+                        <Select.Option key={r.id} value={'' + r.id}>{r.active_name}</Select.Option>
+                      ))}
+                    </Select>
+                  )}
+                  {this.props.onAddRelation ? (
+                    <Button
+                      type="default"
+                      shape="circle"
+                      onClick={this.props.onAddRelation}
+                      style={{ marginLeft: '10px' }}
+                    >
+                      <Icon type="plus" />
+                    </Button>
+                  ) : null}
+                </div>
                 <Button
                   style={{ marginTop: '20px' }}
                   onClick={() => {

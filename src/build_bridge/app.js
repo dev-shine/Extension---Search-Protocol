@@ -15,16 +15,25 @@ class App extends Component {
   state = {
     mode:       null,
     linkPair:   null,
-    bridgeData: null
+    bridgeData: null,
+    relations:  [],
+    selectedRelation: undefined
   }
 
   onClose = () => {
     ipc.ask('CLOSE')
   }
 
+  onAddRelation = () => {
+    ipc.ask('ADD_RELATION')
+  }
+
   onUpdateField = (val, field) => {
     this.setState(
-      setIn(['bridgeData', field], val, this.state)
+      compose(
+        setIn(['bridgeData', field], val),
+        field === 'relation' ? setIn(['selectedRelation'], val) : x => x
+      )(this.state)
     )
 
     // if (this.state.mode === C.UPSERT_MODE.EDIT) {
@@ -84,12 +93,14 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT')
-    .then(({ bridgeData, linkPair, mode }) => {
+    .then(({ bridgeData, linkPair, mode, relations }) => {
       log('buildBridge, INIT GOT', { bridgeData, linkPair, mode })
 
       this.setState({
         mode,
         bridgeData,
+        relations,
+        selectedRelation: bridgeData ? bridgeData.relation : undefined,
         ...(linkPair ? { linkPair } : {})
       })
 
@@ -101,6 +112,19 @@ class App extends Component {
         })
       }
     })
+
+    ipc.onAsk((cmd, args) => {
+      switch (cmd) {
+        case 'SELECT_NEW_RELATION': {
+          log('SELECT_NEW_RELATION', cmd, args)
+          this.setState({
+            relations: [...this.state.relations, args.relation],
+            selectedRelation: args.relation.id
+          })
+          return true
+        }
+      }
+    })
   }
 
   render () {
@@ -110,8 +134,11 @@ class App extends Component {
       <CreateLinkComp
         mode={this.state.mode}
         bridge={this.state.bridgeData}
+        relations={this.state.relations}
+        selectedRelation={this.state.selectedRelation}
         linkPair={this.state.linkPair}
         onUpdateField={this.onUpdateField}
+        onAddRelation={this.onAddRelation}
         onSubmit={this.onClickSubmit}
         onCancel={this.onClickCancel}
       />

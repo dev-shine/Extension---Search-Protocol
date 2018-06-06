@@ -733,36 +733,48 @@ const buildBridge = ({
   mode = C.UPSERT_MODE.ADD,
   onSuccess = tryShowBridges } = {}
 ) => {
-  const iframeAPI = createIframeWithMask({
-    url:    Ext.extension.getURL('build_bridge.html'),
-    width:  630,
-    height: 520,
-    onAsk: (cmd, args) => {
-      switch (cmd) {
-        case 'INIT':
-          return {
-            mode,
-            bridgeData,
-            linkPair
-          }
+  API.loadRelations()
+  .then(relations => {
+    const iframeAPI = createIframeWithMask({
+      url:    Ext.extension.getURL('build_bridge.html'),
+      width:  630,
+      height: 520,
+      onAsk: (cmd, args) => {
+        switch (cmd) {
+          case 'INIT':
+            return {
+              mode,
+              bridgeData,
+              linkPair,
+              relations
+            }
 
-        case 'DONE':
-          onSuccess(args)
-          return true
+          case 'DONE':
+            onSuccess(args)
+            return true
 
-        case 'CLOSE':
-          iframeAPI.destroy()
-          return true
+          case 'CLOSE':
+            iframeAPI.destroy()
+            return true
+
+          case 'ADD_RELATION':
+            upsertRelation({
+              onSuccess: ({ relation }) => {
+                iframeAPI.ask('SELECT_NEW_RELATION', { relation })
+              }
+            })
+            return true
+        }
       }
-    }
-  })
+    })
 
-  setStyle(iframeAPI.$iframe, {
-    position: 'fixed',
-    left: '50%',
-    top: '50%',
-    transform: 'translate(-50%, -50%)',
-    border: '1px solid #ccc'
+    setStyle(iframeAPI.$iframe, {
+      position: 'fixed',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%, -50%)',
+      border: '1px solid #ccc'
+    })
   })
 }
 
@@ -791,6 +803,34 @@ const showMsgAfterCreateBridge = () => {
       transform: 'translate(-50%, -50%)',
       border: '1px solid #ccc'
     })
+  })
+}
+
+const upsertRelation = ({ onSuccess = () => {} }) => {
+  const iframeAPI = createIframeWithMask({
+    url:    Ext.extension.getURL('upsert_relation.html'),
+    width:  500,
+    height: 300,
+    onAsk:  (cmd, args) => {
+      switch (cmd) {
+        case 'CLOSE_UPSERT_RELATION':
+          iframeAPI.destroy()
+          return true
+
+        case 'DONE_UPSERT_RELATION': {
+          onSuccess(args)
+          return true
+        }
+      }
+    }
+  })
+
+  setStyle(iframeAPI.$iframe, {
+    position: 'fixed',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    border: '1px solid #ccc'
   })
 }
 

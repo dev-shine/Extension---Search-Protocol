@@ -88,5 +88,14 @@ export default {
     nameErrMsg: 'Please input your full name',
     namePlaceholder: 'Full name',
     signInWithGoogle: 'Sign in with Google'
+  },
+  upsertRelation: {
+    addRelation: 'Add Relation',
+    activeName: 'Active Name',
+    activeNameErrMsg: 'Please input active name',
+    activeNamePlaceholder: 'Active Name',
+    passiveName: 'Passive Name',
+    passiveNameErrMsg: 'Please input passive name',
+    passiveNamePlaceholder: 'Passive Name'
   }
 }
