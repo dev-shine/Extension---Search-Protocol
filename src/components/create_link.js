@@ -33,7 +33,7 @@ class CreateLinkComp extends React.Component {
   }
 
   decodeData = (values) => {
-    return updateIn(['relation'], x => '' + x, values)
+    return updateIn(['relation'], x => x && ('' + x), values)
   }
 
   onSubmit = () => {
