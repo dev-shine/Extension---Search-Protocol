@@ -23,6 +23,7 @@ export const methods = [
   'checkUser',
   'createRelation',
   'loadRelations',
+  'listRelationsByIds',
   'saveAccessToken',
   'updateNote',
   'deleteNote',

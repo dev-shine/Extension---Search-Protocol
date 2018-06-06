@@ -3,7 +3,7 @@ import { Modal, Select, Form, Input, Collapse, Button, Popconfirm, Icon } from '
 import { translate } from 'react-i18next'
 
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
-import { flatten, setIn, updateIn } from '../common/utils'
+import { flatten, setIn, updateIn, compose } from '../common/utils'
 import API from '../common/api/cs_api'
 import log from '../common/log'
 import { ELEMENT_TYPE } from '../common/models/element_model'
@@ -79,7 +79,10 @@ class App extends Component {
           if (index === -1) return
 
           this.setState(
-            updateIn(['bridges', index], bridge => ({ ...bridge, ...args.bridge }), this.state)
+            compose(
+              updateIn(['bridges', index], bridge => ({ ...bridge, ...args.bridge })),
+              setIn(['relations'], args.relations)
+            )(this.state)
           )
           return true
         }
@@ -151,11 +154,25 @@ class App extends Component {
     )
   }
 
+  renderRelationStr = (relation, relField) => {
+    const { t } = this.props
+
+    if (!relation)  return 'unknown'
+
+    switch (relation.type) {
+      case 1:
+        return relation[relField].toUpperCase()
+
+      case 0:
+        return relation[relField].toUpperCase() + ` (${t('userDefined')})`
+    }
+  }
+
   renderBridge (bridge, currentElementId, key, isEditable) {
     const { t }     = this.props
     const relation  = this.state.relations.find(r => '' + r.id === '' + bridge.relation)
     const relField  = bridge.from !== currentElementId ? 'active_name' : 'passive_name'
-    const relStr    = relation ? (relation[relField].toUpperCase()) : 'unknown'
+    const relStr    = this.renderRelationStr(relation, relField)
 
     const cpartId   = bridge.from !== currentElementId ? bridge.from : bridge.to
     const cpart     = this.state.elementDict[cpartId]
@@ -297,8 +314,22 @@ class App extends Component {
 
   renderB () {
     const { t } = this.props
-    const { bridges, annotations, elementId, userInfo } = this.state
-    const canEdit = (item, userInfo) => userInfo.admin || item.created_by === userInfo.id
+    const { annotations, elementId, userInfo } = this.state
+    const sortBridges  = (list) => {
+      list.sort((a, b) => {
+        const relationA = this.state.relations.find(r => '' + r.id === '' + a.relation)
+        const relationB = this.state.relations.find(r => '' + r.id === '' + b.relation)
+
+        // Standard relations come first before user defined relations
+        if (relationA !== relationB)  return relationB.type - relationA.type
+
+        // If relation type equals, Sort by id
+        return b.id - a.id
+      })
+      return list
+    }
+    const bridges   = sortBridges(this.state.bridges)
+    const canEdit   = (item, userInfo) => userInfo.admin || item.created_by === userInfo.id
 
     return (
       <Collapse defaultActiveKey={['notes', 'bridges']}>

@@ -405,12 +405,38 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
       log('showBridgesModal onAsk', cmd, args)
 
       switch (cmd) {
-        case 'INIT_RELATED_ELEMENTS':
+        case 'INIT_RELATED_ELEMENTS': {
+          const getExtraRelationIds = (bridges, relations) => {
+            return bridges.reduce((list, b) => {
+              if (!relations.find(r => r.id === b.relation)) {
+                list.push(b.relation)
+              }
+              return list
+            }, [])
+          }
+
           return Promise.all([
             API.loadRelations(),
             API.checkUser()
           ])
-          .then(([relations, userInfo]) => ({ userInfo, relations, bridges, annotations, elementId }))
+          .then(([relations, userInfo]) => {
+            // Note: there could be relations used in bridges, but not included in your own relation list
+            const extraRelationIds  = getExtraRelationIds(bridges, relations)
+            const pExtraRelations   = extraRelationIds.length > 0
+                                        ? API.listRelationsByIds(extraRelationIds)
+                                        : Promise.resolve([])
+
+            return pExtraRelations.then(extraRelations => {
+              return {
+                userInfo,
+                bridges,
+                annotations,
+                elementId,
+                relations: [...relations, ...extraRelations]
+              }
+            })
+          })
+        }
 
         case 'RELOAD_BRIDGES_AND_NOTES': {
           getCsAPI().tryShowBridges()
@@ -457,7 +483,11 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
               },
               onSuccess: ({ bridge }) => {
                 log('EDIT_BRIDGE onSuccess', bridge)
-                iframeAPI.ask('UPDATE_BRIDGE', { bridge })
+
+                // Note: There could be new relation created,
+                API.loadRelations()
+                .then(relations => iframeAPI.ask('UPDATE_BRIDGE', { bridge, relations }))
+
                 csAPI.tryShowBridges()
               }
             })
