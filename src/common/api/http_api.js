@@ -226,6 +226,11 @@ export const listBridgesWithElementIds = wrap((eids) => {
 })
 
 // Relations
+export const createRelation = wrap((data) => {
+  return jwtRequest.post(apiUrl('/relations'))
+  .send(data)
+})
+
 export const listRelations = wrap(() => {
   return jwtRequest.get(apiUrl('/relations'))
 }, {

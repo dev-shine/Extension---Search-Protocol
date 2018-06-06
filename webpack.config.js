@@ -21,6 +21,7 @@ module.exports = {
     annotate:         './src/annotate/index.js',
     build_bridge:     './src/build_bridge/index.js',
     image_area:       './src/image_area/index.js',
+    upsert_relation:  './src/upsert_relation/index.js',
     after_create_bridge: './src/after_create_bridge/index.js'
   },
   output: {
