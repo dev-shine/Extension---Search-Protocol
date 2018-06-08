@@ -94,9 +94,9 @@ export default {
     addRelation: 'Add Relation',
     activeName: 'Active Name',
     activeNameErrMsg: 'Please input active name',
-    activeNamePlaceholder: 'Active Name',
+    activeNamePlaceholder: 'Enter the active form of the relationship. E.g., Supports',
     passiveName: 'Passive Name',
     passiveNameErrMsg: 'Please input passive name',
-    passiveNamePlaceholder: 'Passive Name'
+    passiveNamePlaceholder: 'Enter the active form of the relationship. E.g., Is Supported By'
   }
 }
