@@ -26,7 +26,7 @@ export const showLinks = ({ elements, bridges, annotations, url, onCreate, getCs
       annotations:  annotations.filter(b => b.target === item.id)
     }
   })
-  // .filter(item => item.bridges.length + item.annotations.length > 0)
+  .filter(item => item.bridges.length + item.annotations.length > 0)
 
   const allLinks  = links.map(link => showOneLink({
     link,
