@@ -94,9 +94,9 @@ export default {
     addRelation: '添加关系',
     activeName: '主动名称',
     activeNameErrMsg: '请输入主动名称',
-    activeNamePlaceholder: '主动名称',
+    activeNamePlaceholder: '请输入此关系的主动名称，例如：支持',
     passiveName: '被动名称',
     passiveNameErrMsg: '请输入被动名称',
-    passiveNamePlaceholder: '被动名称'
+    passiveNamePlaceholder: '请输入此关系的被动名称，例如：被支持'
   }
 }
