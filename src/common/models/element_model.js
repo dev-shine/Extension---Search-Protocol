@@ -84,7 +84,7 @@ export function isElementEqual (a, b) {
   const isEqual       = (x, y) => JSON.stringify(x) === JSON.stringify(y)
   const commonKeys    = ['url']
   const keysToCompare = {
-    [ELEMENT_TYPE.IMAGE]:      [...commonKeys, 'imageSize', 'offset', 'locator'],
+    [ELEMENT_TYPE.IMAGE]:      [...commonKeys, 'imageSize', 'rect', 'locator'],
     [ELEMENT_TYPE.SELECTION]:  [...commonKeys, 'start', 'end', 'text']
   }
 
