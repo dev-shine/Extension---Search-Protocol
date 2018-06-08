@@ -201,15 +201,17 @@ const API = {
       return storage.set('user_settings', {...settings, ...obj})
     })
   },
-  showElementInNewTab: (element) => {
-    return Ext.tabs.create({ url: element.url })
+  showElementInCurrentTab: (element) => {
+    return getCurrentTab()
     .then(tab => {
-      log('showElementInNewTab got tab', tab)
-      return tabIpcStore.get(tab.id, 10000)
-    })
-    .then(ipc => {
-      log('showElementInNewTab got ipc', ipc)
-      return ipc.ask('HIGHLIGHT_ELEMENT', { element })
+      tabIpcStore.del(tab.id)
+
+      return Ext.tabs.update(tab.id, { url: element.url })
+      .then(() => tabIpcStore.get(tab.id, 10000))
+      .then(ipc => {
+        log('showElementInCurrentTab got ipc', ipc)
+        return ipc.ask('HIGHLIGHT_ELEMENT', { element })
+      })
     })
   },
   openSocialLogin: (provider) => {

@@ -11,7 +11,7 @@ export const methods = [
   'askCurrentTab',
   'startAnnotationOnCurrentTab',
   'captureScreenInSelection',
-  'showElementInNewTab',
+  'showElementInCurrentTab',
   'openSocialLogin',
   'changeLanguage',
 

@@ -122,7 +122,7 @@ class CreateLinkComp extends React.Component {
                   from: this.props.bridge.fromElement,
                   to:   this.props.bridge.toElement
                 }, editBridgetTarget)
-                API.showElementInNewTab(link)
+                API.showElementInCurrentTab(link)
               }}
             >
               <img src="./img/edit.png" style={{ height: '14px' }} />
