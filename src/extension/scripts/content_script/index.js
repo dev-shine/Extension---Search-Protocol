@@ -582,6 +582,7 @@ const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}
 }
 
 const selectImageArea = ({ $img, linkData }) => {
+  log('selectImageArea', linkData)
   const extraWidth  = 40
   const extraHeight = 130
   const minWidth    = 500
@@ -589,8 +590,20 @@ const selectImageArea = ({ $img, linkData }) => {
     const onAsk = (cmd, args) => {
       switch (cmd) {
         case 'INIT': {
-          const { elements = [] }   = state.currentPage
-          const imageElements       = elements.filter(item => item.type === ELEMENT_TYPE.IMAGE)
+          const {
+            elements = [],
+            bridges  = [],
+            annotations = []
+          } = state.currentPage
+          const imageElements       = elements.filter(item => {
+            if (item.type !== ELEMENT_TYPE.IMAGE) return false
+
+            const bridgeCount       = bridges.filter(a => a.from === item.id || a.to === item.id).length
+            const annotationCount   = annotations.filter(a => a.target === item.id).length
+            if (bridgeCount + annotationCount === 0)  return false
+
+            return true
+          })
           const existingImageAreas  = imageElements.filter(item => {
             if (item.locator !== linkData.locator) {
               return false
