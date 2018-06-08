@@ -95,9 +95,10 @@ class App extends Component {
       this.setState({ linkData, annotationData, mode })
 
       this.props.form.setFieldsValue({
-        title:  annotationData.title || '',
-        desc:   annotationData.desc || '',
-        tags:   annotationData.tags || ''
+        title:    annotationData.title || '',
+        desc:     annotationData.desc || '',
+        tags:     annotationData.tags || '',
+        privacy:  annotationData.privacy ? (annotationData.privacy + '') : '0'
       })
     })
   }
@@ -164,6 +165,24 @@ class App extends Component {
               />
             )}
           </Form.Item>
+          <Form.Item label={t('privacy:privacyLabel')}>
+            {getFieldDecorator('privacy', {
+              validateTrigger: ['onBlur'],
+              rules: [
+                { required: true, message: t('privacy:privacyErrMsg') }
+              ]
+            })(
+              <Select
+                placeholder={t('privacy:privacyPlaceholder')}
+                onChange={val => this.onUpdateField(parseInt(val, 10), 'privacy')}
+                style={{ width: '150px' }}
+              >
+                {C.PRIVACY_LIST.map(p => (
+                  <Select.Option key={p.value} value={'' + p.value}>{t(`privacy:${p.key}`)}</Select.Option>
+                ))}
+              </Select>
+            )}
+          </Form.Item>
           <div className="actions">
             <Button
               type="primary"
@@ -190,5 +209,5 @@ class App extends Component {
 
 export default compose(
   Form.create(),
-  translate(['common', 'createNote'])
+  translate(['common', 'createNote', 'privacy'])
 )(App)

@@ -130,6 +130,7 @@ class App extends Component {
   render () {
     if (!this.state.mode) return <div />
 
+    log('to render CreateLinkComp', this.state.bridgeData)
     return (
       <CreateLinkComp
         mode={this.state.mode}

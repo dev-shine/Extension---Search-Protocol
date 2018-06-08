@@ -29,11 +29,17 @@ class CreateLinkComp extends React.Component {
   }
 
   encodeData = (values) => {
-    return updateIn(['relation'], x => parseInt(x, 10), values)
+    return compose(
+      updateIn(['relation'], x => parseInt(x, 10)),
+      updateIn(['privacy'], x => parseInt(x, 10))
+    )(values)
   }
 
   decodeData = (values) => {
-    return updateIn(['relation'], x => x && ('' + x), values)
+    return compose(
+      updateIn(['relation'], x => x && ('' + x)),
+      updateIn(['privacy'], x => x ? ('' + x) : '0')
+    )(values)
   }
 
   onSubmit = () => {
@@ -57,7 +63,8 @@ class CreateLinkComp extends React.Component {
         const values = this.decodeData({
           desc:       this.props.bridge.desc,
           tags:       this.props.bridge.tags,
-          relation:   this.props.bridge.relation
+          relation:   this.props.bridge.relation,
+          privacy:    this.props.bridge.privacy
         })
         this.props.form.setFieldsValue(values)
       }, 60)
@@ -69,7 +76,8 @@ class CreateLinkComp extends React.Component {
       this.props.form.setFieldsValue(this.decodeData({
         desc:       nextProps.bridge.desc,
         tags:       nextProps.bridge.tags,
-        relation:   nextProps.bridge.relation
+        relation:   nextProps.bridge.relation,
+        privacy:    nextProps.bridge.privacy
       }))
     }
 
@@ -253,6 +261,26 @@ class CreateLinkComp extends React.Component {
               />
             )}
           </Form.Item>
+
+          <Form.Item label={t('privacy:privacyLabel')}>
+            {getFieldDecorator('privacy', {
+              validateTrigger: ['onBlur'],
+              rules: [
+                { required: true, message: t('privacy:privacyErrMsg') }
+              ]
+            })(
+              <Select
+                placeholder={t('privacy:privacyPlaceholder')}
+                defaultValue="0"
+                onChange={val => this.props.onUpdateField(parseInt(val, 10), 'privacy')}
+                style={{ width: '150px' }}
+              >
+                {C.PRIVACY_LIST.map(p => (
+                  <Select.Option key={p.value} value={'' + p.value}>{t(`privacy:${p.key}`)}</Select.Option>
+                ))}
+              </Select>
+            )}
+          </Form.Item>
         </Form>
 
         <div className="actions">
@@ -280,5 +308,5 @@ class CreateLinkComp extends React.Component {
 
 export default compose(
   Form.create(),
-  translate(['common', 'buildBridge'])
+  translate(['common', 'buildBridge', 'privacy'])
 )(CreateLinkComp)
