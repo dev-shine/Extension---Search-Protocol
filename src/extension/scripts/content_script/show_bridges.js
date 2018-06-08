@@ -417,7 +417,7 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
 
           return Promise.all([
             API.loadRelations(),
-            API.checkUser()
+            API.checkUser().catch(e => null)
           ])
           .then(([relations, userInfo]) => {
             // Note: there could be relations used in bridges, but not included in your own relation list

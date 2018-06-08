@@ -329,7 +329,7 @@ class App extends Component {
       return list
     }
     const bridges   = sortBridges(this.state.bridges)
-    const canEdit   = (item, userInfo) => userInfo.admin || item.created_by === userInfo.id
+    const canEdit   = (item, userInfo) => userInfo && (userInfo.admin || item.created_by === userInfo.id)
 
     return (
       <Collapse defaultActiveKey={['notes', 'bridges']}>
