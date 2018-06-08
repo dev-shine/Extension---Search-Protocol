@@ -189,7 +189,7 @@ class App extends Component {
     const onClickLink = (e) => {
       if (cpart) {
         e.preventDefault()
-        API.showElementInNewTab(cpart)
+        API.showElementInCurrentTab(cpart)
       }
     }
 
