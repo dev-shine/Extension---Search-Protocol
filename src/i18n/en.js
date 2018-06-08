@@ -98,5 +98,12 @@ export default {
     passiveName: 'Passive Name',
     passiveNameErrMsg: 'Please input passive name',
     passiveNamePlaceholder: 'Enter the active form of the relationship. E.g., Is Supported By'
+  },
+  privacy: {
+    privacyLabel: 'Who should see this?',
+    privacyErrMsg: 'Please select privacy',
+    privacyPlaceholder: 'Who should see this?',
+    public: 'Public',
+    onlyMe: 'Only me'
   }
 }

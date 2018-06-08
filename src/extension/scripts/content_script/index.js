@@ -549,7 +549,7 @@ const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('annotate.html'),
     width:  600,
-    height: 400,
+    height: 480,
     onAsk: (cmd, args) => {
       log('annotate onAsk', cmd, args)
 
@@ -751,7 +751,7 @@ const buildBridge = ({
     const iframeAPI = createIframeWithMask({
       url:    Ext.extension.getURL('build_bridge.html'),
       width:  630,
-      height: 520,
+      height: 600,
       onAsk: (cmd, args) => {
         switch (cmd) {
           case 'INIT':

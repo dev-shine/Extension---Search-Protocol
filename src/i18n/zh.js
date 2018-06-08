@@ -98,5 +98,12 @@ export default {
     passiveName: '被动名称',
     passiveNameErrMsg: '请输入被动名称',
     passiveNamePlaceholder: '请输入此关系的被动名称，例如：被支持'
+  },
+  privacy: {
+    privacyLabel: '允许谁看到？',
+    privacyErrMsg: '请选择隐私设置',
+    privacyPlaceholder: '允许谁看到？',
+    public: '公开',
+    onlyMe: '仅限自己'
   }
 }
