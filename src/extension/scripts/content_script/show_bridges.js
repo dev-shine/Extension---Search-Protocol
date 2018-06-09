@@ -1,6 +1,6 @@
 import * as C from '../../../common/constant'
 import log from '../../../common/log'
-import API from '../../../common/api/cs_api'
+import API from 'cs_api'
 import Ext from 'ext'
 import { parseRangeJSON } from '../../../common/selection'
 import { ELEMENT_TYPE } from '../../../common/models/element_model'

@@ -44,7 +44,8 @@ module.exports = {
   resolve: {
     alias: Object.assign(
       {
-        ext$: path.resolve(__dirname, './src/common/web_extension.js')
+        ext$:     path.resolve(__dirname, './src/common/web_extension.js'),
+        cs_api$:  path.resolve(__dirname, './src/common/api/cs_api')
       },
       !isProduction ? {
         'antd/dist/antd.less': 'antd/dist/antd.css'

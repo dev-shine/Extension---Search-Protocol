@@ -8,7 +8,7 @@ import { translate } from 'react-i18next'
 import './settings.scss'
 import * as actions from '../actions'
 import { compose, setIn, updateIn } from '../../common/utils'
-import API from '../../common/api/popup_api'
+import API from 'cs_api'
 import log from '../../common/log'
 import i18n, { languages } from '../../i18n'
 

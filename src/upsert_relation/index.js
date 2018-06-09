@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './app'
-import API from '../common/api/popup_api'
+import API from 'cs_api'
 import i18n from '../i18n'
 
 const rootEl = document.getElementById('root');

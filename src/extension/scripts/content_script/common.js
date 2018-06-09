@@ -16,7 +16,7 @@ import { isPointInRange, selectionToJSON, parseRangeJSON } from '../../../common
 import { createIframe } from '../../../common/ipc/cs_postmessage'
 import { ELEMENT_TYPE, isElementEqual } from '../../../common/models/element_model'
 import { LOCAL_BRIDGE_STATUS, EDIT_BRIDGE_TARGET } from '../../../common/models/local_model'
-import API from '../../../common/api/cs_api'
+import API from 'cs_api'
 import log from '../../../common/log'
 import { showHyperLinkBadge, showLinks } from './show_bridges'
 import i18n from '../../../i18n'

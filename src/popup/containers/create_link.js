@@ -9,7 +9,7 @@ import * as actions from '../actions'
 import { compose, setIn, updateIn } from '../../common/utils'
 import { notifyError, notifySuccess } from '../../components/notification'
 import CreateLinkComp from '../../components/create_link'
-import API from '../../common/api/popup_api'
+import API from 'cs_api'
 
 class CreateLink extends React.Component {
   onClickSubmit = (data) => {
