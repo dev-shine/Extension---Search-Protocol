@@ -3,18 +3,17 @@ import log from '../../../common/log'
 import API from '../../../common/api/cs_api'
 import Ext from '../../../common/web_extension'
 import { parseRangeJSON } from '../../../common/selection'
-import { ELEMENT_TYPE, isElementEqual } from '../../../common/models/element_model'
-import { createIframe } from '../../../common/ipc/cs_postmessage'
-import { liveBuild, isRectsIntersect, isPointInRect, or } from '../../../common/utils'
+import { ELEMENT_TYPE } from '../../../common/models/element_model'
+import { liveBuild, isRectsIntersect, or } from '../../../common/utils'
 import {
   setStyle, scrollLeft, scrollTop, clientWidth, clientHeight,
   pixel, pageX, pageY, getElementByXPath
 } from '../../../common/dom_utils'
 import {
   commonStyle,
-  createSelectionBox, createButtons, createRect, createEl,
-  createContextMenus, createIframeWithMask,
-  createOverlayForRange, createOverlayForRects
+  createEl,
+  createIframeWithMask,
+  createOverlayForRects
 } from './common'
 import { rectsPointPosition } from './position'
 
@@ -439,7 +438,7 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
         }
 
         case 'RELOAD_BRIDGES_AND_NOTES': {
-          getCsAPI().tryShowBridges()
+          getCsAPI().showContentElements()
           return true
         }
 
@@ -453,7 +452,7 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
             onSuccess: ({ annotation }) => {
               log('EDIT_ANNOTATION onSuccess', annotation)
               iframeAPI.ask('UPDATE_ANNOTATION', { annotation })
-              csAPI.tryShowBridges()
+              csAPI.showContentElements()
             }
           })
           return true
@@ -488,7 +487,7 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
                 API.loadRelations()
                 .then(relations => iframeAPI.ask('UPDATE_BRIDGE', { bridge, relations }))
 
-                csAPI.tryShowBridges()
+                csAPI.showContentElements()
               }
             })
           })
