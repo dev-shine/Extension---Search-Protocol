@@ -1,4 +1,4 @@
-import Ext from '../../common/web_extension'
+import Ext from 'ext'
 import storage from '../../common/storage'
 import { delay } from '../../common/utils'
 import API from '../../common/api/bg_api'

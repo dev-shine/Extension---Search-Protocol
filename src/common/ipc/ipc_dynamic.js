@@ -1,4 +1,4 @@
-import Ext from '../web_extension'
+import Ext from 'ext'
 import { csInit } from './ipc_bg_cs'
 import { popupInit } from './ipc_bg_popup'
 import { ipcForIframe } from './cs_postmessage'
