@@ -7,7 +7,7 @@ import { Alert, Button, Select, Form, Input } from 'antd'
 import './home.scss'
 import * as actions from '../actions'
 import { compose, setIn, updateIn } from '../../common/utils'
-import API from '../../common/api/popup_api'
+import API from 'cs_api'
 import { notifyError, notifySuccess } from '../../components/notification'
 
 class Home extends React.Component {

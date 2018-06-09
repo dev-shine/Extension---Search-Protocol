@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import App from './app'
 import ipc from '../common/ipc/ipc_dynamic'
 import { passWheelEvent } from '../common/ipc/cs_postmessage'
-import API from '../common/api/popup_api'
+import API from 'cs_api'
 import i18n from '../i18n'
 
 if (window.top !== window) {

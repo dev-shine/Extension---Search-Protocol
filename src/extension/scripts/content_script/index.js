@@ -1,6 +1,6 @@
 import ipc from '../../../common/ipc/ipc_cs'
 import log from '../../../common/log'
-import API from '../../../common/api/cs_api'
+import API from 'cs_api'
 import {
   getPPI, getElementByXPath
 } from '../../../common/dom_utils'

@@ -4,7 +4,7 @@ import { translate } from 'react-i18next'
 
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import { flatten, setIn, updateIn, compose } from '../common/utils'
-import API from '../common/api/cs_api'
+import API from 'cs_api'
 import log from '../common/log'
 import { ELEMENT_TYPE } from '../common/models/element_model'
 import ClampPre from '../components/clamp_pre'

@@ -3,7 +3,7 @@ import { Checkbox, Button } from 'antd'
 import { translate } from 'react-i18next'
 
 import ipc from '../common/ipc/ipc_dynamic'
-import API from '../common/api/cs_api'
+import API from 'cs_api'
 import log from '../common/log'
 import './app.scss'
 

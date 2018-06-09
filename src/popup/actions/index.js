@@ -1,5 +1,5 @@
 import { type3, types as T } from './action_types'
-import API from '../../common/api/popup_api'
+import API from 'cs_api'
 import { LOCAL_BRIDGE_STATUS } from '../../common/models/local_model'
 
 export function setRoute (data) {
