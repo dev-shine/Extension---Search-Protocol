@@ -9,6 +9,7 @@ import log from '../common/log'
 import { ELEMENT_TYPE } from '../common/models/element_model'
 import ClampPre from '../components/clamp_pre'
 import { notifyError, notifySuccess } from '../components/notification'
+import 'antd/dist/antd.less'
 import './app.scss'
 
 const ipc = ipcForIframe()

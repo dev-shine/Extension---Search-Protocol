@@ -1,4 +1,5 @@
 node_modules
 dist
+dist_sdk
 public/bundle.js
 *.zip
