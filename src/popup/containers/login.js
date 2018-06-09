@@ -10,7 +10,7 @@ import { compose } from '../../common/utils'
 import Tab from '../components/tab'
 import { notifySuccess } from '../../components/notification'
 import Ext from 'ext'
-import API from 'cs_api'
+import API from '../../common/api/popup_api'
 import './login.scss'
 
 class __LoginForm extends React.Component {

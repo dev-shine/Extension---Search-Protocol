@@ -5,7 +5,7 @@ import {HashRouter} from 'react-router-dom'
 import App from './app'
 import { Provider, createStore, reducer } from './redux'
 import { setUserInfo, setLoaded, setLocalBridge } from './actions'
-import API from 'cs_api'
+import API from '../common/api/popup_api'
 import i18n from '../i18n'
 
 const store = createStore(
