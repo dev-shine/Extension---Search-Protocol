@@ -42,9 +42,14 @@ module.exports = {
     }
   },
   resolve: {
-    alias: !isProduction ? {
-      'antd/dist/antd.less': 'antd/dist/antd.css'
-    } : {}
+    alias: Object.assign(
+      {
+        ext$: path.resolve(__dirname, './src/common/web_extension.js')
+      },
+      !isProduction ? {
+        'antd/dist/antd.less': 'antd/dist/antd.css'
+      } : {}
+    )
   },
   module: {
     rules: (function () {

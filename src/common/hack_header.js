@@ -1,5 +1,5 @@
 import { uid, without } from './utils'
-import Ext from './web_extension'
+import Ext from 'ext'
 
 let jobs = {}
 

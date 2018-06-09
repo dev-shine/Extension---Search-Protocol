@@ -9,7 +9,7 @@ import * as actions from '../actions'
 import { compose } from '../../common/utils'
 import Tab from '../components/tab'
 import { notifySuccess } from '../../components/notification'
-import Ext from '../../common/web_extension'
+import Ext from 'ext'
 import API from '../../common/api/popup_api'
 import './login.scss'
 

@@ -1,4 +1,4 @@
-import Ext from '../web_extension'
+import Ext from 'ext'
 
 const local = Ext.storage.local
 

@@ -1,4 +1,4 @@
-import Ext from './web_extension'
+import Ext from 'ext'
 import { delay } from './utils'
 
 // refer to https://stackoverflow.com/questions/12168909/blob-from-dataurl

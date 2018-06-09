@@ -1,5 +1,5 @@
 import ipcPromise from './ipc_promise'
-import Ext from '../web_extension'
+import Ext from 'ext'
 
 const TIMEOUT = 1000 * 60
 

@@ -1,5 +1,5 @@
 import * as C from '../../../common/constant'
-import Ext from '../../../common/web_extension'
+import Ext from 'ext'
 import {
   reduceRects, normalizeUrl, objMap, uid, or,
   setIn, isTwoRangesIntersecting, isLatinCharacter

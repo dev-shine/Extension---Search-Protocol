@@ -1,6 +1,6 @@
 import { bgInit as popupBgInit } from '../ipc/ipc_bg_popup'
 import { bgInit as csBgInit } from '../ipc/ipc_bg_cs'
-import Ext from '../web_extension'
+import Ext from 'ext'
 import storage from '../storage'
 import { getTabIpcstore } from '../tab_ipc_store'
 import { captureScreenInSelection } from '../capture_screenshot'
