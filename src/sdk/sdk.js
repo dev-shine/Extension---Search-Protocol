@@ -1,12 +1,13 @@
 import { genShowContentElements, bindSelectionEvent } from '../extension/scripts/content_script/common'
+import { getPPI } from '../common/dom_utils'
 
 ;(function () {
   let currentPage
 
   const mouseRevealConfig = {
-    nearDistanceInInch:   1,
+    nearDistanceInInch:   3,
     nearVisibleDuration:  2,
-    pixelsPerInch: 40
+    pixelsPerInch: getPPI()
   }
   const getCurrentPage = () => currentPage
   const getCsAPI = () => ({
@@ -17,6 +18,7 @@ import { genShowContentElements, bindSelectionEvent } from '../extension/scripts
   })
   const showContentElements = genShowContentElements({
     getCsAPI,
+    showSubMenu:          false,
     getLocalBridge:       () => 'Just a placeholder',
     getMouseRevealConfig: () => mouseRevealConfig,
     onUpdateCurrentPage:  (page) => { currentPage = page }

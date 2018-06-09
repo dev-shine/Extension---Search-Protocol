@@ -189,15 +189,16 @@ class App extends Component {
     })()
     const onClickLink = (e) => {
       if (cpart) {
-        e.preventDefault()
-        API.showElementInCurrentTab(cpart)
+        if (API.showElementInCurrentTab(cpart) !== true) {
+          e.preventDefault()
+        }
       }
     }
 
     return (
       <div className="bridge-item base-item" key={key}>
         <div className="item-content">
-          <a className="bridge-image" href={cpart.url} onClick={onClickLink}>
+          <a className="bridge-image" target="_top" href={cpart.url} onClick={onClickLink}>
             <img src={cpart.image} />
           </a>
           <div className="bridge-detail">
@@ -214,7 +215,7 @@ class App extends Component {
                 <tr>
                   <td>{t('link')}</td>
                   <td>
-                    <a target="_blank" href={cpart.url} onClick={onClickLink}>
+                    <a target="_top" href={cpart.url} onClick={onClickLink}>
                       {cpart.url || '[URL deleted]'}
                     </a>
                   </td>

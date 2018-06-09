@@ -33,7 +33,8 @@ module.exports = {
   resolve: {
     alias: Object.assign(
       {
-        ext$: path.resolve(__dirname, './src/sdk/web_extension.js')
+        ext$:     path.resolve(__dirname, './src/sdk/web_extension.js'),
+        cs_api$:  path.resolve(__dirname, './src/sdk/api')
       },
       !isProduction ? {
         'antd/dist/antd.less': 'antd/dist/antd.css'
@@ -96,6 +97,14 @@ module.exports = {
       const list = [
         {
           from: 'src/extension/assets/related_elements.html'
+        },
+        {
+          from: 'src/extension/assets/svg',
+          to: 'svg'
+        },
+        {
+          from: 'src/extension/assets/img',
+          to: 'img'
         }
       ]
 

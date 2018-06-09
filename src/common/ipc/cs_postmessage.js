@@ -1,7 +1,7 @@
 
 const TYPE = 'CS_MSG'
 
-export const postMessage = (targetWin, myWin, payload, target = '*', timeout = 5000) => {
+export const postMsg = (targetWin, myWin, payload, target = '*', timeout = 5000) => {
   return new Promise((resolve, reject) => {
     if (!targetWin || !targetWin.postMessage) {
       throw new Error('csPostMessage: targetWin is not a window', targetWin)
@@ -107,7 +107,7 @@ export const ipcForIframe = ({ targetWindow = window.top, timeout = 10000 } = {}
 
   return {
     ask: (cmd, args) => {
-      return postMessage(targetWindow, window, { cmd, args }, '*', timeout)
+      return postMsg(targetWindow, window, { cmd, args }, '*', timeout)
     },
     onAsk: (fn) => {
       onAsk = fn
@@ -155,7 +155,7 @@ export const createIframe = ({ url, width, height, onLoad, onAsk, onMsg, ipcTime
     },
     ask: (cmd, args) => {
       return pLoad.then(() => {
-        return postMessage($iframe.contentWindow, window, { cmd, args }, '*', ipcTimeout)
+        return postMsg($iframe.contentWindow, window, { cmd, args }, '*', ipcTimeout)
       })
     }
   }
