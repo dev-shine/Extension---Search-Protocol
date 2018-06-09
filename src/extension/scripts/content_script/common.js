@@ -1519,7 +1519,8 @@ export const genShowContentElements = ({
   getLocalBridge,
   getMouseRevealConfig,
   onUpdateCurrentPage = () => {},
-  onUpdateAPI = () => {}
+  onUpdateAPI = () => {},
+  showSubMenu = true
 } = {}) => (() => {
   let linksAPI
 
@@ -1534,11 +1535,13 @@ export const genShowContentElements = ({
         ...data,
         url,
         getCsAPI,
-        onCreate: (api) => addSubmenuForBadge({
-          getLocalBridge,
-          link: api,
-          showContentElements: fn
-        })
+        onCreate: showSubMenu
+                    ? (api) => addSubmenuForBadge({
+                      getLocalBridge,
+                      link: api,
+                      showContentElements: fn
+                    })
+                    : () => {}
       })
       oldAPI.hide()
 

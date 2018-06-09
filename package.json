@@ -6,6 +6,7 @@
     "start": "NODE_ENV=development webpack --watch --progress --hide-modules --mode development --config webpack.config.js",
     "preview": "NODE_ENV=production webpack --watch --progress --hide-modules --mode production --config webpack.config.js",
     "build": "NODE_ENV=production webpack --mode production --config webpack.config.js",
+    "dev-sdk": "NODE_ENV=development webpack --mode development --config webpack.sdk.config.js",
     "build-sdk": "NODE_ENV=production webpack --mode production --config webpack.sdk.config.js"
   },
   "author": "",

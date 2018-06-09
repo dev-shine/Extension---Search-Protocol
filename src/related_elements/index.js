@@ -9,7 +9,9 @@ const render = () => ReactDOM.render(<App />, rootEl)
 
 render()
 
-API.getUserSettings()
-.then(settings => {
-  i18n.changeLanguage(settings.language)
-})
+if (API.getUserSettings) {
+  API.getUserSettings()
+  .then(settings => {
+    i18n.changeLanguage(settings.language)
+  })
+}
