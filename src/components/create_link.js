@@ -186,7 +186,7 @@ class CreateLinkComp extends React.Component {
                       onChange={val => this.props.onUpdateField(parseInt(val, 10), 'relation')}
                     >
                       {this.props.relations.map(r => (
-                        <Select.Option key={r.id} value={'' + r.id}>{r.active_name}</Select.Option>
+                        <Select.Option key={r.id} value={'' + r.id}>{r.passive_name}</Select.Option>
                       ))}
                     </Select>
                   )}
