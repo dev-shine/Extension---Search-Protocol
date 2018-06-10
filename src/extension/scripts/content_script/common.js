@@ -1314,7 +1314,13 @@ export const createGetMenus = ({ showContentElements, getLocalBridge, fixedMenus
 export const isSelectionRangeValid = (currentPage) => (range) => {
   const { elements = [] } = currentPage
   const selectionElements = elements.filter(item => item.type === ELEMENT_TYPE.SELECTION)
-  const hasIntersect      = or(...selectionElements.map(item => isTwoRangesIntersecting(range, parseRangeJSON(item))))
+  const hasIntersect      = or(...selectionElements.map(item => {
+    try {
+      return isTwoRangesIntersecting(range, parseRangeJSON(item))
+    } catch (e) {
+      return false
+    }
+  }))
   return !hasIntersect
 }
 
