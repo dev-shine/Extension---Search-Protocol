@@ -27,6 +27,6 @@ npm run build-sdk
       </script>
     ```
 
-2. Create an browser bookmark with that javascript (without '<script>' '</script>'), so that you can test on any pages. (tutorial)[https://www.useloom.com/share/3416fcecd5e7487c92903644422e5ed2?focus_title=1&muted=1]
+2. Create an browser bookmark with that javascript (without '<script>' '</script>'), so that you can test on any pages. [tutorial](https://www.useloom.com/share/3416fcecd5e7487c92903644422e5ed2?focus_title=1&muted=1)
 
 
