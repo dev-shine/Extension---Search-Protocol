@@ -33,6 +33,7 @@ export const showLinks = ({ elements, bridges, annotations, url, onCreate, getCs
     getCsAPI,
     getLinksAPI:  () => linksAPI
   }))
+  .filter(x => x)
 
   const linksAPI = {
     links: allLinks,
@@ -174,6 +175,7 @@ export const showImage = ({ link, getLinksAPI, getCsAPI, color, opacity, needBad
   let timer
 
   const liveBuildAPI = liveBuild({
+    initial: true,
     bindEvent: (fn) => {
       window.addEventListener('resize', fn)
       window.addEventListener('scroll', fn)
@@ -185,22 +187,27 @@ export const showImage = ({ link, getLinksAPI, getCsAPI, color, opacity, needBad
       clearInterval(timer)
     },
     getFuse: () => {
-      const $img        = getElementByXPath(link.locator)
-      const boundRect   = $img.getBoundingClientRect()
-      const ratio       = link.imageSize && link.imageSize.width ? (boundRect.width / link.imageSize.width) : 1
-      const rect        = {
-        top:      ratio * link.rect.y + boundRect.top,
-        left:     ratio * link.rect.x + boundRect.left,
-        width:    ratio * link.rect.width,
-        height:   ratio * link.rect.height
+      try {
+        const $img        = getElementByXPath(link.locator)
+        const boundRect   = $img.getBoundingClientRect()
+        const ratio       = link.imageSize && link.imageSize.width ? (boundRect.width / link.imageSize.width) : 1
+        const rect        = {
+          top:      ratio * link.rect.y + boundRect.top,
+          left:     ratio * link.rect.x + boundRect.left,
+          width:    ratio * link.rect.width,
+          height:   ratio * link.rect.height
+        }
+        return rect
+      } catch (e) {
+        return null
       }
-      return rect
     },
     isEqual: (r1, r2) => {
       const encode = (r) => JSON.stringify(r)
       return encode(r1) === encode(r2)
     },
     onFuseChange: (rect, oldAPI) => {
+      if (!rect)  return null
       if (oldAPI) oldAPI.destroy()
 
       const topRight    = {
@@ -269,6 +276,7 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
   let timer
 
   const liveBuildAPI = liveBuild({
+    initial: true,
     bindEvent: (fn) => {
       window.addEventListener('resize', fn)
       window.addEventListener('scroll', fn)
@@ -280,15 +288,22 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
       clearInterval(timer)
     },
     getFuse: () => {
-      const range   = parseRangeJSON(link)
-      const rects   = range.getClientRects()
-      return Array.from(rects)
+      try {
+        const range   = parseRangeJSON(link)
+        log('showSelection - getFuse', range, range.getClientRects(), range.getBoundingClientRect())
+        const rects   = range.getClientRects()
+        return Array.from(rects)
+      } catch (e) {
+        return null
+      }
     },
     isEqual: (rs1, rs2) => {
       const encode = (rs) => JSON.stringify(rs.map(r => r.toJSON()))
       return encode(rs1) === encode(rs2)
     },
     onFuseChange: (rects, oldAPI) => {
+      log('showSelection', rects)
+      if (!rects || !rects.length)  return null
       if (oldAPI) oldAPI.destroy()
 
       const topRight    = {
