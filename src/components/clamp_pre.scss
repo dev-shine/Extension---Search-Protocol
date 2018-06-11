@@ -17,10 +17,15 @@
   }
 
   .action-button {
-    display: block;
+    display: flex;
+    align-items: center;
     margin-top: 10px;
     color: $primary-color;
     cursor: pointer;
+
+    .toggle-fold {
+      margin-right: 15px;
+    }
   }
 }
 

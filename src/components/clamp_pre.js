@@ -4,7 +4,8 @@ import './clamp_pre.scss'
 
 class ClampPre extends React.Component {
   static propTypes = {
-    lines: PropTypes.number
+    lines: PropTypes.number,
+    extraActions: PropTypes.node
   }
 
   static defaultProps = {
@@ -45,12 +46,13 @@ class ClampPre extends React.Component {
   }
 
   renderShowAllButton () {
-    if (!this.state.ready || !this.state.needClamp) return null
+    if (!this.state.ready) return null
 
     return (
-      <span className="action-button" onClick={this.toggleFold}>
-        {this.state.fold ? 'Show all ▼' : 'Hide ▲'}
-      </span>
+      <div className="action-button" onClick={this.state.needClamp ? this.toggleFold : () => {}}>
+        {this.state.needClamp ? (<span className="toggle-fold">{this.state.fold ? 'Show all ▼' : 'Hide ▲'}</span>) : null}
+        {this.props.extraActions || null}
+      </div>
     )
   }
 
