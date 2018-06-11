@@ -104,15 +104,29 @@ class App extends Component {
       <div className="annotation-item base-item" key={key}>
         <div className="item-content">
           <h4>{annotation.title}</h4>
-          <ClampPre>{annotation.desc}</ClampPre>
-          <div className="tags">
-            {tags.map((tag, i) => (
-              <span key={i} className="tag-item">{tag}</span>
-            ))}
-          </div>
+          <ClampPre
+            extraActions={(
+              <div className="extra">
+                {annotation.privacy !== 0 ? (
+                  <img src="./img/lock.png" className="lock-icon" />
+                ) : null}
+                {tags.map((tag, i) => (
+                  <span key={i} className="tag-item">{tag}</span>
+                ))}
+              </div>
+            )}
+          >
+            {annotation.desc}
+          </ClampPre>
         </div>
-        {isEditable ? (
-          <div className="actions">
+        <div className="actions">
+          <Button
+            type="default"
+            onClick={() => {}}
+          >
+            <img src="./img/share.png" style={{ height: '14px' }} />
+          </Button>
+          {isEditable ? (
             <Button
               type="default"
               onClick={e => {
@@ -121,6 +135,8 @@ class App extends Component {
             >
               <img src="./img/edit.png" style={{ height: '14px' }} />
             </Button>
+          ) : null}
+          {isEditable ? (
             <Popconfirm
               onConfirm={() => {
                 API.deleteNote(annotation.id)
@@ -149,8 +165,8 @@ class App extends Component {
                 <img src="./img/delete.png" style={{ height: '14px' }} />
               </Button>
             </Popconfirm>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </div>
     )
   }
@@ -175,6 +191,7 @@ class App extends Component {
     const relField  = bridge.from !== currentElementId ? 'active_name' : 'passive_name'
     const relStr    = this.renderRelationStr(relation, relField)
 
+    const tags      = bridge.tags.split(',').map(s => s.trim())
     const cpartId   = bridge.from !== currentElementId ? bridge.from : bridge.to
     const cpart     = this.state.elementDict[cpartId]
     const source    = new URL(cpart.url).origin.replace(/^.*?:\/\//, '')
@@ -202,33 +219,44 @@ class App extends Component {
             <img src={cpart.image} />
           </a>
           <div className="bridge-detail">
-            <table className="the-table">
-              <tbody>
-                <tr>
-                  <td>{t('relation')}</td>
-                  <td>{relStr}</td>
-                </tr>
-                <tr>
-                  <td>{t('relatedElements:source')}</td>
-                  <td>{source}</td>
-                </tr>
-                <tr>
-                  <td>{t('link')}</td>
-                  <td>
-                    <a target="_top" href={cpart.url} onClick={onClickLink}>
-                      {cpart.url || '[URL deleted]'}
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div className="bridge-title">
+              <div className="bridge-relation">
+                {relStr}
+              </div>
+            </div>
+            <ClampPre
+              extraActions={(
+                <div className="extra">
+                  {bridge.privacy !== 0 ? (
+                    <img src="./img/lock.png" className="lock-icon" />
+                  ) : null}
+                  {tags.map((tag, i) => (
+                    <span key={i} className="tag-item">{tag}</span>
+                  ))}
+                </div>
+              )}
+            >
+              {bridge.desc}
+            </ClampPre>
           </div>
-          <div className="bridge-type">
+          {/* <div className="bridge-type">
             {typeImage}
-          </div>
+          </div> */}
         </div>
-        {isEditable ? (
-          <div className="actions">
+        <div className="actions">
+          <Button
+            type="default"
+            onClick={onClickLink}
+          >
+            <img src="./img/link.png" style={{ height: '14px' }} />
+          </Button>
+          <Button
+            type="default"
+            onClick={() => {}}
+          >
+            <img src="./img/share.png" style={{ height: '14px' }} />
+          </Button>
+          {isEditable ? (
             <Button
               type="default"
               onClick={e => {
@@ -243,6 +271,8 @@ class App extends Component {
             >
               <img src="./img/edit.png" style={{ height: '14px' }} />
             </Button>
+          ) : null}
+          {isEditable ? (
             <Popconfirm
               onConfirm={() => {
                 API.deleteBridge(bridge.id)
@@ -271,8 +301,8 @@ class App extends Component {
                 <img src="./img/delete.png" style={{ height: '14px' }} />
               </Button>
             </Popconfirm>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </div>
     )
   }
