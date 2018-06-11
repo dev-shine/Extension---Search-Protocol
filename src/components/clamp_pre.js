@@ -25,24 +25,34 @@ class ClampPre extends React.Component {
   }
 
   componentDidMount () {
-    setTimeout(() => {
-      const $pre = this.$pre
-      const fullHeight = $pre.offsetHeight
+    setTimeout(() => this.calculate(), 100)
+  }
 
-      $pre.style.display  = '-webkit-box'
-      const partialHeight = $pre.offsetHeight
-      const needClamp     = fullHeight > partialHeight
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.children !== this.props.children) {
+      setTimeout(() => this.calculate(), 100)
+    }
+  }
 
-      console.log('partial, full, needClamp', partialHeight, fullHeight, needClamp)
+  calculate () {
+    const $pre = this.$pre
+    $pre.style.display = 'block';
 
-      $pre.removeAttribute('style')
+    const fullHeight = $pre.offsetHeight
 
-      this.setState({
-        needClamp,
-        fold: needClamp,
-        ready: true
-      })
-    }, 100)
+    $pre.style.display  = '-webkit-box'
+    const partialHeight = $pre.offsetHeight
+    const needClamp     = fullHeight > partialHeight
+
+    console.log('partial, full, needClamp', partialHeight, fullHeight, needClamp)
+
+    $pre.removeAttribute('style')
+
+    this.setState({
+      needClamp,
+      fold: needClamp,
+      ready: true
+    })
   }
 
   renderShowAllButton () {
