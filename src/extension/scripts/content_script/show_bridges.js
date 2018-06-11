@@ -156,6 +156,7 @@ export const showHyperLinkBadge = ({ totalCount, url, $el }) => {
 
   const api = ['getOverlayContainer', 'getBadgeContainer', 'getElement', 'show', 'hide', 'isInView', 'pointPosition'].reduce((prev, key) => {
     prev[key] = (...args) => {
+      if (!liveBuildAPI)  return
       return liveBuildAPI.getAPI()[key](...args)
     }
     return prev
@@ -257,6 +258,7 @@ export const showImage = ({ link, getLinksAPI, getCsAPI, color, opacity, needBad
 
   const api = ['getOverlayContainer', 'getBadgeContainer', 'getElement', 'show', 'hide', 'isInView', 'pointPosition'].reduce((prev, key) => {
     prev[key] = (...args) => {
+      if (!liveBuildAPI)  return
       return liveBuildAPI.getAPI()[key](...args)
     }
     return prev
@@ -353,6 +355,7 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
 
   const api = ['getOverlayContainer', 'getBadgeContainer', 'getElement', 'show', 'hide', 'isInView', 'pointPosition'].reduce((prev, key) => {
     prev[key] = (...args) => {
+      if (!liveBuildAPI)  return
       return liveBuildAPI.getAPI()[key](...args)
     }
     return prev
