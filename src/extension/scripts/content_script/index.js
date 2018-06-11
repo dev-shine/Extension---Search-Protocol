@@ -150,7 +150,7 @@ const onBgRequest = (cmd, args) => {
         }
       }, 500, 10000)
       .then($el => {
-        $el.scrollIntoView({ block: 'center' })
+        $el.scrollIntoView()
 
         setTimeout(() => {
           const linkAPI = showOneLink({
