@@ -103,7 +103,21 @@ class App extends Component {
     return (
       <div className="annotation-item base-item" key={key}>
         <div className="item-content">
-          <h4>{annotation.title}</h4>
+          <h4>
+            <span>{annotation.title}</span>
+            <span className="creator-info">
+              <span>{annotation.created_by_username}</span>
+              {this.state.userInfo && this.state.userInfo.id !== annotation.created_by ? (
+                <Button
+                  type="default"
+                  size="small"
+                  onClick={() => {}}
+                >
+                  {t('follow')}
+                </Button>
+              ) : null}
+            </span>
+          </h4>
           <ClampPre
             extraActions={(
               <div className="extra">
@@ -223,6 +237,18 @@ class App extends Component {
               <div className="bridge-relation">
                 {relStr}
               </div>
+              <span className="creator-info">
+                <span>{bridge.created_by_username}</span>
+                {this.state.userInfo && this.state.userInfo.id !== bridge.created_by ? (
+                  <Button
+                    type="default"
+                    size="small"
+                    onClick={() => {}}
+                  >
+                    {t('follow')}
+                  </Button>
+                ) : null}
+              </span>
             </div>
             <ClampPre
               extraActions={(

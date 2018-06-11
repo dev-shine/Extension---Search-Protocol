@@ -133,8 +133,10 @@ body {
 
       .bridge-title {
         display: flex;
+        align-items: center;
 
         .bridge-relation {
+          margin-right: 15px;
           padding: 0 8px;
           color: #fff;
           background-color: $primary-color;
@@ -190,6 +192,17 @@ body {
     }
 
     h4 {
+      display: flex;
+      align-items: center;
+
+      & > * {
+        margin-right: 15px;
+
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+
       font-size: 1.2em;
       font-weight: bold;
     }
@@ -211,6 +224,16 @@ body {
     .lock-icon {
       height: 20px;
       margin-right: 10px;
+    }
+  }
+
+  .creator-info {
+    color: $primary-color;
+    font-weight: normal;
+    font-size: 12px;
+
+    button {
+      margin-left: 10px;
     }
   }
 
