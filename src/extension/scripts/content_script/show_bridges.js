@@ -376,6 +376,7 @@ export const showBridgeCount = ({ position, text, onClick, style = {} }) => {
     style: {
       ...commonStyle,
       ...position,
+      userSelect: 'none',
       transform:  'translate(-80%, -80%)',
       position:   'absolute',
       zIndex:     100001,
