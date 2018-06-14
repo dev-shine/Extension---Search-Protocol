@@ -5,7 +5,7 @@ import { translate } from 'react-i18next'
 import { notifyError, notifySuccess } from '../components/notification'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import API from '../common/api/cs_iframe_api'
-import { compose } from '../common/utils'
+import { compose, updateIn } from '../common/utils'
 import log from '../common/log'
 import * as C from '../common/constant'
 import './app.scss'
@@ -16,6 +16,18 @@ class App extends Component {
   state = {
     mode:       C.UPSERT_MODE.ADD,
     linkData:   null
+  }
+
+  encodeData = (values) => {
+    return compose(
+      updateIn(['privacy'], x => parseInt(x, 10))
+    )(values)
+  }
+
+  decodeData = (values) => {
+    return compose(
+      updateIn(['privacy'], x => x ? ('' + x) : '0')
+    )(values)
   }
 
   onSubmitAdd = (values) => {
@@ -69,6 +81,7 @@ class App extends Component {
   onClickSubmit = () => {
     this.props.form.validateFields((err, values) => {
       if (err)  return
+      values = this.encodeData(values)
 
       switch (this.state.mode) {
         case C.UPSERT_MODE.ADD:
@@ -94,12 +107,12 @@ class App extends Component {
       log('init got annotation', linkData, annotationData, mode)
       this.setState({ linkData, annotationData, mode })
 
-      this.props.form.setFieldsValue({
+      this.props.form.setFieldsValue(this.decodeData({
         title:    annotationData.title || '',
         desc:     annotationData.desc || '',
         tags:     annotationData.tags || '',
-        privacy:  annotationData.privacy ? (annotationData.privacy + '') : '0'
-      })
+        privacy:  annotationData.privacy || '0'
+      }))
     })
   }
 
