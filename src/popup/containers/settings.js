@@ -99,6 +99,12 @@ class Settings extends React.Component {
             </Form>
           </Collapse.Panel>
         </Collapse>
+        <a
+          className="feedback-link"
+          target="_blank"
+          href="https://join.slack.com/t/bridgit-feedback/shared_invite/enQtMzkxMTYyNzQ5MzQ3LWYxOTljMGY3MWExY2QwZmU2ZDQzMDM0ZjdmYTEzZTk5Y2JjZDgyNzM3YmU0NTIxMGY1ZDdjMzk0ZDNhNjVlZjE">
+         Click here to provide Feedback
+        </a>
       </div>
     )
   }
