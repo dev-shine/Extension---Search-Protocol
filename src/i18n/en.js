@@ -30,6 +30,8 @@ export default {
     tagsRequiredErrMsg: 'Please input tags',
     tagsCountErrMsg: 'Enter up to 5 tags separated by commas',
     tagsPlaceholder: 'Enter up to 5 tags separated by commas',
+    tagsPlaceholderAnnotation: 'Enter up to 5 tags separated by commas. Add "keeper" tag if you want us to keep this note.',
+    tagsPlaceholderBridge: 'Enter up to 5 tags separated by commas. Add "keeper" tag if you want us to keep this bridge.',
     invalidSelectionCross: 'Invalid Selection: Selection cannot cross content element boundaries',
     userDefined: 'User Defined'
   },

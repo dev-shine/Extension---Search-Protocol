@@ -256,7 +256,7 @@ class CreateLinkComp extends React.Component {
               ]
             })(
               <Input
-                placeholder={t('tagsPlaceholder')}
+                placeholder={t('tagsPlaceholderBridge')}
                 onChange={e => this.props.onUpdateField(e.target.value, 'tags')}
               />
             )}

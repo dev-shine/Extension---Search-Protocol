@@ -173,7 +173,7 @@ class App extends Component {
               ]
             })(
               <Input
-                placeholder={t('tagsPlaceholder')}
+                placeholder={t('tagsPlaceholderAnnotation')}
                 onChange={e => this.onUpdateField(e.target.value, 'tags')}
               />
             )}
