@@ -14,6 +14,12 @@ import './app.scss'
 
 const ipc = ipcForIframe()
 
+const domainFromUrl = (data) => {
+  var a = document.createElement('a');
+  a.href = data;
+  return a.hostname;
+}
+
 class App extends Component {
   state = {
     ready: false
@@ -209,6 +215,7 @@ class App extends Component {
     const cpartId   = bridge.from !== currentElementId ? bridge.from : bridge.to
     const cpart     = this.state.elementDict[cpartId]
     const source    = new URL(cpart.url).origin.replace(/^.*?:\/\//, '')
+    const bridgeToDomain = domainFromUrl(bridge.toElement.url);
     const typeImage = (function () {
       switch (cpart.type) {
         case ELEMENT_TYPE.IMAGE:
@@ -233,6 +240,9 @@ class App extends Component {
             <img src={cpart.image} />
           </a>
           <div className="bridge-detail">
+            <div className="domain-name-link">
+              <a href={bridge.toElement.url} target='_blank'>{bridgeToDomain.toUpperCase()} </a>
+            </div>
             <div className="bridge-title">
               <div className="bridge-relation">
                 {relStr}
@@ -270,7 +280,7 @@ class App extends Component {
           </div> */}
         </div>
         <div className="actions">
-          <Button
+          {/* <Button
             type="default"
             onClick={onClickLink}
           >
@@ -281,7 +291,7 @@ class App extends Component {
             onClick={() => {}}
           >
             <img src="./img/share.png" style={{ height: '14px' }} />
-          </Button>
+          </Button> */}
           {isEditable ? (
             <Button
               type="default"

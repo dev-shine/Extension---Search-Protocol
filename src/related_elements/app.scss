@@ -130,7 +130,12 @@ body {
           margin-bottom: 0;
         }
       }
-
+      .domain-name-link {
+        a {
+          color: #ED5F8F;
+        }
+        margin-bottom: 5px;
+      }
       .bridge-title {
         display: flex;
         align-items: center;

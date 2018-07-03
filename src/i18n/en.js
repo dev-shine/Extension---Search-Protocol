@@ -66,7 +66,7 @@ export default {
   },
   relatedElements: {
     source: 'Source',
-    relatedElements: 'Related Elements',
+    relatedElements: 'Bridgit: Related Bridges and Notes',
     sureToDeleteNote: 'Are you sure you want to Permanently delete this Note?',
     sureToDeleteBridge: 'Are you sure you want to Permanently delete this Bridge?'
   },
