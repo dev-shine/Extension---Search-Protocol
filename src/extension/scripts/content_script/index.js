@@ -56,7 +56,8 @@ const setStateWithSettings = (settings) => {
   setState({
     nearDistanceInInch:   settings.nearDistanceInInch,
     nearVisibleDuration:  settings.nearVisibleDuration,
-    pixelsPerInch:        getPPI()
+    pixelsPerInch:        getPPI(),
+    showOnLoad: settings.showOnLoad
   })
 }
 
@@ -69,7 +70,7 @@ const bindEvents = () => {
 }
 
 let linksAPI
-
+let destroyMenu
 const init = () => {
   const getCsAPI = () => ({
     annotate,
@@ -88,7 +89,6 @@ const init = () => {
   bindEvents()
   bindSelectionEvent({ getCurrentPage })
   bindSocialLoginEvent(ipc)
-  initContextMenus({ getCurrentPage, getLocalBridge, showContentElements })
 
   API.getUserSettings()
   .then(settings => {
@@ -96,6 +96,7 @@ const init = () => {
     setStateWithSettings(settings)
 
     if (settings.showOnLoad) {
+      destroyMenu = initContextMenus({ getCurrentPage, getLocalBridge, showContentElements })
       showContentElements()
     }
   })
@@ -124,6 +125,12 @@ const onBgRequest = (cmd, args) => {
 
     case 'UPDATE_SETTINGS': {
       log('Got UPDATE_SETTINGS', args)
+      if (!args.settings.showOnLoad) {
+        destroyMenu()
+      } else {
+        log('enable it')
+        init()
+      }
       setStateWithSettings(args.settings)
 
       if (linksAPI) {
