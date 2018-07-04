@@ -7,14 +7,14 @@
   "default_locale": "en",
 
   "icons": {
-    "128": "logo.png"
+    "128": "icon.png"
   },
 
   "browser_action": {
     "default_title": "Bridgit",
     "default_popup": "popup.html",
     "default_icon": {
-      "38": "logo.png"
+      "38": "icon.png"
     }
   },
 
