@@ -98,6 +98,10 @@ class App extends Component {
     ipc.ask('CLOSE')
   }
 
+  onAddRelation = () => {
+    ipc.ask('ADD_RELATION')
+  }
+
   onUpdateField = (val, key) => {
     this.setState({ [key]: val })
   }

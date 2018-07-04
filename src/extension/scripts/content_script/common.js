@@ -1193,6 +1193,14 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
         case 'CLOSE':
           iframeAPI.destroy()
           return true
+
+        case 'ADD_RELATION':
+          upsertRelation({
+            onSuccess: ({ relation }) => {
+              iframeAPI.ask('SELECT_NEW_RELATION', { relation })
+            }
+          })
+          return true
       }
     }
   })
@@ -1397,7 +1405,6 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
   return () => {
     log('destroying menus')
     destroy.destroy()
-
   }
 }
 

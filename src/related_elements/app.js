@@ -105,7 +105,8 @@ class App extends Component {
   renderAnnotation (annotation, key, isEditable) {
     const { t } = this.props
     const tags  = annotation.tags.split(',').map(s => s.trim())
-
+    console.log('===========ANNOTATION-DATA==============', annotation)
+    // add annotation tag here
     return (
       <div className="annotation-item base-item" key={key}>
         <div className="item-content">
