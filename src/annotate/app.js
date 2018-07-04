@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Modal, Select, Form, Input, Button } from 'antd'
+import { Modal, Select, Form, Input, Button, Icon } from 'antd'
 import { translate } from 'react-i18next'
 
 import { notifyError, notifySuccess } from '../components/notification'
@@ -15,7 +15,8 @@ const ipc = ipcForIframe()
 class App extends Component {
   state = {
     mode:       C.UPSERT_MODE.ADD,
-    linkData:   null
+    linkData:   null,
+    relations: []
   }
 
   encodeData = (values) => {
@@ -103,16 +104,35 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT')
-    .then(({ annotationData = {}, linkData, mode }) => {
-      log('init got annotation', linkData, annotationData, mode)
-      this.setState({ linkData, annotationData, mode })
+    .then(({ annotationData = {}, linkData, mode, relations }) => {
+      log('init got annotation', linkData, annotationData, mode, relations)
+      this.setState({
+        linkData,
+        annotationData,
+        mode,
+        relations
+      })
 
       this.props.form.setFieldsValue(this.decodeData({
         title:    annotationData.title || '',
         desc:     annotationData.desc || '',
         tags:     annotationData.tags || '',
-        privacy:  annotationData.privacy || '0'
+        privacy:  annotationData.privacy || '0',
+        selectedRelation: annotationData ? annotationData.relation : undefined
       }))
+    })
+
+    ipc.onAsk((cmd, args) => {
+      switch (cmd) {
+        case 'SELECT_NEW_RELATION': {
+          log('SELECT_NEW_RELATION', cmd, args)
+          this.setState({
+            relations: [...this.state.relations, args.relation],
+            selectedRelation: args.relation.id
+          })
+          return true
+        }
+      }
     })
   }
 
@@ -195,6 +215,38 @@ class App extends Component {
                 ))}
               </Select>
             )}
+          </Form.Item>
+
+          <Form.Item label={t('buildBridge:relationLabel')} className="relation-form-item">
+            <div className="relationship-row">
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ display: 'flex' }}>
+                  {getFieldDecorator('relation', {
+                    ...(this.state.selectedRelation ? { initialValue: '' + this.state.selectedRelation } : {}),
+                    rules: [
+                      { required: true, message: t('buildBridge:relationErrMsg') }
+                    ]
+                  })(
+                    <Select
+                      placeholder={t('buildBridge:relationPlaceholder')}
+                      onChange={val => this.onUpdateField(parseInt(val, 10), 'relation')}
+                    >
+                      {this.state.relations.map(r => (
+                        <Select.Option key={r.id} value={'' + r.id}>{r.active_name}</Select.Option>
+                      ))}
+                    </Select>
+                  )}
+                  <Button
+                    type="default"
+                    shape="circle"
+                    onClick={this.onAddRelation}
+                    style={{ marginLeft: '10px' }}
+                  >
+                    <Icon type="plus" />
+                  </Button>
+                </div>
+              </div>
+            </div>
           </Form.Item>
           <div className="actions">
             <Button

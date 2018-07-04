@@ -1168,6 +1168,8 @@ export const selectImageArea = ({ $img, linkData, getCurrentPage, showContentEle
 }
 
 export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}, onSuccess } = {}) => {
+  API.loadRelations()
+  .then(relations => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('annotate.html'),
     width:  600,
@@ -1180,7 +1182,8 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
           return {
             mode,
             annotationData,
-            linkData
+            linkData,
+            relations
           }
 
         case 'DONE':
@@ -1200,6 +1203,7 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
     top: '50%',
     transform: 'translate(-50%, -50%)',
     border: '1px solid #ccc'
+  })
   })
 }
 
@@ -1390,7 +1394,11 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
     }
   })
 
-  return () => { destroy() }
+  return () => {
+    log('destroying menus')
+    destroy.destroy()
+
+  }
 }
 
 export const addSubmenuForBadge = ({ link, getLocalBridge, showContentElements }) => {
