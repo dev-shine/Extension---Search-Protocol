@@ -21,12 +21,14 @@ class App extends Component {
 
   encodeData = (values) => {
     return compose(
+      updateIn(['relation'], x => parseInt(x, 10)),
       updateIn(['privacy'], x => parseInt(x, 10))
     )(values)
   }
 
   decodeData = (values) => {
     return compose(
+      updateIn(['relation'], x => x && ('' + x)),
       updateIn(['privacy'], x => x ? ('' + x) : '0')
     )(values)
   }
