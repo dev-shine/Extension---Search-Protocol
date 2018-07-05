@@ -185,6 +185,12 @@ body {
     border-bottom: 1px solid #eee;
 
     .item-content {
+      .annotation-relation {
+        padding: 0 8px;
+        color: #fff;
+        background-color: #EF5D8F;
+        border-radius: 4px;
+      }
       &:last-child {
         margin-bottom: 0;
         padding-bottom: 0;

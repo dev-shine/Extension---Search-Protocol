@@ -62,7 +62,8 @@ export default {
     titlePlaceholder: 'Enter Title for this content element',
     note: 'Note',
     noteErrMsg: 'Please enter the text of your Note here',
-    notePlaceholder: 'Enter Note for this content'
+    notePlaceholder: 'Enter Note for this content',
+    relationErrMsg: 'Please select a relationship'
   },
   relatedElements: {
     source: 'Source',

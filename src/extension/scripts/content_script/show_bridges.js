@@ -470,7 +470,10 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
             annotationData: args.annotation,
             onSuccess: ({ annotation }) => {
               log('EDIT_ANNOTATION onSuccess', annotation)
-              iframeAPI.ask('UPDATE_ANNOTATION', { annotation })
+              API.loadRelations()
+                .then(relations => {
+                  iframeAPI.ask('UPDATE_ANNOTATION', { annotation, relations })
+                })
               csAPI.showContentElements()
             }
           })
@@ -504,7 +507,9 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
 
                 // Note: There could be new relation created,
                 API.loadRelations()
-                .then(relations => iframeAPI.ask('UPDATE_BRIDGE', { bridge, relations }))
+                .then(relations => {
+                  iframeAPI.ask('UPDATE_BRIDGE', { bridge, relations })
+                })
 
                 csAPI.showContentElements()
               }

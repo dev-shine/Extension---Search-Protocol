@@ -73,9 +73,12 @@ class App extends Component {
           const { annotations } = this.state
           const index = annotations.findIndex(item => item.id === args.annotation.id)
           if (index === -1) return
-
           this.setState(
-            setIn(['annotations', index], args.annotation, this.state)
+            compose(
+              // setIn(['annotations', index], args.annotation, this.state),
+              updateIn(['annotations', index], annotation => ({ ...annotation, ...args.annotation })),
+              setIn(['relations'], args.relations)
+            )
           )
           return true
         }
@@ -105,13 +108,22 @@ class App extends Component {
   renderAnnotation (annotation, key, isEditable) {
     const { t } = this.props
     const tags  = annotation.tags.split(',').map(s => s.trim())
-    console.log('===========ANNOTATION-DATA==============', annotation)
+    const relation  = this.state.relations.find(r => '' + r.id === '' + annotation.relation)
+    const relStr    = this.renderRelationStr(relation, 'active_name')
+    /*
+    <div className="bridge-relation">
+    {relStr}
+    </div>
+    */
     // add annotation tag here
     return (
       <div className="annotation-item base-item" key={key}>
         <div className="item-content">
           <h4>
             <span>{annotation.title}</span>
+            <span className="annotation-relation">
+              {relStr}
+            </span>
             <span className="creator-info">
               <span>{annotation.created_by_username}</span>
               {this.state.userInfo && this.state.userInfo.id !== annotation.created_by ? (
@@ -434,6 +446,9 @@ class App extends Component {
     return (
       <Modal
         title={t('relatedElements:relatedElements')}
+        maskStyle={{
+          backgroundColor: 'rgba(55, 55, 55, 0.3)'
+        }}
         visible={true}
         width={700}
         className="links-modal"

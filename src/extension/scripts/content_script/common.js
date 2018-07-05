@@ -683,7 +683,7 @@ export const createIframeWithMask = (function () {
       style: {
         position: 'fixed',
         zIndex: curZIndex,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.25)',
         top: 0,
         bottom: 0,
         left: 0,

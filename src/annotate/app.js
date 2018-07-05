@@ -124,7 +124,7 @@ class App extends Component {
         desc:     annotationData.desc || '',
         tags:     annotationData.tags || '',
         privacy:  annotationData.privacy || '0',
-        selectedRelation: annotationData ? annotationData.relation : undefined
+        relation: annotationData ? annotationData.relation : undefined
       }))
     })
 
@@ -135,6 +135,10 @@ class App extends Component {
           this.setState({
             relations: [...this.state.relations, args.relation],
             selectedRelation: args.relation.id
+          }, () => {
+            this.props.form.setFieldsValue(this.decodeData({
+              relation: args.relation.id
+            }))
           })
           return true
         }
@@ -230,7 +234,7 @@ class App extends Component {
                   {getFieldDecorator('relation', {
                     ...(this.state.selectedRelation ? { initialValue: '' + this.state.selectedRelation } : {}),
                     rules: [
-                      { required: true, message: t('buildBridge:relationErrMsg') }
+                      { required: true, message: t('createNote:relationErrMsg') }
                     ]
                   })(
                     <Select
