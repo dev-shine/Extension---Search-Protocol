@@ -228,9 +228,9 @@ class App extends Component {
     const cpartId   = bridge.from !== currentElementId ? bridge.from : bridge.to
     const cpart     = this.state.elementDict[cpartId]
     const source    = new URL(cpart.url).origin.replace(/^.*?:\/\//, '')
-    let bridgeToDomain = domainFromUrl(bridge.toElement.url);
-    let splitArr = bridgeToDomain.split('.');
-    bridgeToDomain = splitArr.splice(0, splitArr.length - 1).join('')
+    let bridgeToDomain = source // domainFromUrl(bridge.toElement.url);
+    let splitArr = bridgeToDomain.split('.')
+    bridgeToDomain = splitArr.slice(0, splitArr.length - 1).join('')
     const typeImage = (function () {
       switch (cpart.type) {
         case ELEMENT_TYPE.IMAGE:
@@ -256,7 +256,7 @@ class App extends Component {
           </a>
           <div className="bridge-detail">
             <div className="domain-name-link">
-              <a href={bridge.toElement.url} target='_blank'>{bridgeToDomain.toUpperCase()} </a>
+              <a href={cpart.url} target='_blank'>{bridgeToDomain.toUpperCase()} </a>
             </div>
             <div className="bridge-title">
               <div className="bridge-relation">
