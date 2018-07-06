@@ -392,7 +392,7 @@ export const createOverlayForRange = ({ range, ...rest }) => {
   return createOverlayForRects({ rects, ...rest })
 }
 
-export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.5 }) => {
+export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4 }) => {
   const $root = createEl({})
   const sx    = scrollLeft(document)
   const sy    = scrollTop(document)
