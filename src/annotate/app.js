@@ -208,56 +208,63 @@ class App extends Component {
               />
             )}
           </Form.Item>
-          <Form.Item label={t('privacy:privacyLabel')}>
-            {getFieldDecorator('privacy', {
-              validateTrigger: ['onBlur'],
-              rules: [
-                { required: true, message: t('privacy:privacyErrMsg') }
-              ]
-            })(
-              <Select
-                placeholder={t('privacy:privacyPlaceholder')}
-                onChange={val => this.onUpdateField(parseInt(val, 10), 'privacy')}
-                style={{ width: '150px' }}
-              >
-                {C.PRIVACY_LIST.map(p => (
-                  <Select.Option key={p.value} value={'' + p.value}>{t(`privacy:${p.key}`)}</Select.Option>
-                ))}
-              </Select>
-            )}
-          </Form.Item>
-
-          <Form.Item label={t('buildBridge:relationLabel')} className="relation-form-item">
-            <div className="relationship-row">
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ display: 'flex' }}>
-                  {getFieldDecorator('relation', {
-                    ...(this.state.selectedRelation ? { initialValue: '' + this.state.selectedRelation } : {}),
-                    rules: [
-                      { required: true, message: t('createNote:relationErrMsg') }
-                    ]
-                  })(
-                    <Select
-                      placeholder={t('buildBridge:relationPlaceholder')}
-                      onChange={val => this.onUpdateField(parseInt(val, 10), 'relation')}
-                    >
-                      {this.state.relations.map(r => (
-                        <Select.Option key={r.id} value={'' + r.id}>{r.active_name}</Select.Option>
-                      ))}
-                    </Select>
-                  )}
-                  <Button
-                    type="default"
-                    shape="circle"
-                    onClick={this.onAddRelation}
-                    style={{ marginLeft: '10px' }}
-                  >
-                    <Icon type="plus" />
-                  </Button>
-                </div>
+          <div style={{display:'flex', justifyContent: 'space-between'}}>
+            <Form.Item label={t('privacy:privacyLabel')}>
+            <div style={{ display: 'flex' }}>
+              {getFieldDecorator('privacy', {
+                validateTrigger: ['onBlur'],
+                rules: [
+                  { required: true, message: t('privacy:privacyErrMsg') }
+                ]
+              })(
+                <Select
+                  placeholder={t('privacy:privacyPlaceholder')}
+                  onChange={val => this.onUpdateField(parseInt(val, 10), 'privacy')}
+                  style={{ width: '150px' }}
+                >
+                  {C.PRIVACY_LIST.map(p => (
+                    <Select.Option key={p.value} value={'' + p.value}>{t(`privacy:${p.key}`)}</Select.Option>
+                  ))}
+                </Select>
+              )}
               </div>
-            </div>
-          </Form.Item>
+            </Form.Item>
+
+            <Form.Item label={t('createNote:relationLabel')} 
+            // className="relation-form-item"
+            >
+              {/* <div className="relationship-row"> */}
+                {/* <div style={{ textAlign: 'center' }}> */}
+                  <div style={{ display: 'flex' }}>
+                    {getFieldDecorator('relation', {
+                      ...(this.state.selectedRelation ? { initialValue: '' + this.state.selectedRelation } : {}),
+                      rules: [
+                        { required: true, message: t('createNote:relationErrMsg') }
+                      ]
+                    })(
+                      <Select
+                        placeholder={t('createNote:relationPlaceholder')}
+                        onChange={val => this.onUpdateField(parseInt(val, 10), 'relation')}
+                        style={{ width: '150px' }}
+                      >
+                        {this.state.relations.map(r => (
+                          <Select.Option key={r.id} value={'' + r.id}>{r.active_name}</Select.Option>
+                        ))}
+                      </Select>
+                    )}
+                    <Button
+                      type="default"
+                      shape="circle"
+                      onClick={this.onAddRelation}
+                      style={{ marginLeft: '10px' }}
+                    >
+                      <Icon type="plus" />
+                    </Button>
+                  </div>
+                {/* </div> */}
+              {/* </div> */}
+            </Form.Item>
+          </div>
           <div className="actions">
             <Button
               type="primary"

@@ -63,7 +63,9 @@ export default {
     note: 'Note',
     noteErrMsg: 'Please enter the text of your Note here',
     notePlaceholder: 'Enter Note for this content',
-    relationErrMsg: 'Please select a relationship'
+    relationErrMsg: 'Please select a category',
+    relationLabel: 'Category',
+    relationPlaceholder: 'Choose a category'
   },
   relatedElements: {
     source: 'Source',
