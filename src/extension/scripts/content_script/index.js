@@ -163,6 +163,7 @@ const onBgRequest = (cmd, args) => {
           const linkAPI = showOneLink({
             link:       element,
             color:      'green',
+            opacity: 0.4,
             needBadge:  false
           })
 
