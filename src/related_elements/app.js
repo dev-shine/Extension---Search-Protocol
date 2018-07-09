@@ -256,7 +256,7 @@ class App extends Component {
           </a>
           <div className="bridge-detail">
             <div className="domain-name-link">
-              <a href={cpart.url} target='_blank'>{bridgeToDomain.toUpperCase()} </a>
+              <a href={cpart.url} target='_top' onClick={onClickLink}>{bridgeToDomain.toUpperCase()} </a>
             </div>
             <div className="bridge-title">
               <div className="bridge-relation">
