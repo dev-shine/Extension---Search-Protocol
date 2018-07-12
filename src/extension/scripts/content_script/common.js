@@ -1010,7 +1010,9 @@ export const showHyperLinkBadges = () => {
     return prev
   }, {})
   const urls    = Object.keys(urlsObj)
-
+  if (pageUrl.indexOf('bridgit.io') > -1) {
+    return
+  }
   API.annotationsAndBridgesByUrls(urls)
   .then(result => {
     objMap((data, url) => {

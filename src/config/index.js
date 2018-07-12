@@ -3,7 +3,8 @@
 export default {
   localBackend: false,
   api: {
-    base: __DEVELOPMENT__ ? 'http://bridgit.test/api' : 'https://bridgit.io/app/api'
+    base: __DEVELOPMENT__ ? 'http://bridgit.test/api' : 'https://bridgit.io/app/api',
+    base: 'https://bridgit.io/app/api',
   },
   settings: {
     minImageAreaRatio: 0.05,
