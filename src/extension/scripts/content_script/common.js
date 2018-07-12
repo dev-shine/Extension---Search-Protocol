@@ -23,6 +23,7 @@ import i18n from '../../../i18n'
 import config from '../../../config'
 import { MouseReveal } from './mouse_reveal'
 
+let hideMenu = false;
 export const commonStyle = {
   boxSizing:  'border-box',
   fontFamily: 'Arial'
@@ -509,7 +510,12 @@ export const renderContextMenus = (menuOptions, eventData) => {
     e.stopPropagation()
   }
   const onClickDoc = (e) => {
-    api.hide()
+    if (hideMenu) {
+      api.hide()
+      document.removeEventListener('click', onClickDoc)
+    } else {
+      hideMenu = true;
+    }
   }
 
   $menu.addEventListener('click', onClickWholeMenu)
@@ -663,12 +669,17 @@ export const createContextMenus = ({
       })
     }
   }
-
-  document.addEventListener('contextmenu', onContextMenu)
-
+  // Adding code
+  let mouseUpBinding = bindSelectionEnd((e, selection) => {
+    hideMenu = false
+    onContextMenu(e)
+  });
+  // Adding code end
+  // document.addEventListener('contextmenu', onContextMenu)
   return {
     destroy: () => {
-      document.removeEventListener('contextmenu', onContextMenu)
+      // document.removeEventListener('contextmenu', onContextMenu)
+      mouseUpBinding()
       showContextMenus({ clear: false })
     }
   }
