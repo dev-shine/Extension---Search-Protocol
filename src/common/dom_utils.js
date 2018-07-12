@@ -9,7 +9,8 @@ export const setStyle = function (dom, style) {
   if (!dom)   throw new Error('setStyle: dom not exist')
 
   for (var i = 0, keys = Object.keys(style), len = keys.length; i < len; i++) {
-    dom.style[keys[i]] = style[keys[i]]
+    // dom.style[keys[i]] = style[keys[i]]
+    dom.style.setProperty([keys[i]], style[keys[i]], 'important')
   }
 
   return dom
