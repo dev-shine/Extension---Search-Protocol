@@ -105,6 +105,29 @@ class App extends Component {
     this.bindIpcEvent()
   }
 
+  updateFollowUnFollowStatus = (createdBy) => {
+    let { annotations, bridges } = this.state
+    annotations = annotations.map((item) => {
+      let obj = {...item}
+      if (obj.created_by === createdBy) {
+        obj.is_follow = !obj.is_follow
+      }
+      return obj
+    });
+
+    bridges = bridges.map((item) => {
+      let obj = {...item}
+      if (obj.created_by === createdBy) {
+        obj.is_follow = !obj.is_follow
+      }
+      return obj
+    });
+
+    this.setState({
+      annotations,
+      bridges
+    })
+  }
   renderAnnotation (annotation, key, isEditable) {
     const { t } = this.props
     const tags  = annotation.tags.split(',').map(s => s.trim())
@@ -130,9 +153,19 @@ class App extends Component {
                 <Button
                   type="default"
                   size="small"
-                  onClick={() => {}}
+                  onClick={() => {
+                    API.userFollow({ user_id: annotation.created_by })
+                    .then(() => {
+                      notifySuccess(`${annotation.is_follow ? t('Successfully Unfollowed') : t('Successfully Followed')}`)
+
+                      // Note: tell page to reload bridges and notes
+                      ipc.ask('RELOAD_BRIDGES_AND_NOTES')
+                      // locally update status
+                      this.updateFollowUnFollowStatus(annotation.created_by)
+                    })
+                  }}
                 >
-                  {t('follow')}
+                  {annotation.is_follow ? t('unfollow') : t('follow')}
                 </Button>
               ) : null}
             </span>
@@ -153,12 +186,12 @@ class App extends Component {
           </ClampPre>
         </div>
         <div className="actions">
-          <Button
+          {/* <Button
             type="default"
             onClick={() => {}}
           >
             <img src="./img/share.png" style={{ height: '14px' }} />
-          </Button>
+          </Button> */}
           {isEditable ? (
             <Button
               type="default"
@@ -268,9 +301,18 @@ class App extends Component {
                   <Button
                     type="default"
                     size="small"
-                    onClick={() => {}}
+                    onClick={() => {
+                      API.userFollow({ user_id: bridge.created_by })
+                      .then(() => {
+                        notifySuccess(`${bridge.is_follow ? t('Successfully Unfollowed') : t('Successfully Followed')}`)
+                        // Note: tell page to reload bridges and notes
+                        ipc.ask('RELOAD_BRIDGES_AND_NOTES')
+                        // locally update status
+                        this.updateFollowUnFollowStatus(bridge.created_by)
+                      })
+                    }}
                   >
-                    {t('follow')}
+                    {bridge.is_follow ? t('unfollow') : t('follow')}
                   </Button>
                 ) : null}
               </span>

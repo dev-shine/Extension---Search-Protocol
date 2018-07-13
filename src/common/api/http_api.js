@@ -274,3 +274,8 @@ export const annotationsAndBridgesByUrls = wrap((urls) => {
     annotations:  data.notes.map(decodeNote)
   }), pages)
 })
+
+export const userFollow = wrap((data) => {
+  return jwtRequest.post(apiUrl('/userFollow'))
+  .send(data)
+})

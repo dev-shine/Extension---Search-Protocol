@@ -29,6 +29,7 @@ export const methods = [
   'deleteNote',
   'updateBridge',
   'deleteBridge',
+  'userFollow',
 
   // backend API
   'createContentElement',

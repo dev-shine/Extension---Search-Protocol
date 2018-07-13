@@ -23,7 +23,6 @@ import i18n from '../../../i18n'
 import config from '../../../config'
 import { MouseReveal } from './mouse_reveal'
 
-let hideMenu = false;
 export const commonStyle = {
   'box-sizing':  'border-box',
   'font-family': 'Arial'
@@ -293,8 +292,8 @@ export const createSelectionBox = (options = {}) => {
     {
       text: 'Cancel',
       style: {
-        backgroundColor: 'red',
-        borderColor: 'red'
+        'background-color': 'red',
+        'border-color': 'red'
       },
       onClick: (e) => {
         rectAPI.destroy()
@@ -404,14 +403,14 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4 
     const $dom = createEl({
       style: {
         opacity,
-        backgroundColor:  color,
+        'background-color':  color,
         position:         'absolute',
         'z-index':           100000,
         top:              pixel(rect.top + sy),
         left:             pixel(rect.left + sx),
         width:            pixel(Math.abs(rect.width)),
         height:           pixel(Math.abs(rect.height)),
-        pointerEvents:    'none'
+        'pointer-events':    'none'
       }
     })
 
@@ -443,7 +442,7 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4 
       return api
     },
     setColor: (color) => {
-      api.setStyle({ backgroundColor: color })
+      api.setStyle({ 'background-color': color })
       return api
     }
   }
@@ -458,7 +457,8 @@ export const renderContextMenus = (menuOptions, eventData) => {
     normalStyle,
     containerStyle = {},
     onMouseOver = () => {},
-    onMouseOut  = () => {}
+    onMouseOut  = () => {},
+    id
   } = menuOptions
 
   const menuStyle = {
@@ -473,7 +473,7 @@ export const renderContextMenus = (menuOptions, eventData) => {
     ...commonStyle,
     ...normalStyle
   }
-  const $menu = createEl({ style: menuStyle })
+  const $menu = createEl({ style: menuStyle, attrs: { id } })
   const $menuList = menus(eventData).map(menu => {
     const $dom = createEl({
       text:  menu.text,
@@ -510,16 +510,12 @@ export const renderContextMenus = (menuOptions, eventData) => {
     e.stopPropagation()
   }
   const onClickDoc = (e) => {
-    if (hideMenu) {
-      api.hide()
-      document.removeEventListener('click', onClickDoc)
-    } else {
-      hideMenu = true;
-    }
+    api.hide()
+    document.removeEventListener('click', onClickDoc)
   }
 
   $menu.addEventListener('click', onClickWholeMenu)
-  document.addEventListener('click', onClickDoc)
+  setTimeout(() => document.addEventListener('click', onClickDoc), 300)
 
   $menuList.forEach(item => $menu.appendChild(item.$dom))
   document.body.appendChild($menu)
@@ -671,14 +667,23 @@ export const createContextMenus = ({
   }
   // Adding code
   let mouseUpBinding = bindSelectionEnd((e, selection) => {
-    hideMenu = false
     onContextMenu(e)
   });
+
+  const onHoverImage = (e) => {
+    if (isOnImage(e)) {
+      onContextMenu(e)
+    }
+  }
+
+  document.addEventListener('mouseover', onHoverImage)
   // Adding code end
-  // document.addEventListener('contextmenu', onContextMenu)
+  document.addEventListener('contextmenu', onContextMenu)
+
   return {
     destroy: () => {
-      // document.removeEventListener('contextmenu', onContextMenu)
+      document.removeEventListener('contextmenu', onContextMenu)
+      document.removeEventListener('mouseover', onHoverImage)
       mouseUpBinding()
       showContextMenus({ clear: false })
     }
