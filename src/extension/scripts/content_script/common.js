@@ -25,8 +25,8 @@ import { MouseReveal } from './mouse_reveal'
 
 let hideMenu = false;
 export const commonStyle = {
-  boxSizing:  'border-box',
-  fontFamily: 'Arial'
+  'box-sizing':  'border-box',
+  'font-family': 'Arial'
 }
 
 export const createEl = ({ tag = 'div', attrs = {}, style = {}, text }) => {
@@ -48,7 +48,7 @@ export const createRect = (opts) => {
   const containerStyle = {
     ...commonStyle,
     position: 'absolute',
-    zIndex:   100000,
+    'z-index':   100000,
     top:      pixel(opts.top),
     left:     pixel(opts.left),
     width:    pixel(opts.width),
@@ -135,10 +135,10 @@ export const createButtons = (btns, { groupStyle = {} } = {}) => {
     padding:  '6px',
     width:    '80px',
     border:   '1px solid #EF5D8F',
-    borderRadius: '2px',
-    fontSize: '12px',
+    'border-radius': '2px',
+    'font-size': '12px',
     color:    '#fff',
-    backgroundColor: '#EF5D8F',
+    'background-color': '#EF5D8F',
     cursor:   'pointer'
   }
   const $buttons = btns.map((btn, i) => {
@@ -406,7 +406,7 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4 
         opacity,
         backgroundColor:  color,
         position:         'absolute',
-        zIndex:           100000,
+        'z-index':           100000,
         top:              pixel(rect.top + sy),
         left:             pixel(rect.left + sx),
         width:            pixel(Math.abs(rect.width)),
@@ -465,7 +465,7 @@ export const renderContextMenus = (menuOptions, eventData) => {
     ...commonStyle,
     ...containerStyle,
     position: 'absolute',
-    zIndex: 100000,
+    'z-index': 100000,
     x: 0,
     y: 0
   }
@@ -693,8 +693,8 @@ export const createIframeWithMask = (function () {
     const $mask = createEl({
       style: {
         position: 'fixed',
-        zIndex: curZIndex,
-        backgroundColor: 'rgba(0, 0, 0, 0.25)',
+        'z-index': curZIndex,
+        'background-color': 'rgba(0, 0, 0, 0.25)',
         top: 0,
         bottom: 0,
         left: 0,
@@ -705,7 +705,7 @@ export const createIframeWithMask = (function () {
     document.body.appendChild($mask)
 
     setStyle(iframeAPI.$iframe, {
-      zIndex:     curZIndex + 1
+      'z-index':     curZIndex + 1
     })
 
     curZIndex += 2
@@ -1021,7 +1021,9 @@ export const showHyperLinkBadges = () => {
     return prev
   }, {})
   const urls    = Object.keys(urlsObj)
-
+  if (pageUrl.indexOf('bridgit.io') > -1) {
+    return
+  }
   API.annotationsAndBridgesByUrls(urls)
   .then(result => {
     objMap((data, url) => {
@@ -1234,16 +1236,16 @@ export const commonMenuOptions = {
   normalStyle: {
     background: '#fff',
     color:      '#333',
-    fontSize:   '13px',
-    lineHeight: '32px',
+    'font-size':   '13px',
+    'line-height': '32px',
     padding:    '0 10px',
     cursor:     'pointer'
   },
   containerStyle: {
     overflow:     'hidden',
-    borderRadius: '3px',
+    'border-radius': '3px',
     border:       '1px solid #ccc',
-    boxShadow:    'rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px'
+    'box-shadow':    'rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px'
   }
 }
 
