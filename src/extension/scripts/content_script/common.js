@@ -1262,6 +1262,12 @@ export const commonMenuItems = () => ({
       annotate({ linkData, onSuccess: showContentElements })
     }
   }),
+  followElement: ({ showContentElements }) => ({
+    text: i18n.t('follow'),
+    onClick: (e) => {
+      console.log('follow clicked for element');
+    }
+  }),
   createBridge: () => ({
     text: i18n.t('createBridge'),
     onClick: (e, { linkData }) => {
@@ -1374,7 +1380,8 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
         getLocalBridge,
         fixedMenus: [
           commonMenuItems().annotate({ showContentElements }),
-          commonMenuItems().createBridge()
+          commonMenuItems().createBridge(),
+          commonMenuItems().followElement({ showContentElements })
         ],
         decorate: (menuItem) => {
           return {
