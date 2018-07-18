@@ -6,6 +6,7 @@ import log from '../../common/log'
 import { getTabIpcstore } from '../../common/tab_ipc_store'
 import { bgInit as popupBgInit } from '../../common/ipc/ipc_bg_popup'
 import { bgInit as csBgInit } from '../../common/ipc/ipc_bg_cs'
+import setupGoogleAnalytics from '../../common/google_analytics'
 
 const tabIpcStore = getTabIpcstore()
 
@@ -64,4 +65,5 @@ const setupGoogleAnalytics = () => {
 }
 
 /* eslint-enable */
+setupGoogleAnalytics();
 init()
