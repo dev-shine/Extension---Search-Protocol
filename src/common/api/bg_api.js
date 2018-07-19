@@ -11,7 +11,7 @@ import * as backendAPI from './backend_api'
 import { objMap } from '../utils'
 import log from '../log'
 import i18n from '../../i18n'
-import { setupGoogleAnalytics } from '../google_analytics';
+import { sendGAMessage } from '../google_analytics';
 
 const tabIpcStore = getTabIpcstore()
 
@@ -238,7 +238,7 @@ const API = {
     return true
   },
   addGAMessage: (eventCategory, eventAction, eventLabel) => {
-    setupGoogleAnalytics(eventCategory, eventAction, eventLabel);
+    sendGAMessage(eventCategory, eventAction, eventLabel);
     return Promise.resolve(true)
   }
 }

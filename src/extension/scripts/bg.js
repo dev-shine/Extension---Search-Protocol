@@ -13,7 +13,7 @@ const tabIpcStore = getTabIpcstore()
 const init = () => {
   initUserSettings()
   bindEvents()
-  setupGoogleAnalytics('Extension', 'Loaded', 'Chrome');
+  setupGoogleAnalytics();
 }
 
 const initUserSettings = () => {
