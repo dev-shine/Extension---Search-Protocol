@@ -34,6 +34,10 @@ class App extends Component {
     .then(({ relations, bridges, annotations, elementId, userInfo }) => {
       log('INIT WITH', { relations, bridges, annotations, elementId, userInfo })
 
+      API.addGAMessage('Clicked','RelatedElements',`for elementId=${elementId}`).then(()=>{
+        log('ga message sent')
+      })
+
       const elementIds = [
         ...flatten(bridges.map(b => [b.from, b.to])),
         ...annotations.map(a => a.target.id)
