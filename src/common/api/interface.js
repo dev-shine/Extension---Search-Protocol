@@ -14,6 +14,7 @@ export const methods = [
   'showElementInCurrentTab',
   'openSocialLogin',
   'changeLanguage',
+  'addGAMessage',
 
   // http API
   'login',

@@ -11,6 +11,7 @@ import * as backendAPI from './backend_api'
 import { objMap } from '../utils'
 import log from '../log'
 import i18n from '../../i18n'
+import { setupGoogleAnalytics } from '../google_analytics';
 
 const tabIpcStore = getTabIpcstore()
 
@@ -235,6 +236,10 @@ const API = {
       ipc.ask('CHANGE_LANGUAGE', lang)
     })
     return true
+  },
+  addGAMessage: (message) => {
+    setupGoogleAnalytics(message);
+    return Promise.resolve(true)
   }
 }
 

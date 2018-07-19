@@ -415,7 +415,6 @@ export const showBridgeCount = ({ position, text, onClick, style = {} }) => {
 }
 
 export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) => {
-  window.ga('send','event','Clicked Bridge');
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('related_elements.html'),
     width:  clientWidth(document),
