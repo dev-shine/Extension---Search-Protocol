@@ -237,8 +237,8 @@ const API = {
     })
     return true
   },
-  addGAMessage: (message) => {
-    setupGoogleAnalytics(message);
+  addGAMessage: (eventCategory, eventAction, eventLabel) => {
+    setupGoogleAnalytics(eventCategory, eventAction, eventLabel);
     return Promise.resolve(true)
   }
 }
