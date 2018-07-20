@@ -14,12 +14,6 @@ import './app.scss'
 
 const ipc = ipcForIframe()
 
-const domainFromUrl = (data) => {
-  var a = document.createElement('a');
-  a.href = data;
-  return a.hostname;
-}
-
 class App extends Component {
   state = {
     ready: false

@@ -963,6 +963,40 @@ export const showMsgAfterCreateBridge = () => {
   })
 }
 
+export const showElementDescription = ({ linkData, onSuccess }) => {
+  // return API.getUserSettings()
+  // .then(settings => {
+  //   if (settings.hideAfterCreateMsg)  return true
+    const iframeAPI = createIframeWithMask({
+      url:    Ext.extension.getURL('element_description.html'),
+      width:  500,
+      height: 450,
+      onAsk:  (cmd, args) => {
+        switch (cmd) {
+          case 'INIT':
+            return {
+              linkData
+            }
+          case 'CLOSE':
+            iframeAPI.destroy()
+            return true
+          case 'DONE':
+            onSuccess()
+            return true
+        }
+      }
+    })
+
+    setStyle(iframeAPI.$iframe, {
+      position: 'fixed',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%, -50%)',
+      border: '1px solid #ccc'
+    })
+  // })
+}
+
 export const buildBridge = ({
   bridgeData = {},
   linkPair,
@@ -1262,10 +1296,18 @@ export const commonMenuItems = () => ({
       annotate({ linkData, onSuccess: showContentElements })
     }
   }),
-  followElement: ({ showContentElements }) => ({
-    text: i18n.t('follow'),
-    onClick: (e) => {
-      console.log('follow clicked for element');
+  followElement: ({ showContentElements, linkData = {} }) => ({
+    text: linkData.is_follow ? i18n.t('UnFollow') : i18n.t('Follow'),
+    onClick: (e, { linkData }) => {
+      if (linkData.is_follow) { // call the unfollow api directly using linkData.id
+        API.elementFollow({element_id: linkData.id})
+        .then(() => {
+          showContentElements()
+          alert('Successfully UnFollowed')
+        })
+      } else {
+        showElementDescription({ linkData, onSuccess: showContentElements })
+      }
     }
   }),
   createBridge: () => ({
@@ -1421,7 +1463,8 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
         fixedMenus: [
           commonMenuItems().selectImageArea({ getCurrentPage, showContentElements }),
           commonMenuItems().annotate({ showContentElements }),
-          commonMenuItems().createBridge()
+          commonMenuItems().createBridge(),
+          commonMenuItems().followElement({ showContentElements })
         ]
       })
     }
@@ -1470,7 +1513,8 @@ export const addSubmenuForBadge = ({ link, getLocalBridge, showContentElements }
               getLocalBridge,
               fixedMenus: [
                 commonMenuItems().annotate({ showContentElements }),
-                commonMenuItems().createBridge()
+                commonMenuItems().createBridge(),
+                commonMenuItems().followElement({ showContentElements, linkData: link.getElement() })
               ]
             })
           },

@@ -42,6 +42,16 @@ export default {
     callToAction2: `Move to the circular indicator associated with an existing content element and select "Build Bridge"`,
     hideThisMessage: `Do not show this message again`
   },
+  elementDescription: {
+    titleLabel: 'Title',
+    descLabel: 'Description',
+    titlePlaceholder: 'Name of the Element',
+    descPlaceholder: 'Add a description for this Element',
+    titleErrMsg: 'Please input title',
+    descErrMsg: 'Please input description',
+    successfullyFollowed: 'Sucessfully followed',
+    defineElementBeforeFollow: 'Please give title and description of the element to follow'
+  },
   buildBridge: {
     relationLabel: 'How are these content elements related?',
     relationErrMsg: 'Please select a relationship between the two content elements',

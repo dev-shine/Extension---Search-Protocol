@@ -31,6 +31,8 @@ export const methods = [
   'updateBridge',
   'deleteBridge',
   'userFollow',
+  'createElementDescription',
+  'elementFollow',
 
   // backend API
   'createContentElement',

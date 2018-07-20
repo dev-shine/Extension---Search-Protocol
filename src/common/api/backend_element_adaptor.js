@@ -84,7 +84,7 @@ export const decodeElement = (element) => {
     switch (type) {
       case ELEMENT_TYPE.IMAGE: {
         return {
-          ...pick(['url', 'image'], element),
+          ...pick(['url', 'image', 'is_follow', 'name', 'desc'], element),
           locator:  element.start_locator,
           ...decodeRect(element.rect)
         }
@@ -92,7 +92,7 @@ export const decodeElement = (element) => {
 
       case ELEMENT_TYPE.SELECTION: {
         return {
-          ...pick(['url', 'image', 'text'], element),
+          ...pick(['url', 'image', 'text', 'is_follow', 'name', 'desc'], element),
           start: {
             locator: element.start_locator,
             offset:  element.start_offset

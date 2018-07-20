@@ -22,7 +22,8 @@ module.exports = {
     build_bridge:     './src/build_bridge/index.js',
     image_area:       './src/image_area/index.js',
     upsert_relation:  './src/upsert_relation/index.js',
-    after_create_bridge: './src/after_create_bridge/index.js'
+    after_create_bridge: './src/after_create_bridge/index.js',
+    element_description: './src/element_description/index.js'
   },
   output: {
     path: path.join(__dirname, 'dist'),
