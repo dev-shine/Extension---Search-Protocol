@@ -34,6 +34,14 @@ class App extends Component {
     .then(({ relations, bridges, annotations, elementId, userInfo }) => {
       log('INIT WITH', { relations, bridges, annotations, elementId, userInfo })
 
+      API.addGAMessage({
+        eventCategory:'Clicked',
+        eventAction:'RelatedElements',
+        eventLabel:`for elementId=${elementId}`
+      }).then(()=>{
+        log('ga message sent')
+      })
+
       const elementIds = [
         ...flatten(bridges.map(b => [b.from, b.to])),
         ...annotations.map(a => a.target.id)
@@ -171,6 +179,15 @@ class App extends Component {
             </span>
           </h4>
           <ClampPre
+            onShowMore = {()=> {
+              API.addGAMessage({
+                eventCategory:'Clicked',
+                eventAction:'ShowMoreNotes',
+                eventLabel:`for elementId=${annotation.id}`
+              }).then(()=>{
+                log('ga message sent')
+              })
+            }}
             extraActions={(
               <div className="extra">
                 {annotation.privacy !== 0 ? (
@@ -250,7 +267,7 @@ class App extends Component {
         return relation[relField].toUpperCase() + ` (${t('userDefined')})`
     }
   }
-
+  
   renderBridge (bridge, currentElementId, key, isEditable) {
     const { t }     = this.props
     const relation  = this.state.relations.find(r => '' + r.id === '' + bridge.relation)
@@ -274,6 +291,13 @@ class App extends Component {
       }
     })()
     const onClickLink = (e) => {
+      API.addGAMessage({
+        eventCategory:'Clicked',
+        eventAction:'Bridge',
+        eventLabel:`for elementId=${bridge.id}`
+      }).then(()=>{
+        log('ga message sent')
+      })
       if (cpart) {
         if (API.showElementInCurrentTab(cpart) !== true) {
           e.preventDefault()
@@ -318,6 +342,15 @@ class App extends Component {
               </span>
             </div>
             <ClampPre
+              onShowMore = {()=> {
+                API.addGAMessage({
+                  eventCategory:'Clicked',
+                  eventAction:'ShowMoreBridges',
+                  eventLabel:`for elementId=${bridge.id}`
+                }).then(()=>{
+                  log('ga message sent')
+                })
+              }}
               extraActions={(
                 <div className="extra">
                   {bridge.privacy !== 0 ? (
