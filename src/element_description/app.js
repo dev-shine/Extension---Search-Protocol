@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { Form, Input, Button } from 'antd'
 import { translate } from 'react-i18next'
 import { notifyError, notifySuccess } from '../components/notification'
@@ -39,18 +39,17 @@ class App extends Component {
     this.setState({
       elementData: linkData
     })
-    console.log(linkData)
     if (linkData.name) {
       this.followUnFollowElement(linkData)
     } else {
       this.setState({
         disableInputs: false
       })
+      this.props.form.setFieldsValue({
+        title: linkData.name,
+        desc: linkData.desc || ''
+      })
     }
-    this.props.form.setFieldsValue({
-      title: linkData.name,
-      desc: linkData.desc || ''
-    })
   })
  }
  onClickCancel = () => {
@@ -61,7 +60,6 @@ class App extends Component {
   this.props.form.validateFields((err, values) => {
     if (err)  return
     const { t } = this.props
-    console.log('=====values entered====', values)
     let dataValues = {...values}
     dataValues.name = values.title
     dataValues.element_id = linkData.id
@@ -80,70 +78,91 @@ class App extends Component {
 onUpdateField = (val, key) => {
   this.setState({ [key]: val })
 }
+renderForm = () => {
+  const { t } = this.props
+  const { getFieldDecorator } = this.props.form
+  const { disableInputs } = this.state
+  return (
+    <Fragment>
+      <h3>
+        {t('elementDescription:defineElementBeforeFollow')}
+      </h3>
+      <Form>
+        <Form.Item label={t('elementDescription:titleLabel')}>
+          {getFieldDecorator('title', {
+            validateTrigger: ['onBlur'],
+            rules: [
+              { required: true, message: t('elementDescription:titleErrMsg') }
+            ]
+          })(
+            <Input
+              placeholder={t('elementDescription:titlePlaceholder')}
+              onChange={e => this.onUpdateField(e.target.value, 'title')}
+              disabled={disableInputs}
+            />
+          )}
+        </Form.Item>
+        <Form.Item label={t('elementDescription:descLabel')}>
+          {getFieldDecorator('desc', {
+            validateTrigger: ['onBlur'],
+            rules: [
+              { required: true, message: t('elementDescription:descErrMsg') }
+            ]
+          })(
+            <Input.TextArea
+              rows={4}
+              placeholder={t('elementDescription:descPlaceholder')}
+              onChange={e => this.onUpdateField(e.target.value, 'desc')}
+              disabled={disableInputs}
+            />
+          )}
+        </Form.Item>
+        <div className="actions">
+          <Button
+            type="primary"
+            size="large"
+            className="save-button"
+            disabled={disableInputs}
+            onClick={this.onClickSubmit}
+          >
+            {t('save')}
+          </Button>
+          <Button
+            type="danger"
+            size="large"
+            className="cancel-button"
+            onClick={this.onClickCancel}
+          >
+            {t('cancel')}
+          </Button>
+        </div>
+      </Form>
+    </Fragment>
+  )
+}
+renderInfo = () => {
+  const { t } = this.props
+  const { elementData } = this.state
+  return (
+    <Fragment>
+      <h3>
+        You will receive notifications when information is added or edited for the element
+        <span style={{fontWeight:'bold'}}> {elementData.name} </span>
+      </h3>
+    </Fragment>
+  )
+}
   render () {
-    const { t } = this.props
-    const { getFieldDecorator } = this.props.form
     const { elementData, disableInputs } = this.state
     return (
       <div className='element-wrapper'>
         <div className='element-image'>
           <img src={elementData.image} />
         </div>
-        {!disableInputs && 
-          <h3>
-            {t('elementDescription:defineElementBeforeFollow')}
-          </h3>
+        {!disableInputs
+          ? this.renderForm()
+          : this.renderInfo()
         }
-        <Form>
-          <Form.Item label={t('elementDescription:titleLabel')}>
-            {getFieldDecorator('title', {
-              validateTrigger: ['onBlur'],
-              rules: [
-                { required: true, message: t('elementDescription:titleErrMsg') }
-              ]
-            })(
-              <Input
-                placeholder={t('elementDescription:titlePlaceholder')}
-                onChange={e => this.onUpdateField(e.target.value, 'title')}
-                disabled={disableInputs}
-              />
-            )}
-          </Form.Item>
-          <Form.Item label={t('elementDescription:descLabel')}>
-            {getFieldDecorator('desc', {
-              validateTrigger: ['onBlur'],
-              rules: [
-                { required: true, message: t('elementDescription:descErrMsg') }
-              ]
-            })(
-              <Input.TextArea
-                rows={4}
-                placeholder={t('elementDescription:descPlaceholder')}
-                onChange={e => this.onUpdateField(e.target.value, 'desc')}
-                disabled={disableInputs}
-              />
-            )}
-          </Form.Item>
-          <div className="actions">
-            <Button
-              type="primary"
-              size="large"
-              className="save-button"
-              disabled={disableInputs}
-              onClick={this.onClickSubmit}
-            >
-              {t('save')}
-            </Button>
-            <Button
-              type="danger"
-              size="large"
-              className="cancel-button"
-              onClick={this.onClickCancel}
-            >
-              {t('cancel')}
-            </Button>
-          </div>
-        </Form>
       </div>
     )
   }

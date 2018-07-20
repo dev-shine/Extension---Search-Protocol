@@ -970,7 +970,7 @@ export const showElementDescription = ({ linkData, onSuccess }) => {
     const iframeAPI = createIframeWithMask({
       url:    Ext.extension.getURL('element_description.html'),
       width:  500,
-      height: 400,
+      height: 450,
       onAsk:  (cmd, args) => {
         switch (cmd) {
           case 'INIT':
@@ -1299,8 +1299,15 @@ export const commonMenuItems = () => ({
   followElement: ({ showContentElements, linkData = {} }) => ({
     text: linkData.is_follow ? i18n.t('UnFollow') : i18n.t('Follow'),
     onClick: (e, { linkData }) => {
-      console.log('----=-=-=-=-=-=-=-=-=-=-=link-data-=-=-=-=-=-=', linkData)
-      showElementDescription({ linkData, onSuccess: showContentElements })
+      if (linkData.is_follow) { // call the unfollow api directly using linkData.id
+        API.elementFollow({element_id: linkData.id})
+        .then(() => {
+          showContentElements()
+          alert('Successfully UnFollowed')
+        })
+      } else {
+        showElementDescription({ linkData, onSuccess: showContentElements })
+      }
     }
   }),
   createBridge: () => ({

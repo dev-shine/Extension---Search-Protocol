@@ -1,4 +1,4 @@
-$item-height: 70px;
+$item-height: 90px;
 
 .msg-wrapper {
   padding: 25px 25px 0;
@@ -36,13 +36,15 @@ body {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    width:  $item-height * 4 / 3;
+    //width:  $item-height * 4 / 3;
     height: $item-height;
     border: 1px solid #eee;
     margin-bottom: 20px;
     img {
-      max-height: $item-height;
-      max-width: $item-height * 4 / 3;
+      // max-height: $item-height;
+      // max-width: $item-height * 4 / 3;
+      overflow: hidden;
+      object-fit: contain;
     }
   }
 }
