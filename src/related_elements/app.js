@@ -34,7 +34,11 @@ class App extends Component {
     .then(({ relations, bridges, annotations, elementId, userInfo }) => {
       log('INIT WITH', { relations, bridges, annotations, elementId, userInfo })
 
-      API.addGAMessage('Clicked','RelatedElements',`for elementId=${elementId}`).then(()=>{
+      API.addGAMessage({
+        eventCategory:'Clicked',
+        eventAction:'RelatedElements',
+        eventLabel:`for elementId=${elementId}`
+      }).then(()=>{
         log('ga message sent')
       })
 
@@ -176,7 +180,11 @@ class App extends Component {
           </h4>
           <ClampPre
             onShowMore = {()=> {
-              API.addGAMessage('Clicked','ShowMoreNotes',`for elementId=${annotation.id}`).then(()=>{
+              API.addGAMessage({
+                eventCategory:'Clicked',
+                eventAction:'ShowMoreNotes',
+                eventLabel:`for elementId=${annotation.id}`
+              }).then(()=>{
                 log('ga message sent')
               })
             }}
@@ -283,7 +291,11 @@ class App extends Component {
       }
     })()
     const onClickLink = (e) => {
-      API.addGAMessage('Clicked','Bridge',`for elementId=${bridge.id}`).then(()=>{
+      API.addGAMessage({
+        eventCategory:'Clicked',
+        eventAction:'Bridge',
+        eventLabel:`for elementId=${bridge.id}`
+      }).then(()=>{
         log('ga message sent')
       })
       if (cpart) {
@@ -331,7 +343,11 @@ class App extends Component {
             </div>
             <ClampPre
               onShowMore = {()=> {
-                API.addGAMessage('Clicked','ShowMoreBridges',`for elementId=${bridge.id}`).then(()=>{
+                API.addGAMessage({
+                  eventCategory:'Clicked',
+                  eventAction:'ShowMoreBridges',
+                  eventLabel:`for elementId=${bridge.id}`
+                }).then(()=>{
                   log('ga message sent')
                 })
               }}

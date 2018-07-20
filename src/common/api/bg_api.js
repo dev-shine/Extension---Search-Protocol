@@ -237,8 +237,8 @@ const API = {
     })
     return true
   },
-  addGAMessage: (eventCategory, eventAction, eventLabel) => {
-    sendGAMessage(eventCategory, eventAction, eventLabel);
+  addGAMessage: (GAData) => {
+    sendGAMessage(GAData);
     return Promise.resolve(true)
   }
 }

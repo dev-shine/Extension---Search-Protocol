@@ -12,7 +12,7 @@ export const setupGoogleAnalytics = () => {
   } 
   
   
-  export const sendGAMessage  = (eventCategory, eventAction, eventLabel) => {
-    console.log("message: ", eventCategory, eventAction, eventLabel);
-    ga('send', 'event', eventCategory, eventAction, eventLabel);
+  export const sendGAMessage  = (data) => {
+    console.log("message: ", data);
+    ga('send', 'event', data);
   }
