@@ -981,7 +981,7 @@ export const showElementDescription = ({ linkData, onSuccess }) => {
             iframeAPI.destroy()
             return true
           case 'DONE':
-            onSuccess(args)
+            onSuccess()
             return true
         }
       }

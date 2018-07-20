@@ -154,6 +154,16 @@ export const createElement = wrap(({ image, ...textFields }) => {
   .field(unpick(['id'], textFields))
 })
 
+export const createElementDescription = wrap((data) => {
+  return jwtRequest.post(apiUrl('/elementData'))
+  .send(data)
+})
+
+export const elementFollow = wrap((data) => {
+  return jwtRequest.post(apiUrl('/elementFollow'))
+  .send(data)
+})
+
 export const updateElement = (id, data) => {
   throw new Error('todo')
 }

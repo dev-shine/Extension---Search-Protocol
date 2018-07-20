@@ -48,7 +48,9 @@ export default {
     titlePlaceholder: 'Name of the Element',
     descPlaceholder: 'Add a description for this Element',
     titleErrMsg: 'Please input title',
-    descErrMsg: 'Please input description'
+    descErrMsg: 'Please input description',
+    successfullyFollowed: 'Sucessfully followed',
+    defineElementBeforeFollow: 'Please give title and description of the element to follow'
   },
   buildBridge: {
     relationLabel: 'How are these content elements related?',

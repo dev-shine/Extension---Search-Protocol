@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
-import { Modal, Select, Form, Input, Button, Icon } from 'antd'
+import { Form, Input, Button } from 'antd'
 import { translate } from 'react-i18next'
 import { notifyError, notifySuccess } from '../components/notification'
 import { compose } from '../common/utils'
-// import ipc from '../common/ipc/ipc_dynamic'
-// import API from 'cs_api'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import API from '../common/api/cs_iframe_api'
 import log from '../common/log'
@@ -14,7 +12,26 @@ const ipc = ipcForIframe()
 
 class App extends Component {
   state = {
-    elementData: {}
+    elementData: {},
+    disableInputs: true
+  }
+
+  followUnFollowElement = (linkData) => {
+    const { t } = this.props
+    API.elementFollow({element_id: linkData.id})
+    .then(() => {
+      let successMessage = linkData.is_follow ? t('Successfully Unfollowed') : t('Successfully Followed')
+      successMessage += ` element ${linkData.name}`
+      notifySuccess(successMessage)
+      ipc.ask('DONE')
+      setTimeout(() => this.onClickCancel(), 3500)
+    })
+    .catch(e => {
+      notifyError(e.message)
+      setTimeout(() => this.onClickCancel(), 3500)
+    })
+    // notifySuccess(`${linkData.is_follow ? t('Successfully Unfollowed') : t('Successfully Followed')}`)
+    // notifySuccess(`${t('elementDescription:successfullyFollowed')} ${linkData.name}`)
   }
  componentDidMount () {
   ipc.ask('INIT')
@@ -22,9 +39,17 @@ class App extends Component {
     this.setState({
       elementData: linkData
     })
+    console.log(linkData)
+    if (linkData.name) {
+      this.followUnFollowElement(linkData)
+    } else {
+      this.setState({
+        disableInputs: false
+      })
+    }
     this.props.form.setFieldsValue({
-      title: '',
-      desc: ''
+      title: linkData.name,
+      desc: linkData.desc || ''
     })
   })
  }
@@ -32,12 +57,24 @@ class App extends Component {
   ipc.ask('CLOSE')
 }
  onClickSubmit = () => {
+  const { elementData: linkData } = this.state
   this.props.form.validateFields((err, values) => {
     if (err)  return
     const { t } = this.props
     console.log('=====values entered====', values)
-    notifySuccess(t('successfullySaved'))
-    setTimeout(() => this.onClickCancel(), 1500)
+    let dataValues = {...values}
+    dataValues.name = values.title
+    dataValues.element_id = linkData.id
+
+    API.createElementDescription(dataValues)
+      .then(() => {
+        notifySuccess(t('successfullySaved'))
+        this.followUnFollowElement(linkData)
+      })
+      .catch(e => {
+        notifyError(e.message)
+        setTimeout(() => this.onClickCancel(), 1500)
+      })
   });
 }
 onUpdateField = (val, key) => {
@@ -46,12 +83,17 @@ onUpdateField = (val, key) => {
   render () {
     const { t } = this.props
     const { getFieldDecorator } = this.props.form
-    const { elementData } = this.state
+    const { elementData, disableInputs } = this.state
     return (
       <div className='element-wrapper'>
         <div className='element-image'>
           <img src={elementData.image} />
         </div>
+        {!disableInputs && 
+          <h3>
+            {t('elementDescription:defineElementBeforeFollow')}
+          </h3>
+        }
         <Form>
           <Form.Item label={t('elementDescription:titleLabel')}>
             {getFieldDecorator('title', {
@@ -63,6 +105,7 @@ onUpdateField = (val, key) => {
               <Input
                 placeholder={t('elementDescription:titlePlaceholder')}
                 onChange={e => this.onUpdateField(e.target.value, 'title')}
+                disabled={disableInputs}
               />
             )}
           </Form.Item>
@@ -77,6 +120,7 @@ onUpdateField = (val, key) => {
                 rows={4}
                 placeholder={t('elementDescription:descPlaceholder')}
                 onChange={e => this.onUpdateField(e.target.value, 'desc')}
+                disabled={disableInputs}
               />
             )}
           </Form.Item>
@@ -85,6 +129,7 @@ onUpdateField = (val, key) => {
               type="primary"
               size="large"
               className="save-button"
+              disabled={disableInputs}
               onClick={this.onClickSubmit}
             >
               {t('save')}
