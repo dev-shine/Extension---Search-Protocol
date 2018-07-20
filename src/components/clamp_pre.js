@@ -19,6 +19,9 @@ class ClampPre extends React.Component {
   }
 
   toggleFold = () => {
+    if(this.state.fold){
+      this.props.onShowMore()
+    }
     this.setState({
       fold: !this.state.fold
     })
@@ -85,4 +88,7 @@ class ClampPre extends React.Component {
   }
 }
 
+ClampPre.defaultProps = {
+  onShowMore : () => {}
+}
 export default ClampPre
