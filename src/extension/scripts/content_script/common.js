@@ -22,6 +22,7 @@ import { showHyperLinkBadge, showLinks } from './show_bridges'
 import i18n from '../../../i18n'
 import config from '../../../config'
 import { MouseReveal } from './mouse_reveal'
+import throttle from 'lodash.throttle'
 
 export const commonStyle = {
   'box-sizing':  'border-box',
@@ -458,7 +459,8 @@ export const renderContextMenus = (menuOptions, eventData) => {
     containerStyle = {},
     onMouseOver = () => {},
     onMouseOut  = () => {},
-    id
+    id,
+    className
   } = menuOptions
 
   const menuStyle = {
@@ -473,7 +475,7 @@ export const renderContextMenus = (menuOptions, eventData) => {
     ...commonStyle,
     ...normalStyle
   }
-  const $menu = createEl({ style: menuStyle, attrs: { id } })
+  const $menu = createEl({ style: menuStyle, attrs: { id, 'class': className } })
   const $menuList = menus(eventData).map(menu => {
     const $dom = createEl({
       text:  menu.text,
@@ -607,11 +609,23 @@ export const createContextMenus = ({
     const r = s.getRangeAt(0)
     const p = { x: e.pageX, y: e.pageY }
 
-    return isPointInRange(p, r) && isSelectionRangeValid(r)
+    return isSelectionRangeValid(r) &&  isPointInRange(p, r)
   }
   const isOnImage = (e) => {
     const dom = e.target
     return dom.tagName && dom.tagName.toLowerCase() === 'img' && isImageValid(dom)
+  }
+  const isNotOnMenu = (e) => {
+    return (!(
+      (e.target && e.target.id === '__on_image__') ||
+      (e.target.parentElement && e.target.parentElement.id === '__on_image__') ||
+      (e.target && e.target.id === '__on_selection__') ||
+      (e.target.parentElement && e.target.parentElement.id === '__on_selection__')) &&
+      (document.getElementById('__on_image__') || document.getElementById('__on_selection__')) &&
+      window.getSelection().isCollapsed)
+  }
+  const isBadgeMenuShowing = () => {
+    return Array.from(document.getElementsByClassName('menu-on-badge')).length > 0
   }
   const onContextMenu = (e) => {
     showContextMenus({ clear: true })
@@ -671,21 +685,29 @@ export const createContextMenus = ({
   });
 
   const onHoverImage = (e) => {
-    if (isOnImage(e)) {
+    if (isOnImage(e) && !isBadgeMenuShowing()) {
       onContextMenu(e)
+    } else {
+      if (isNotOnMenu(e) && !isBadgeMenuShowing()) {
+        showContextMenus({ clear: true })
+      }
     }
   }
 
-  document.addEventListener('mouseover', onHoverImage)
+  const onPressEscape = (e) => {
+    return (e.keyCode === 27) ? showContextMenus({ clear: true }) : null;
+  }
+  document.addEventListener('mouseover', throttle(onHoverImage, 200))
+  document.addEventListener('keyup', onPressEscape)
   // Adding code end
-  document.addEventListener('contextmenu', onContextMenu)
+  // document.addEventListener('contextmenu', onContextMenu)
 
   return {
     destroy: () => {
-      document.removeEventListener('contextmenu', onContextMenu)
+      // document.removeEventListener('contextmenu', onContextMenu)
       document.removeEventListener('mouseover', onHoverImage)
       mouseUpBinding()
-      showContextMenus({ clear: false })
+      showContextMenus({ clear: true })
     }
   }
 }
@@ -1503,11 +1525,12 @@ export const addSubmenuForBadge = ({ link, getLocalBridge, showContentElements }
     return {
       showAround: ({ rect }) => {
         if (instance) return
-
+        showContextMenus({ clear: true })
         instance = showContextMenus({
           menuOptions: {
             ...commonMenuOptions,
             id: uid(),
+            className: 'menu-on-badge',
             menus: createGetMenus({
               showContentElements,
               getLocalBridge,
