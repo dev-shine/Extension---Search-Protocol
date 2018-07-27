@@ -37,7 +37,7 @@ export const isPointInRect = (point, rect) => {
   return (
     point.x > rect.x &&
     point.y > rect.y &&
-    point.x < (rect.x + rect.width) &&
+    point.x < (rect.x + rect.width * 1.25) &&
     point.y < (rect.y + rect.height)
   )
 }
