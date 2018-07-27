@@ -14,6 +14,9 @@ import './app.scss'
 
 const ipc = ipcForIframe()
 
+API.addGAMessage = API.addGAMessage ? API.addGAMessage : () => {
+  return Promise.resolve(true)
+}
 class App extends Component {
   state = {
     ready: false
