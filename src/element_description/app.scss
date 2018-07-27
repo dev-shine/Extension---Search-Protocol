@@ -41,8 +41,8 @@ body {
     border: 1px solid #eee;
     margin-bottom: 20px;
     img {
-      // max-height: $item-height;
       // max-width: $item-height * 4 / 3;
+      max-height: $item-height;
       overflow: hidden;
       object-fit: contain;
     }
