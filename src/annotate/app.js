@@ -16,7 +16,8 @@ class App extends Component {
   state = {
     mode:       C.UPSERT_MODE.ADD,
     linkData:   null,
-    relations: []
+    noteCategories: [],
+    privacy: 0
   }
 
   encodeData = (values) => {
@@ -100,8 +101,9 @@ class App extends Component {
     ipc.ask('CLOSE')
   }
 
-  onAddRelation = () => {
-    ipc.ask('ADD_RELATION')
+  onAddNoteCategory = () => {
+    // ADD_CATEGORY
+    ipc.ask('ADD_CATEGORY')
   }
 
   onUpdateField = (val, key) => {
@@ -110,13 +112,13 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT')
-    .then(({ annotationData = {}, linkData, mode, relations }) => {
-      log('init got annotation', linkData, annotationData, mode, relations)
+    .then(({ annotationData = {}, linkData, mode, noteCategories }) => {
+      log('init got annotation', linkData, annotationData, mode, noteCategories)
       this.setState({
         linkData,
         annotationData,
         mode,
-        relations
+        noteCategories
       })
 
       this.props.form.setFieldsValue(this.decodeData({
@@ -130,11 +132,11 @@ class App extends Component {
 
     ipc.onAsk((cmd, args) => {
       switch (cmd) {
-        case 'SELECT_NEW_RELATION': {
-          log('SELECT_NEW_RELATION', cmd, args)
+        case 'SELECT_NEW_CATEGORY': { // SELECT_NEW_CATEGORY
+          // log('SELECT_NEW_RELATION', cmd, args)
           this.setState({
-            relations: [...this.state.relations, args.relation],
-            selectedRelation: args.relation.id
+            noteCategories: [...this.state.noteCategories, args.relation],
+            selectedCategory: args.relation.id
           }, () => {
             this.props.form.setFieldsValue(this.decodeData({
               relation: args.relation.id
@@ -237,7 +239,7 @@ class App extends Component {
                 {/* <div style={{ textAlign: 'center' }}> */}
                   <div style={{ display: 'flex' }}>
                     {getFieldDecorator('relation', {
-                      ...(this.state.selectedRelation ? { initialValue: '' + this.state.selectedRelation } : {}),
+                      ...(this.state.selectedCategory ? { initialValue: '' + this.state.selectedCategory } : {}),
                       rules: [
                         { required: true, message: t('createNote:relationErrMsg') }
                       ]
@@ -247,15 +249,17 @@ class App extends Component {
                         onChange={val => this.onUpdateField(parseInt(val, 10), 'relation')}
                         style={{ width: '150px' }}
                       >
-                        {this.state.relations.map(r => (
-                          <Select.Option key={r.id} value={'' + r.id}>{r.active_name}</Select.Option>
+                        {this.state.noteCategories
+                        .filter(n => (this.state.privacy === 0 && n.privacy !== 1) || this.state.privacy === 1)
+                        .map(r => (
+                          <Select.Option key={r.id} value={'' + r.id}>{r.name}</Select.Option>
                         ))}
                       </Select>
                     )}
                     <Button
                       type="default"
                       shape="circle"
-                      onClick={this.onAddRelation}
+                      onClick={this.onAddNoteCategory}
                       style={{ marginLeft: '10px' }}
                     >
                       <Icon type="plus" />

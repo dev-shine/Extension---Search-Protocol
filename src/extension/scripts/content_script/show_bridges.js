@@ -25,7 +25,7 @@ export const showLinks = ({ elements, bridges, annotations, url, onCreate, getCs
       annotations:  annotations.filter(b => b.target === item.id)
     }
   })
-  .filter(item => item.bridges.length + item.annotations.length > 0)
+  .filter(item => item.bridges.length + item.annotations.length >= 0)
 
   const allLinks  = links.map(link => showOneLink({
     link,
@@ -219,7 +219,11 @@ export const showImage = ({ link, getLinksAPI, getCsAPI, color, opacity, needBad
       const badgeAPI    = needBadge ? showBridgeCount({
         text:     '' + totalCount,
         position: topRight,
-        onClick:  () => showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id })
+        onClick:  () => {
+          if (totalCount > 0) {
+            showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id })
+          }
+        }
       }) : {
         show: () => {},
         hide: () => {},
@@ -316,7 +320,11 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
       const badgeAPI    = needBadge ? showBridgeCount({
         text:     '' + totalCount,
         position: topRight,
-        onClick:  () => showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id })
+        onClick:  () => {
+          if (totalCount > 0) {
+            showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id })
+          }
+        }
       }) : {
         show: () => {},
         hide: () => {},

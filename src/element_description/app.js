@@ -5,6 +5,7 @@ import { notifyError, notifySuccess } from '../components/notification'
 import { compose } from '../common/utils'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import API from '../common/api/cs_iframe_api'
+import { encodeElement } from '../common/api/backend_element_adaptor'
 import log from '../common/log'
 import './app.scss'
 
@@ -21,7 +22,7 @@ class App extends Component {
     API.elementFollow({element_id: linkData.id})
     .then(() => {
       let successMessage = linkData.is_follow ? t('Successfully Unfollowed') : t('Successfully Followed')
-      successMessage += ` element ${linkData.name}`
+      // successMessage += ` element ${linkData.name}`
       notifySuccess(successMessage)
       ipc.ask('DONE')
       setTimeout(() => this.onClickCancel(), 3500)
@@ -55,6 +56,19 @@ class App extends Component {
  onClickCancel = () => {
   ipc.ask('CLOSE')
 }
+
+ createElementDescription = (dataValues, linkData) => {
+  const { t } = this.props
+  API.createElementDescription(dataValues)
+  .then(() => {
+    notifySuccess(t('successfullySaved'))
+    this.followUnFollowElement(linkData)
+  })
+  .catch(e => {
+    notifyError(e.message)
+    // setTimeout(() => this.onClickCancel(), 1500)
+  })
+ }
  onClickSubmit = () => {
   const { elementData: linkData } = this.state
   this.props.form.validateFields((err, values) => {
@@ -63,16 +77,19 @@ class App extends Component {
     let dataValues = {...values}
     dataValues.name = values.title
     dataValues.element_id = linkData.id
-
-    API.createElementDescription(dataValues)
-      .then(() => {
-        notifySuccess(t('successfullySaved'))
-        this.followUnFollowElement(linkData)
+    if (!linkData.id) {
+      API.createElement(encodeElement(linkData))
+      .then((newElementData) => {
+        dataValues.element_id = newElementData.id
+        linkData.id = newElementData.id
+        this.createElementDescription(dataValues, linkData)
       })
       .catch(e => {
         notifyError(e.message)
-        setTimeout(() => this.onClickCancel(), 1500)
       })
+    } else {
+      this.createElementDescription(dataValues, linkData)
+    }
   });
 }
 onUpdateField = (val, key) => {

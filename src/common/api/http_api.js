@@ -241,8 +241,22 @@ export const createRelation = wrap((data) => {
   .send(data)
 })
 
+export const createNoteCategory = wrap((data) => {
+  return jwtRequest.post(apiUrl('/noteCategory'))
+  .send(data)
+})
+
 export const listRelations = wrap(() => {
   return jwtRequest.get(apiUrl('/relations'))
+}, {
+  post: list => {
+    list.sort((a, b) => a.id - b.id)
+    return list
+  }
+})
+
+export const listNoteCategories = wrap(() => {
+  return jwtRequest.get(apiUrl('/noteCategory'))
 }, {
   post: list => {
     list.sort((a, b) => a.id - b.id)
@@ -262,6 +276,7 @@ export const listRelationsByIds = wrap((ids) => {
 
 export const loadRelations = withCache(listRelations, 1000 * 5)
 
+export const loadNoteCategories = withCache(listNoteCategories, 1000 * 5)
 // others
 export const annotationsAndBridgesByUrl = wrap((url) => {
   return jwtRequest.post(apiUrl('/search/page'))

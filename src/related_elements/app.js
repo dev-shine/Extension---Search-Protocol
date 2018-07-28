@@ -138,17 +138,14 @@ class App extends Component {
     const tags  = annotation.tags.split(',').map(s => s.trim())
     const relation  = this.state.relations.find(r => '' + r.id === '' + annotation.relation)
     const relStr    = this.renderRelationStr(relation, 'active_name')
-    /*
-    <div className="bridge-relation">
-    {relStr}
-    </div>
-    */
-    // add annotation tag here
+
     return (
       <div className="annotation-item base-item" key={key}>
         <div className="item-content">
-          <h4>
+          <h4 style={{marginBottom: '2px'}}>
             <span>{annotation.title}</span>
+          </h4>
+          <h4>
             <span className="annotation-relation">
               {relStr}
             </span>

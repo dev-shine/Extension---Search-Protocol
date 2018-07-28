@@ -957,6 +957,34 @@ export const upsertRelation = ({ onSuccess = () => {} }) => {
   })
 }
 
+export const upsertCategory = ({ onSuccess = () => {} }) => {
+  const iframeAPI = createIframeWithMask({
+    url:    Ext.extension.getURL('upsert_category.html'),
+    width:  500,
+    height: 300,
+    onAsk:  (cmd, args) => {
+      switch (cmd) {
+        case 'CLOSE_UPSERT_CATEGORY':
+          iframeAPI.destroy()
+          return true
+
+        case 'DONE_UPSERT_CATEGORY': {
+          onSuccess(args)
+          return true
+        }
+      }
+    }
+  })
+
+  setStyle(iframeAPI.$iframe, {
+    position: 'fixed',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    border: '1px solid #ccc'
+  })
+}
+
 export const showMsgAfterCreateBridge = () => {
   return API.getUserSettings()
   .then(settings => {
@@ -1242,8 +1270,8 @@ export const selectImageArea = ({ $img, linkData, getCurrentPage, showContentEle
 }
 
 export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}, onSuccess } = {}) => {
-  API.loadRelations()
-  .then(relations => {
+  API.loadNoteCategories()
+  .then(noteCategories => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('annotate.html'),
     width:  600,
@@ -1257,7 +1285,7 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
             mode,
             annotationData,
             linkData,
-            relations
+            noteCategories
           }
 
         case 'DONE':
@@ -1268,10 +1296,10 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
           iframeAPI.destroy()
           return true
 
-        case 'ADD_RELATION':
-          upsertRelation({
+        case 'ADD_CATEGORY':
+          upsertCategory({
             onSuccess: ({ relation }) => {
-              iframeAPI.ask('SELECT_NEW_RELATION', { relation })
+              iframeAPI.ask('SELECT_NEW_CATEGORY', { relation })
             }
           })
           return true
@@ -1319,13 +1347,13 @@ export const commonMenuItems = () => ({
     }
   }),
   followElement: ({ showContentElements, linkData = {} }) => ({
-    text: linkData.is_follow ? i18n.t('UnFollow') : i18n.t('Follow'),
+    text: linkData.is_follow ? i18n.t('Unfollow') : i18n.t('Follow'),
     onClick: (e, { linkData }) => {
       if (linkData.is_follow) { // call the unfollow api directly using linkData.id
         API.elementFollow({element_id: linkData.id})
         .then(() => {
           showContentElements()
-          alert('Successfully UnFollowed')
+          alert('Successfully Unfollowed')
         })
       } else {
         showElementDescription({ linkData, onSuccess: showContentElements })

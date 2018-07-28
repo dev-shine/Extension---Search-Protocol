@@ -37,6 +37,8 @@
     "after_crate_bridge.js",
     "upsert_relation.html",
     "upsert_relation.js",
+    "upsert_category.html",
+    "upsert_category.js",
     "element_description.html",
     "element_description.js",
     "vendor.js",

@@ -33,7 +33,9 @@ export const methods = [
   'userFollow',
   'createElementDescription',
   'elementFollow',
-
+  'createElement',
+  'loadNoteCategories',
+  'createNoteCategory',
   // backend API
   'createContentElement',
   'createAnnotation',

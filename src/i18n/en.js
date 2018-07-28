@@ -114,6 +114,12 @@ export default {
     passiveNameErrMsg: 'Please input passive name',
     passiveNamePlaceholder: 'Enter the active form of the relationship. E.g., Is Supported By'
   },
+  upsertCategory: {
+    addCategory: 'Add Category',
+    name: 'Name',
+    nameErrMsg: 'Please input name',
+    namePlaceHolder: 'Enter the name of category'
+  },
   privacy: {
     privacyLabel: 'Who should see this?',
     privacyErrMsg: 'Please select privacy',
