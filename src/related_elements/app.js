@@ -28,14 +28,14 @@ class App extends Component {
 
   init = () => {
     ipc.ask('INIT_RELATED_ELEMENTS')
-    .then(({ relations, bridges, annotations, elementId, userInfo }) => {
-      log('INIT WITH', { relations, bridges, annotations, elementId, userInfo })
+    .then(({ relations, bridges, annotations, elementId, userInfo, noteCategories }) => {
+      log('INIT WITH', { relations, bridges, annotations, elementId, userInfo, noteCategories })
 
       API.addGAMessage({
         eventCategory:'Clicked',
         eventAction:'RelatedElements',
         eventLabel:`for elementId=${elementId}`
-      }).then(()=>{
+      }).then(() => {
         log('ga message sent')
       })
 
@@ -50,6 +50,7 @@ class App extends Component {
         bridges,
         annotations,
         elementId,
+        noteCategories,
         ready: elementIds.length === 0
       })
 
@@ -136,8 +137,8 @@ class App extends Component {
   renderAnnotation (annotation, key, isEditable) {
     const { t } = this.props
     const tags  = annotation.tags.split(',').map(s => s.trim())
-    const relation  = this.state.relations.find(r => '' + r.id === '' + annotation.relation)
-    const relStr    = this.renderRelationStr(relation, 'active_name')
+    const relation  = this.state.noteCategories.find(r => '' + r.id === '' + annotation.relation)
+    const relStr    = this.renderRelationStr(relation, 'name')
 
     return (
       <div className="annotation-item base-item" key={key}>
@@ -173,12 +174,12 @@ class App extends Component {
             </span>
           </h4>
           <ClampPre
-            onShowMore = {()=> {
+            onShowMore = {() => {
               API.addGAMessage({
                 eventCategory:'Clicked',
                 eventAction:'ShowMoreNotes',
                 eventLabel:`for elementId=${annotation.id}`
-              }).then(()=>{
+              }).then(() => {
                 log('ga message sent')
               })
             }}
@@ -261,7 +262,7 @@ class App extends Component {
         return relation[relField].toUpperCase() + ` (${t('userDefined')})`
     }
   }
-  
+
   renderBridge (bridge, currentElementId, key, isEditable) {
     const { t }     = this.props
     const relation  = this.state.relations.find(r => '' + r.id === '' + bridge.relation)
@@ -336,12 +337,12 @@ class App extends Component {
               </span>
             </div>
             <ClampPre
-              onShowMore = {()=> {
+              onShowMore = {() => {
                 API.addGAMessage({
                   eventCategory:'Clicked',
                   eventAction:'ShowMoreBridges',
                   eventLabel:`for elementId=${bridge.id}`
-                }).then(()=>{
+                }).then(() => {
                   log('ga message sent')
                 })
               }}

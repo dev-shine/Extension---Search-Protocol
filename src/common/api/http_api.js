@@ -274,6 +274,16 @@ export const listRelationsByIds = wrap((ids) => {
   }
 })
 
+export const listNoteCategoriesByIds = wrap((ids) => {
+  return jwtRequest.get(apiUrl('/noteCategory'))
+  .query({ 'ids[]': ids })
+}, {
+  post: list => {
+    list.sort((a, b) => a.id - b.id)
+    return list
+  }
+})
+
 export const loadRelations = withCache(listRelations, 1000 * 5)
 
 export const loadNoteCategories = withCache(listNoteCategories, 1000 * 5)

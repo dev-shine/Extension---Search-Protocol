@@ -440,30 +440,45 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
               return list
             }, [])
           }
-
+          const getExtraCategoryIds = (annotations, noteCategories) => {
+            return annotations.reduce((list, a) => {
+              if (!noteCategories.find(n => n.id === a.relation)) {
+                list.push(a.relation)
+              }
+              return list
+            }, [])
+          }
           return Promise.all([
             API.loadRelations(),
-            API.checkUser().catch(e => null)
+            API.checkUser().catch(e => null),
+            API.loadNoteCategories()
           ])
-          .then(([relations, userInfo]) => {
+          .then(([relations, userInfo, noteCategories]) => {
             // Note: there could be relations used in bridges, but not included in your own relation list
             const extraRelationIds  = getExtraRelationIds(bridges, relations)
             const pExtraRelations   = extraRelationIds.length > 0
                                         ? API.listRelationsByIds(extraRelationIds)
                                         : Promise.resolve([])
 
-            return pExtraRelations.then(extraRelations => {
+            const extraCategoryIds = getExtraCategoryIds(annotations, noteCategories)
+            const pExtraCategories = extraCategoryIds.length > 0
+                                      ? API.listNoteCategoriesByIds(extraCategoryIds)
+                                      : Promise.resolve([])
+            return Promise.all([
+              pExtraRelations,
+              pExtraCategories
+            ]).then(([extraRelations, extraCategories]) => {
               return {
                 userInfo,
                 bridges,
                 annotations,
                 elementId,
-                relations: [...relations, ...extraRelations]
+                relations: [...relations, ...extraRelations],
+                noteCategories: [...noteCategories, ...extraCategories]
               }
             })
           })
         }
-
         case 'RELOAD_BRIDGES_AND_NOTES': {
           getCsAPI().showContentElements()
           return true

@@ -25,6 +25,7 @@ export const methods = [
   'createRelation',
   'loadRelations',
   'listRelationsByIds',
+  'listNoteCategoriesByIds',
   'saveAccessToken',
   'updateNote',
   'deleteNote',

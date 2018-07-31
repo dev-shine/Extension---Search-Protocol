@@ -1055,6 +1055,7 @@ export const buildBridge = ({
 ) => {
   API.loadRelations()
   .then(relations => {
+    relations = relations.filter(r => r.is_active)
     const iframeAPI = createIframeWithMask({
       url:    Ext.extension.getURL('build_bridge.html'),
       width:  630,
@@ -1272,6 +1273,7 @@ export const selectImageArea = ({ $img, linkData, getCurrentPage, showContentEle
 export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}, onSuccess } = {}) => {
   API.loadNoteCategories()
   .then(noteCategories => {
+  noteCategories = noteCategories.filter(nc => nc.is_active)
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('annotate.html'),
     width:  600,
@@ -1487,7 +1489,6 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
                 width:  rawRect.width,
                 height: rawRect.height
               }
-
               API.captureScreenInSelection({
                 rect,
                 devicePixelRatio: window.devicePixelRatio
@@ -1665,7 +1666,7 @@ export const genShowContentElements = ({
 } = {}) => (() => {
   let linksAPI
 
-  const fn = () => {
+  const fn = ({ hide = false } = {}) => {
     const url = window.location.href
     const showElementsOnMouseReveal = (data, url) => {
       if (linksAPI) linksAPI.destroy()
@@ -1697,7 +1698,10 @@ export const genShowContentElements = ({
 
       onUpdateAPI(linksAPI)
     }
-
+    if (hide) {
+      if (linksAPI) linksAPI.destroy()
+      return
+    }
     API.annotationsAndBridgesByUrl(url)
     .then(fullfilBridgeAndAnnotation)
     .then(data => {
