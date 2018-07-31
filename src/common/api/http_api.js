@@ -250,7 +250,7 @@ export const listRelations = wrap(() => {
   return jwtRequest.get(apiUrl('/relations'))
 }, {
   post: list => {
-    list.sort((a, b) => a.id - b.id)
+    list.sort((a, b) => a.sort_key - b.sort_key)
     return list
   }
 })
@@ -259,7 +259,7 @@ export const listNoteCategories = wrap(() => {
   return jwtRequest.get(apiUrl('/noteCategory'))
 }, {
   post: list => {
-    list.sort((a, b) => a.id - b.id)
+    list.sort((a, b) => a.sort_key - b.sort_key)
     return list
   }
 })
