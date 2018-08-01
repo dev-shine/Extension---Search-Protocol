@@ -112,6 +112,17 @@ body {
       height: $item-height;
       border: 1px solid #eee;
 
+      .selection-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        max-height: $item-height;
+        -webkit-line-clamp: 4; /* number of lines to show */
+        line-height: $item-height / 4;
+        -webkit-box-orient: vertical;
+        padding: 0 5px;
+        color: #000;
+      }
       img {
         max-height: $item-height;
         max-width: $item-height * 4 / 3;

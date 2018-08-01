@@ -46,5 +46,16 @@ body {
       overflow: hidden;
       object-fit: contain;
     }
+    .selection-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      max-height: $item-height;
+      -webkit-line-clamp: 4; /* number of lines to show */
+      line-height: $item-height / 4;
+      -webkit-box-orient: vertical;
+      padding: 0 5px;
+      color: #000;
+    }
   }
 }

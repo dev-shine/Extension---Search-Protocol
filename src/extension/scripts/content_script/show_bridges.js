@@ -41,7 +41,13 @@ export const showLinks = ({ elements, bridges, annotations, url, onCreate, getCs
       allLinks.forEach(item => item.hide())
     },
     destroy: () => {
-      allLinks.forEach(item => item.destroy())
+      allLinks.forEach(item => {
+        try {
+          item.destroy()
+        } catch (e) {
+          log('some exception', e)
+        }
+      })
     }
   }
 

@@ -7,6 +7,7 @@ import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import API from '../common/api/cs_iframe_api'
 import { encodeElement } from '../common/api/backend_element_adaptor'
 import log from '../common/log'
+import { ELEMENT_TYPE } from '../common/models/element_model'
 import './app.scss'
 
 const ipc = ipcForIframe()
@@ -174,7 +175,13 @@ renderInfo = () => {
     return (
       <div className='element-wrapper'>
         <div className='element-image'>
-          <img src={elementData.image} />
+          {
+            elementData.type === ELEMENT_TYPE.SELECTION
+            ? <div className='selection-text'>
+              {elementData.text}
+            </div>
+            : <img alt={elementData.name ? elementData.name : 'Element image'} src={elementData.image} />
+          }
         </div>
         {!disableInputs
           ? this.renderForm()

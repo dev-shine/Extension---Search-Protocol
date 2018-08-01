@@ -290,7 +290,7 @@ class App extends Component {
         eventCategory:'Clicked',
         eventAction:'Bridge',
         eventLabel:`for elementId=${bridge.id}`
-      }).then(()=>{
+      }).then(() => {
         log('ga message sent')
       })
       if (cpart) {
@@ -299,12 +299,17 @@ class App extends Component {
         }
       }
     }
-
     return (
       <div className="bridge-item base-item" key={key}>
         <div className="item-content">
           <a className="bridge-image" target="_top" href={cpart.url} onClick={onClickLink}>
-            <img src={cpart.image} />
+            {
+              cpart.type === ELEMENT_TYPE.SELECTION
+              ? <div className='selection-text'>
+                {cpart.text}
+              </div>
+              : <img src={cpart.image} />
+            }
           </a>
           <div className="bridge-detail">
             <div className="domain-name-link">
