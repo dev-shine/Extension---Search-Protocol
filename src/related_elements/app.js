@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import { Modal, Select, Form, Input, Collapse, Button, Popconfirm, Icon } from 'antd'
+import { Modal, Select, Form, Input, Collapse, Button, Popconfirm, Icon, Tabs } from 'antd'
 import { translate } from 'react-i18next'
-
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import { flatten, setIn, updateIn, compose } from '../common/utils'
 import API from 'cs_api'
@@ -17,6 +16,8 @@ const ipc = ipcForIframe()
 API.addGAMessage = API.addGAMessage ? API.addGAMessage : () => {
   return Promise.resolve(true)
 }
+
+const TabPane = Tabs.TabPane
 class App extends Component {
   state = {
     ready: false
@@ -51,7 +52,8 @@ class App extends Component {
         annotations,
         elementId,
         noteCategories,
-        ready: elementIds.length === 0
+        ready: elementIds.length === 0,
+        tabActivekey: bridges.length > 0 ? '1' : '2' // 1 tab for bridges 2 for notes
       })
 
       API.loadElementsByIds(elementIds)
@@ -513,6 +515,51 @@ class App extends Component {
     )
   }
 
+  renderT () {
+    const { t } = this.props
+    const { annotations, elementId, userInfo, tabActivekey } = this.state
+    const sortBridges  = (list) => {
+      list.sort((a, b) => {
+        const relationA = this.state.relations.find(r => '' + r.id === '' + a.relation)
+        const relationB = this.state.relations.find(r => '' + r.id === '' + b.relation)
+
+        // Standard relations come first before user defined relations
+        if (relationA !== relationB)  return relationB.type - relationA.type
+
+        // If relation type equals, Sort by id
+        return b.id - a.id
+      })
+      return list
+    }
+    const bridges   = sortBridges(this.state.bridges)
+    const canEdit   = (item, userInfo) => userInfo && (userInfo.admin || item.created_by === userInfo.id)
+    return (
+      <Tabs
+        defaultActiveKey={bridges.length > 0 ? '1' : '2'}
+        onChange={(key) => {
+          log(key)
+          this.setState({
+            tabActivekey: key
+          })
+        }}
+        type="card"
+        // tabBarStyle= {{
+        //   color: '#EF5D8F'
+        // }}
+      >
+        <TabPane tab={ <span className={tabActivekey === '1' ? 'active-tab' : ''}> {'Bridges (' + bridges.length + ')'} </span>} key="1" disabled={ bridges.length < 1 }>
+          {bridges.map((item, index) => (
+              this.renderBridge(item, elementId, index, canEdit(item, userInfo))
+            ))}
+        </TabPane>
+        <TabPane tab={ <span className={tabActivekey === '2' ? 'active-tab' : ''}>{'Notes (' + annotations.length + ')'} </span>} disabled={ annotations.length < 1 } key="2">
+          {annotations.map((item, index) => (
+              this.renderAnnotation(item, index, canEdit(item, userInfo))
+            ))}
+        </TabPane>
+      </Tabs>
+    )
+  }
   render () {
     const { t } = this.props
 
@@ -530,7 +577,7 @@ class App extends Component {
         footer={null}
         onCancel={this.onClose}
       >
-        {this.renderB()}
+        {this.renderT()}
       </Modal>
     )
   }
