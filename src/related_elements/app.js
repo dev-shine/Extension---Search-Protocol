@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Modal, Select, Form, Input, Collapse, Button, Popconfirm, Icon, Tabs } from 'antd'
+import { Modal, Select, Form, Input, Collapse, Button, Popconfirm, Icon, Tabs, Menu, Dropdown } from 'antd'
 import { translate } from 'react-i18next'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import { flatten, setIn, updateIn, compose } from '../common/utils'
@@ -17,10 +17,13 @@ API.addGAMessage = API.addGAMessage ? API.addGAMessage : () => {
   return Promise.resolve(true)
 }
 
+const convertToPlainString = (str) => str.trim().toLocaleLowerCase()
 const TabPane = Tabs.TabPane
+const MenuItem = Menu.Item
 class App extends Component {
   state = {
-    ready: false
+    ready: false,
+    searchText: ''
   }
 
   onClose = () => {
@@ -29,9 +32,9 @@ class App extends Component {
 
   init = () => {
     ipc.ask('INIT_RELATED_ELEMENTS')
-    .then(({ relations, bridges, annotations, elementId, userInfo, noteCategories }) => {
-      log('INIT WITH', { relations, bridges, annotations, elementId, userInfo, noteCategories })
-
+    .then(({ relations, bridges, annotations, elementId, userInfo, noteCategories, element }) => {
+      log('INIT WITH', { relations, bridges, annotations, elementId, userInfo, noteCategories, element })
+      debugger;
       API.addGAMessage({
         eventCategory:'Clicked',
         eventAction:'RelatedElements',
@@ -51,6 +54,7 @@ class App extends Component {
         bridges,
         annotations,
         elementId,
+        element,
         noteCategories,
         ready: elementIds.length === 0,
         tabActivekey: bridges.length > 0 ? '1' : '2' // 1 tab for bridges 2 for notes
@@ -141,7 +145,13 @@ class App extends Component {
     const tags  = annotation.tags.split(',').map(s => s.trim())
     const relation  = this.state.noteCategories.find(r => '' + r.id === '' + annotation.relation)
     const relStr    = this.renderRelationStr(relation, 'name')
-
+    const menu = (
+      <Menu>
+        <MenuItem key="1">Flag</MenuItem>
+        <MenuItem key="2">2nd menu item</MenuItem>
+        <MenuItem key="3">3rd item</MenuItem>
+      </Menu>
+    );
     return (
       <div className="annotation-item base-item" key={key}>
         <div className="item-content">
@@ -206,6 +216,13 @@ class App extends Component {
           >
             <img src="./img/share.png" style={{ height: '14px' }} />
           </Button> */}
+          <Dropdown
+            overlay={menu}
+            trigger={['click']}
+            placement="bottomRight"
+          >
+            <Icon type="ellipsis" style={{fontSize:'20px'}} />
+          </Dropdown>
           {isEditable ? (
             <Button
               type="default"
@@ -246,6 +263,13 @@ class App extends Component {
               </Button>
             </Popconfirm>
           ) : null}
+          <Button
+            type="default"
+            onClick={() => {}}
+          >
+            <img src="./img/like.png" style={{ height: '14px' }} />
+            <div style={{ fontSize: '10px' }}> {annotation.like_count} </div>
+          </Button>
         </div>
       </div>
     )
@@ -547,18 +571,123 @@ class App extends Component {
         //   color: '#EF5D8F'
         // }}
       >
-        <TabPane tab={ <span className={tabActivekey === '1' ? 'active-tab' : ''}> {'Bridges (' + bridges.length + ')'} </span>} key="1" disabled={ bridges.length < 1 }>
-          {bridges.map((item, index) => (
+        <TabPane
+          tab={ <span className={tabActivekey === '1' ? 'active-tab' : ''}> {'Bridges (' + bridges.length + ')'} </span>}
+          key="1"
+          disabled={ bridges.length < 1 }
+        >
+          {this.searchFilterBridges(bridges).map((item, index) => (
               this.renderBridge(item, elementId, index, canEdit(item, userInfo))
-            ))}
+            ))
+          }
         </TabPane>
         <TabPane tab={ <span className={tabActivekey === '2' ? 'active-tab' : ''}>{'Notes (' + annotations.length + ')'} </span>} disabled={ annotations.length < 1 } key="2">
-          {annotations.map((item, index) => (
+          {this.searchFilterNotes(annotations).map((item, index) => (
               this.renderAnnotation(item, index, canEdit(item, userInfo))
-            ))}
+            ))
+          }
         </TabPane>
       </Tabs>
     )
+  }
+
+  searchFilterBridges = (bridges) => {
+    const { relations, searchText, tabActivekey, elementId: currentElementId } = this.state
+    if (searchText === '' || tabActivekey !== '1') {
+      return bridges
+    }
+    const fieldsToFilter = ['desc', 'relationName', 'tags']
+    return bridges.filter(bridge => {
+      const relation  = relations.find(r => '' + r.id === '' + bridge.relation)
+      const relField  = bridge.from !== currentElementId ? 'active_name' : 'passive_name'
+      const relationName = relation[relField]
+      bridge = {...bridge, relationName}
+      return fieldsToFilter.some(field => {
+         return convertToPlainString(bridge[field]).indexOf(convertToPlainString(searchText)) > -1
+      })
+    })
+  }
+  searchFilterNotes = (notes) => {
+    const { noteCategories, searchText, tabActivekey } = this.state
+    if (searchText === '' || tabActivekey !== '2') {
+      return notes
+    }
+    const fieldsToFilter = ['desc', 'relationName', 'tags', 'title']
+    return notes.filter(note => {
+      const relation = noteCategories.find(r => '' + r.id === '' + note.relation)
+      const relationName = relation['name']
+      note = {...note, relationName}
+      return fieldsToFilter.some(field => {
+        return convertToPlainString(note[field]).indexOf(convertToPlainString(searchText)) > -1
+      })
+    })
+  }
+  getElementName = () => {
+    const { element } = this.state
+    if (element.name) {
+      return element.name;
+    }
+    if (ELEMENT_TYPE.SELECTION === element.type) {
+      return element.text.split(/\s+/).slice(0, 5).join(' ');
+    } else {
+      return 'An Image';
+    }
+  }
+  upadteElementFollowStatus = () => {
+    const { element } = this.state
+    this.setState({
+      element: {
+        ...element,
+        is_follow: !element.is_follow
+      }
+    })
+  }
+  renderElementFollow = () => {
+     const { element } = this.state
+     const { t } = this.props
+    return (
+    <Button
+      type="default"
+      size="small"
+      onClick={() => {
+        API.elementFollow({element_id: element.id})
+        .then(() => {
+          let successMessage = element.is_follow ? t('Successfully Unfollowed') : t('Successfully Followed')
+          this.upadteElementFollowStatus()
+          ipc.ask('RELOAD_BRIDGES_AND_NOTES')
+          notifySuccess(successMessage)
+        })
+      }}
+    >
+      {element.is_follow ? t('unfollow') : t('follow')}
+    </Button>
+    )
+  }
+  renderModalHeader = () => {
+    const { t } = this.props
+    const { element } = this.state
+    return (
+      <div className='modal-title'>
+        <div className='app-logo'>
+          <img src="./img/logo.png" />
+        </div>
+        <div className='element-name'>
+         {this.getElementName()}
+         {this.renderElementFollow()}
+        </div>
+        <div className='search-input'>
+          <Input
+            placeholder={t('search')}
+            onChange={e => this.setState({
+              searchText: e.target.value
+            })}
+          />
+        </div>
+      </div>
+    )
+    // return (
+    //   <h1> {t('relatedElements:relatedElements')} </h1>
+    // );
   }
   render () {
     const { t } = this.props
@@ -567,7 +696,7 @@ class App extends Component {
 
     return (
       <Modal
-        title={t('relatedElements:relatedElements')}
+        title={this.renderModalHeader()}
         maskStyle={{
           backgroundColor: 'rgba(55, 55, 55, 0.3)'
         }}

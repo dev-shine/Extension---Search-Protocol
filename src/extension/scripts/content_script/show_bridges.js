@@ -227,7 +227,7 @@ export const showImage = ({ link, getLinksAPI, getCsAPI, color, opacity, needBad
         position: topRight,
         onClick:  () => {
           if (totalCount > 0) {
-            showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id })
+            showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id, element: link })
           }
         }
       }) : {
@@ -328,7 +328,7 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
         position: topRight,
         onClick:  () => {
           if (totalCount > 0) {
-            showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id })
+            showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id, element: link })
           }
         }
       }) : {
@@ -428,7 +428,7 @@ export const showBridgeCount = ({ position, text, onClick, style = {} }) => {
   }
 }
 
-export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) => {
+export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId, element }) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('related_elements.html'),
     width:  clientWidth(document),
@@ -479,6 +479,7 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId }) 
                 bridges,
                 annotations,
                 elementId,
+                element,
                 relations: [...relations, ...extraRelations],
                 noteCategories: [...noteCategories, ...extraCategories]
               }

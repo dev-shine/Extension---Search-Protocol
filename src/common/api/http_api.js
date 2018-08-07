@@ -314,3 +314,8 @@ export const userFollow = wrap((data) => {
   return jwtRequest.post(apiUrl('/userFollow'))
   .send(data)
 })
+
+export const likeAction = wrap((data) => {
+  return jwtRequest.post(apiUrl('/contentLike'))
+  .send(data)
+})

@@ -6,15 +6,34 @@ $item-height: 90px;
 body {
   background: transparent;
 }
-.active-tab {
-  color: #EF5D8F;
-}
+
+
 .links-modal {
+
+  .modal-title {
+    display: flex;
+    justify-content: space-between; 
+    width: 95%;
+    .element-name {
+      button {
+        margin-left: 10px;
+        color: $primary-color;
+      }
+    }
+    .app-logo {
+      width: 100px;
+      img {
+        max-width: 100px;
+      }
+    }
+  }
   .pair-select {
     margin-bottom: 20px;
     width: 100%;
   }
-
+  .active-tab {
+    color: #EF5D8F;
+  }
   .the-table {
     // margin-bottom: 15px;
     width: 100%;
@@ -73,7 +92,7 @@ body {
       margin-left: 20px;
       flex: 0;
       width: 120px;
-
+      text-align: right;
       button {
         width: 100%;
         margin-bottom: 4px;
@@ -258,6 +277,7 @@ body {
 
     button {
       margin-left: 10px;
+      color: $primary-color;
     }
   }
 
