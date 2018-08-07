@@ -10,6 +10,10 @@ export function setRoute (data) {
 }
 
 export function setUserInfo (data) {
+  API.updateUserSettings({ dummyField: Date.now() }) // adding EPOC time so update is always fired on storage and on login/logout we update the application's state
+  .catch(e => {
+    console.error(e.stack)
+  })
   return {
     type: T.SET_USER_INFO,
     data

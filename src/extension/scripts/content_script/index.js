@@ -71,14 +71,15 @@ const bindEvents = () => {
 
 let linksAPI
 let destroyMenu
-const init = () => {
+let showContentElements
+const init = ({ isLoggedIn = false }) => {
   const getCsAPI = () => ({
     annotate,
     buildBridge,
     selectImageArea,
     showContentElements
   })
-  const showContentElements = genShowContentElements({
+  showContentElements = genShowContentElements({
     getCsAPI,
     getLocalBridge,
     getMouseRevealConfig: () => pick(['nearDistanceInInch', 'nearVisibleDuration', 'pixelsPerInch'], state),
@@ -94,12 +95,19 @@ const init = () => {
   .then(settings => {
     i18n.changeLanguage(settings.language)
     setStateWithSettings(settings)
-
-    if (settings.showOnLoad) {
-      destroyMenu = initContextMenus({ getCurrentPage, getLocalBridge, showContentElements })
-      showContentElements()
-    }
-  })
+    // API.checkUser().then(user => {
+    //   console.log(user);
+    //   debugger;
+      if (settings.showOnLoad) {
+        destroyMenu = initContextMenus({ getCurrentPage, getLocalBridge, showContentElements, isLoggedIn })
+        showContentElements({ isLoggedIn }) // { hide = true }
+      }
+    })
+  //   .catch(e => {
+  //     debugger;
+  //     console.log(e)
+  //   })
+  // })
 }
 
 const onBgRequest = (cmd, args) => {
@@ -127,9 +135,12 @@ const onBgRequest = (cmd, args) => {
       log('Got UPDATE_SETTINGS', args)
       if (!args.settings.showOnLoad) {
         destroyMenu()
+        showContentElements({ hide : true })
       } else {
         log('enable it')
-        init()
+        showContentElements({ hide : true })
+        checkUserBeforeInit()
+        // init()
       }
       setStateWithSettings(args.settings)
 
@@ -140,7 +151,12 @@ const onBgRequest = (cmd, args) => {
 
       return true
     }
-
+    case 'UPDATE_AFTER_LOGIN_STATUS': {
+      log('Got into update login_status')
+      debugger
+      checkUserBeforeInit()
+      return true
+    }
     case 'HIGHLIGHT_ELEMENT': {
       const { element } = args
 
@@ -204,5 +220,13 @@ const onBgRequest = (cmd, args) => {
 //     }
 //   })
 // }
-
-init()
+const checkUserBeforeInit = () => {
+  API.checkUser().then(user => {
+    init({isLoggedIn:true})
+  })
+  .catch(e => {
+    init({isLoggedIn:false})
+  })
+}
+checkUserBeforeInit()
+// init()

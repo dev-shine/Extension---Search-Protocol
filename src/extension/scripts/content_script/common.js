@@ -596,6 +596,7 @@ export const rightPosition = ({ size, cursor }) => {
 }
 
 export const createContextMenus = ({
+  isLoggedIn,
   menusOnSelection,
   menusOnImage,
   isSelectionRangeValid,
@@ -629,7 +630,7 @@ export const createContextMenus = ({
   }
   const onContextMenu = (e) => {
     showContextMenus({ clear: true })
-
+    if (!isLoggedIn) return
     const pos = {
       x: e.pageX,
       y: e.pageY
@@ -1454,8 +1455,9 @@ export const isSelectionRangeValid = (currentPage) => (range) => {
   return !hasIntersect
 }
 
-export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentElements }) => {
+export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentElements, isLoggedIn }) => {
   const destroy = createContextMenus({
+    isLoggedIn,
     isSelectionRangeValid: isSelectionRangeValid(getCurrentPage()),
     isImageValid: ($img) => {
       const { width, height } = imageSize($img)
@@ -1666,7 +1668,7 @@ export const genShowContentElements = ({
 } = {}) => (() => {
   let linksAPI
 
-  const fn = ({ hide = false } = {}) => {
+  const fn = ({ hide = false, isLoggedIn = false } = {}) => {
     const url = window.location.href
     const showElementsOnMouseReveal = (data, url) => {
       if (linksAPI) linksAPI.destroy()
@@ -1677,7 +1679,7 @@ export const genShowContentElements = ({
         ...data,
         url,
         getCsAPI,
-        onCreate: showSubMenu
+        onCreate: showSubMenu && isLoggedIn
                     ? (api) => addSubmenuForBadge({
                       getLocalBridge,
                       link: api,
@@ -1688,7 +1690,6 @@ export const genShowContentElements = ({
       oldAPI.hide()
 
       const mrConfig = getMouseRevealConfig()
-
       linksAPI = new MouseReveal({
         items:    oldAPI.links,
         distance: mrConfig.nearDistanceInInch * mrConfig.pixelsPerInch,
