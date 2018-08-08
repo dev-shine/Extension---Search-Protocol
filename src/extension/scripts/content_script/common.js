@@ -698,7 +698,8 @@ export const createContextMenus = ({
   const onPressEscape = (e) => {
     return (e.keyCode === 27) ? showContextMenus({ clear: true }) : null;
   }
-  document.addEventListener('mouseover', throttle(onHoverImage, 200))
+  const throttledOnHoverImage = throttle(onHoverImage, 200)
+  document.addEventListener('mouseover', throttledOnHoverImage)
   document.addEventListener('keyup', onPressEscape)
   // Adding code end
   // document.addEventListener('contextmenu', onContextMenu)
@@ -706,7 +707,8 @@ export const createContextMenus = ({
   return {
     destroy: () => {
       // document.removeEventListener('contextmenu', onContextMenu)
-      document.removeEventListener('mouseover', onHoverImage)
+      document.removeEventListener('mouseover', throttledOnHoverImage)
+      document.removeEventListener('keyup', onPressEscape)
       mouseUpBinding()
       showContextMenus({ clear: true })
     }
@@ -1525,6 +1527,7 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
 
   return () => {
     log('destroying menus')
+    console.log('return destroy called')
     destroy.destroy()
   }
 }

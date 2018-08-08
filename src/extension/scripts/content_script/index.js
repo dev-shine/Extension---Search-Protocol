@@ -95,19 +95,14 @@ const init = ({ isLoggedIn = false }) => {
   .then(settings => {
     i18n.changeLanguage(settings.language)
     setStateWithSettings(settings)
-    // API.checkUser().then(user => {
-    //   console.log(user);
-    //   debugger;
+      if (showContentElements && typeof showContentElements === 'function') {
+        showContentElements({ hide : true })
+      }
       if (settings.showOnLoad) {
         destroyMenu = initContextMenus({ getCurrentPage, getLocalBridge, showContentElements, isLoggedIn })
-        showContentElements({ isLoggedIn }) // { hide = true }
+        showContentElements({ isLoggedIn })
       }
     })
-  //   .catch(e => {
-  //     debugger;
-  //     console.log(e)
-  //   })
-  // })
 }
 
 const onBgRequest = (cmd, args) => {
@@ -134,10 +129,14 @@ const onBgRequest = (cmd, args) => {
     case 'UPDATE_SETTINGS': {
       log('Got UPDATE_SETTINGS', args)
       if (!args.settings.showOnLoad) {
-        destroyMenu()
+        destroyMenu && typeof destroyMenu === 'function' && destroyMenu()
         showContentElements({ hide : true })
       } else {
-        log('enable it')
+        // destroyMenu && typeof destroyMenu === 'function' && destroyMenu()
+        if (destroyMenu && typeof destroyMenu === 'function') {
+          console.log('destroying menu')
+          destroyMenu()
+        }
         showContentElements({ hide : true })
         checkUserBeforeInit()
         // init()
@@ -149,12 +148,6 @@ const onBgRequest = (cmd, args) => {
         linksAPI.setDuration(state.nearVisibleDuration)
       }
 
-      return true
-    }
-    case 'UPDATE_AFTER_LOGIN_STATUS': {
-      log('Got into update login_status')
-      debugger
-      checkUserBeforeInit()
       return true
     }
     case 'HIGHLIGHT_ELEMENT': {
@@ -228,5 +221,11 @@ const checkUserBeforeInit = () => {
     init({isLoggedIn:false})
   })
 }
-checkUserBeforeInit()
+// document.body.setAttribute('bridgit-installed', true)
+localStorage.setItem('bridgit-installed', true)
+document.addEventListener('DOMContentLoaded', () => {
+  checkUserBeforeInit()
+  // Run your code here...
+});
+
 // init()
