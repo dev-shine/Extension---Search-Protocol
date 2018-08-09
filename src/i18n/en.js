@@ -19,6 +19,8 @@ export default {
     annotate: 'Annotate',
     createBridge: 'Create Bridge',
     buildBridge: 'Build Bridge',
+    follow: 'Follow',
+    unfollow: 'Unfollow',
     selectImageArea: 'Select Area',
     updateElementForBridge: 'Update Content Element for Bridge',
     successfullyPosted: 'Successfully posted',
