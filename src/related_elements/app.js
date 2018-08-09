@@ -10,6 +10,7 @@ import ClampPre from '../components/clamp_pre'
 import { notifyError, notifySuccess } from '../components/notification'
 import 'antd/dist/antd.less'
 import './app.scss'
+import throttle from 'lodash.throttle'
 
 const ipc = ipcForIframe()
 
@@ -26,6 +27,10 @@ class App extends Component {
     searchText: ''
   }
 
+  constructor (props) {
+    super(props)
+    this.likeContent = throttle(this.likeContent, 500)
+  }
   onClose = () => {
     ipc.ask('CLOSE_RELATED_ELEMENTS')
   }
@@ -143,8 +148,54 @@ class App extends Component {
   openFlagContent = content => {
     ipc.ask('FLAG_CONTENT', { content })
   }
+
+  likeContent (obj) {
+    const { type, type_id:id, is_like: isLike } = obj
+    let { bridges, annotations } = this.state
+    const dataObj = {...obj, emoji_type: 'like'}
+    if (type === 0) { // update in bridge
+      console.log('liking bridge')
+      bridges = bridges.map(b => {
+        if (b.id === id) {
+          return {
+            ...b,
+            like_count: b.like_count + (isLike ? -1 : 1),
+            is_like: !isLike
+          }
+        }
+        return b
+      })
+      this.setState({
+        bridges
+      })
+    } else if (type === 1) { // update in note
+      console.log('liking note')
+      annotations = annotations.map(a => {
+        if (a.id === id) {
+          return {
+            ...a,
+            like_count: a.like_count + (isLike ? -1 : 1),
+            is_like: !isLike
+          }
+        }
+        return a
+      })
+      this.setState({
+        annotations
+      })
+    }
+     API.likeAction(dataObj)
+    .then(() => {
+      ipc.ask('RELOAD_BRIDGES_AND_NOTES')
+    })
+    .catch(e => {
+       notifyError(e.message)
+    })
+  }
   renderAnnotation (annotation, key, isEditable) {
     const { t } = this.props
+    const { userInfo } = this.state
+    const isLoggedIn = !(userInfo === null)
     const tags  = annotation.tags.split(',').map(s => s.trim())
     const relation  = this.state.noteCategories.find(r => '' + r.id === '' + annotation.relation)
     const relStr    = this.renderRelationStr(relation, 'name')
@@ -305,13 +356,17 @@ class App extends Component {
               </Button>
             </Popconfirm>
           ) : null */}
-          <Button
+          {isLoggedIn ? (<Button
             type="default"
-            onClick={() => {}}
+            onClick={() => {
+              this.likeContent({type_id:annotation.id, type: 1, is_like: annotation.is_like})
+            }}
           >
             <img src="./img/like.png" style={{ height: '14px' }} />
             <div style={{ fontSize: '10px' }}> {annotation.like_count} </div>
           </Button>
+          ) : null
+        }
         </div>
       </div>
     )
@@ -333,6 +388,8 @@ class App extends Component {
 
   renderBridge (bridge, currentElementId, key, isEditable) {
     const { t }     = this.props
+    const { userInfo } = this.state
+    const isLoggedIn = !(userInfo === null)
     const relation  = this.state.relations.find(r => '' + r.id === '' + bridge.relation)
     const relField  = bridge.from !== currentElementId ? 'active_name' : 'passive_name'
     const relStr    = this.renderRelationStr(relation, relField)
@@ -554,13 +611,16 @@ class App extends Component {
               </Button>
             </Popconfirm>
           ) : null */}
-          <Button
+          {isLoggedIn ? (<Button
             type="default"
-            onClick={() => {}}
+            onClick={() => {
+              this.likeContent({type_id:bridge.id, type: 0, is_like: bridge.is_like})
+            }}
           >
             <img src="./img/like.png" style={{ height: '14px' }} />
             <div style={{ fontSize: '10px' }}> {bridge.like_count} </div>
           </Button>
+          ) : null}
         </div>
       </div>
     )
@@ -676,16 +736,13 @@ class App extends Component {
           })
         }}
         type="card"
-        // tabBarStyle= {{
-        //   color: '#EF5D8F'
-        // }}
       >
         <TabPane
           tab={ <span className={tabActivekey === '1' ? 'active-tab' : ''}> {'Bridges (' + filteredBridges.length + ')'} </span>}
           key="1"
           disabled={ bridges.length < 1 }
         >
-          <div style={{height: '465px', overflowY: 'auto'}} >
+          <div className='tab-pane'>
             {filteredBridges.map((item, index) => (
                 this.renderBridge(item, elementId, index, canEdit(item, userInfo))
               ))
@@ -697,7 +754,7 @@ class App extends Component {
           key="2"
           disabled={ annotations.length < 1 }
         >
-          <div style={{height: '465px', overflowY: 'auto'}}>
+          <div className='tab-pane'>
             {filteredNotes.map((item, index) => (
                 this.renderAnnotation(item, index, canEdit(item, userInfo))
               ))
@@ -828,7 +885,7 @@ class App extends Component {
   render () {
     const { t } = this.props
 
-    if (!this.state.ready)  return <div>Loading...</div>
+    if (!this.state.ready)  return <div className='loading-container'>Loading...</div>
     return (
       <div className='links-modal'>
         {this.renderModalHeader()}

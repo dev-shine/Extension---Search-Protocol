@@ -7,12 +7,27 @@ body {
   background: transparent;
 }
 
-
-.links-modal {
-  padding: 20px;
+.loading-container {
   background: #FFF;
-
+  height: 565px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.links-modal {
+  // padding: 20px;
+  background: #FFF;
+  .ant-tabs-bar {
+    padding: 0 20px;
+    margin-bottom: 0;
+  }
+  .tab-pane {
+    padding: 20px;
+    height: 465px; 
+    overflow-y: auto;
+  }
   .modal-title {
+    padding: 20px;
     display: flex;
     justify-content: space-between; 
     // width: 95%;
