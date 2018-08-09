@@ -71,14 +71,15 @@ const bindEvents = () => {
 
 let linksAPI
 let destroyMenu
-const init = () => {
+let showContentElements
+const init = ({ isLoggedIn = false }) => {
   const getCsAPI = () => ({
     annotate,
     buildBridge,
     selectImageArea,
     showContentElements
   })
-  const showContentElements = genShowContentElements({
+  showContentElements = genShowContentElements({
     getCsAPI,
     getLocalBridge,
     getMouseRevealConfig: () => pick(['nearDistanceInInch', 'nearVisibleDuration', 'pixelsPerInch'], state),
@@ -94,12 +95,14 @@ const init = () => {
   .then(settings => {
     i18n.changeLanguage(settings.language)
     setStateWithSettings(settings)
-
-    if (settings.showOnLoad) {
-      destroyMenu = initContextMenus({ getCurrentPage, getLocalBridge, showContentElements })
-      showContentElements()
-    }
-  })
+      if (showContentElements && typeof showContentElements === 'function') {
+        showContentElements({ hide : true })
+      }
+      if (settings.showOnLoad) {
+        destroyMenu = initContextMenus({ getCurrentPage, getLocalBridge, showContentElements, isLoggedIn })
+        showContentElements({ isLoggedIn })
+      }
+    })
 }
 
 const onBgRequest = (cmd, args) => {
@@ -126,10 +129,17 @@ const onBgRequest = (cmd, args) => {
     case 'UPDATE_SETTINGS': {
       log('Got UPDATE_SETTINGS', args)
       if (!args.settings.showOnLoad) {
-        destroyMenu()
+        destroyMenu && typeof destroyMenu === 'function' && destroyMenu()
+        showContentElements({ hide : true })
       } else {
-        log('enable it')
-        init()
+        // destroyMenu && typeof destroyMenu === 'function' && destroyMenu()
+        if (destroyMenu && typeof destroyMenu === 'function') {
+          console.log('destroying menu')
+          destroyMenu()
+        }
+        showContentElements({ hide : true })
+        checkUserBeforeInit()
+        // init()
       }
       setStateWithSettings(args.settings)
 
@@ -140,7 +150,6 @@ const onBgRequest = (cmd, args) => {
 
       return true
     }
-
     case 'HIGHLIGHT_ELEMENT': {
       const { element } = args
 
@@ -204,5 +213,19 @@ const onBgRequest = (cmd, args) => {
 //     }
 //   })
 // }
+const checkUserBeforeInit = () => {
+  API.checkUser().then(user => {
+    init({isLoggedIn:true})
+  })
+  .catch(e => {
+    init({isLoggedIn:false})
+  })
+}
+// document.body.setAttribute('bridgit-installed', true)
+localStorage.setItem('bridgit-installed', true)
+document.addEventListener('DOMContentLoaded', () => {
+  checkUserBeforeInit()
+  // Run your code here...
+});
 
-init()
+// init()

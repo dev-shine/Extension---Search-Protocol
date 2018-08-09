@@ -3,7 +3,11 @@ import { getPPI } from '../common/dom_utils'
 
 ;(function () {
   let currentPage
-
+  let isBridgitInstalled = localStorage.getItem('bridgit-installed') // document.body.getAttribute('bridgit-installed')
+  if (isBridgitInstalled === 'true') {
+    localStorage.setItem('bridgit-sdk-loaded', false)
+    return
+  }
   const mouseRevealConfig = {
     nearDistanceInInch:   3,
     nearVisibleDuration:  2,

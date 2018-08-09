@@ -3,7 +3,7 @@
 
   "name": "Bridgit",
   "description": "__MSG_description__",
-  "version": "0.1.0.8",
+  "version": "0.1.1.1",
   "default_locale": "en",
 
   "icons": {
@@ -51,7 +51,7 @@
     {
       "matches": ["<all_urls>"],
       "js": ["content_script.js"],
-      "run_at": "document_end"
+      "run_at": "document_start"
     }
   ],
 
