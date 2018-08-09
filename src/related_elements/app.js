@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { Modal, Select, Form, Input, Collapse, Button, Popconfirm, Icon, Tabs, Menu, Dropdown } from 'antd'
 import { translate } from 'react-i18next'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
@@ -34,7 +34,6 @@ class App extends Component {
     ipc.ask('INIT_RELATED_ELEMENTS')
     .then(({ relations, bridges, annotations, elementId, userInfo, noteCategories, element }) => {
       log('INIT WITH', { relations, bridges, annotations, elementId, userInfo, noteCategories, element })
-      debugger;
       API.addGAMessage({
         eventCategory:'Clicked',
         eventAction:'RelatedElements',
@@ -140,6 +139,10 @@ class App extends Component {
       bridges
     })
   }
+
+  openFlagContent = content => {
+    ipc.ask('FLAG_CONTENT', { content })
+  }
   renderAnnotation (annotation, key, isEditable) {
     const { t } = this.props
     const tags  = annotation.tags.split(',').map(s => s.trim())
@@ -147,9 +150,48 @@ class App extends Component {
     const relStr    = this.renderRelationStr(relation, 'name')
     const menu = (
       <Menu>
-        <MenuItem key="1">Flag</MenuItem>
-        <MenuItem key="2">2nd menu item</MenuItem>
-        <MenuItem key="3">3rd item</MenuItem>
+        {isEditable &&
+            <MenuItem key="1" >
+              <a onClick={e => {
+                ipc.ask('EDIT_ANNOTATION', { annotation })
+              }}>
+                Edit
+              </a>
+            </MenuItem>
+        }
+        {isEditable &&
+            <MenuItem key="2" >
+              <Popconfirm
+                onConfirm={() => {
+                  API.deleteNote(annotation.id)
+                  .then(() => {
+                    notifySuccess(t('successfullyDeleted'))
+
+                    // Note: tell page to reload bridges and notes
+                    ipc.ask('RELOAD_BRIDGES_AND_NOTES')
+
+                    // Note: update local data
+                    this.setState({
+                      annotations: this.state.annotations.filter(item => item.id !== annotation.id)
+                    })
+                  })
+                  .catch(e => {
+                    notifyError(e.message)
+                  })
+                }}
+                title={t('relatedElements:sureToDeleteNote')}
+                okText={t('delete')}
+                cancelText={t('cancel')}
+              >
+                <a>
+                  Delete
+                </a>
+                </Popconfirm>
+            </MenuItem>
+        }
+        <MenuItem key="3">
+          <a onClick={e => { this.openFlagContent({type_id: annotation.id, type: 1}) }}>Flag</a>
+        </MenuItem>
       </Menu>
     );
     return (
@@ -218,12 +260,12 @@ class App extends Component {
           </Button> */}
           <Dropdown
             overlay={menu}
-            trigger={['click']}
+            // trigger={['click']}
             placement="bottomRight"
           >
             <Icon type="ellipsis" style={{fontSize:'20px'}} />
           </Dropdown>
-          {isEditable ? (
+          { /* isEditable ? (
             <Button
               type="default"
               onClick={e => {
@@ -232,8 +274,8 @@ class App extends Component {
             >
               <img src="./img/edit.png" style={{ height: '14px' }} />
             </Button>
-          ) : null}
-          {isEditable ? (
+          ) : null */ }
+          { /* isEditable ? (
             <Popconfirm
               onConfirm={() => {
                 API.deleteNote(annotation.id)
@@ -262,7 +304,7 @@ class App extends Component {
                 <img src="./img/delete.png" style={{ height: '14px' }} />
               </Button>
             </Popconfirm>
-          ) : null}
+          ) : null */}
           <Button
             type="default"
             onClick={() => {}}
@@ -325,6 +367,57 @@ class App extends Component {
         }
       }
     }
+
+    const menu = (
+      <Menu>
+        {isEditable &&
+            <MenuItem key="1" >
+              <a onClick={e => {
+                ipc.ask('EDIT_BRIDGE', {
+                  bridge: {
+                    ...bridge,
+                    fromElement:  this.state.elementDict[bridge.from],
+                    toElement:    this.state.elementDict[bridge.to]
+                  }
+                })
+              }}>
+                Edit
+              </a>
+            </MenuItem>
+        }
+        {isEditable &&
+            <MenuItem key="2" >
+              <Popconfirm
+                onConfirm={() => {
+                  API.deleteBridge(bridge.id)
+                  .then(() => {
+                    notifySuccess(t('successfullyDeleted'))
+                    // Note: tell page to reload bridges and notes
+                    ipc.ask('RELOAD_BRIDGES_AND_NOTES')
+                    // Note: update local data
+                    this.setState({
+                      bridges: this.state.bridges.filter(item => item.id !== bridge.id)
+                    })
+                  })
+                  .catch(e => {
+                    notifyError(e.message)
+                  })
+                }}
+                title={t('relatedElements:sureToDeleteNote')}
+                okText={t('delete')}
+                cancelText={t('cancel')}
+              >
+                <a>
+                  Delete
+                </a>
+                </Popconfirm>
+            </MenuItem>
+        }
+        <MenuItem key="3">
+          <a onClick={e => { this.openFlagContent({type_id: bridge.id, type: 0}) }}>Flag</a>
+        </MenuItem>
+      </Menu>
+    );
     return (
       <div className="bridge-item base-item" key={key}>
         <div className="item-content">
@@ -408,7 +501,14 @@ class App extends Component {
           >
             <img src="./img/share.png" style={{ height: '14px' }} />
           </Button> */}
-          {isEditable ? (
+          <Dropdown
+            overlay={menu}
+            // trigger={['click']}
+            placement="bottomRight"
+          >
+            <Icon type="ellipsis" style={{fontSize:'20px'}} />
+          </Dropdown>
+          {/* isEditable ? (
             <Button
               type="default"
               onClick={e => {
@@ -423,8 +523,8 @@ class App extends Component {
             >
               <img src="./img/edit.png" style={{ height: '14px' }} />
             </Button>
-          ) : null}
-          {isEditable ? (
+          ) : null */ }
+          {/* isEditable ? (
             <Popconfirm
               onConfirm={() => {
                 API.deleteBridge(bridge.id)
@@ -453,7 +553,14 @@ class App extends Component {
                 <img src="./img/delete.png" style={{ height: '14px' }} />
               </Button>
             </Popconfirm>
-          ) : null}
+          ) : null */}
+          <Button
+            type="default"
+            onClick={() => {}}
+          >
+            <img src="./img/like.png" style={{ height: '14px' }} />
+            <div style={{ fontSize: '10px' }}> {bridge.like_count} </div>
+          </Button>
         </div>
       </div>
     )
@@ -557,6 +664,8 @@ class App extends Component {
     }
     const bridges   = sortBridges(this.state.bridges)
     const canEdit   = (item, userInfo) => userInfo && (userInfo.admin || item.created_by === userInfo.id)
+    const filteredNotes = this.searchFilterNotes(annotations)
+    const filteredBridges = this.searchFilterBridges(bridges)
     return (
       <Tabs
         defaultActiveKey={bridges.length > 0 ? '1' : '2'}
@@ -572,20 +681,28 @@ class App extends Component {
         // }}
       >
         <TabPane
-          tab={ <span className={tabActivekey === '1' ? 'active-tab' : ''}> {'Bridges (' + bridges.length + ')'} </span>}
+          tab={ <span className={tabActivekey === '1' ? 'active-tab' : ''}> {'Bridges (' + filteredBridges.length + ')'} </span>}
           key="1"
           disabled={ bridges.length < 1 }
         >
-          {this.searchFilterBridges(bridges).map((item, index) => (
-              this.renderBridge(item, elementId, index, canEdit(item, userInfo))
-            ))
-          }
+          <div style={{height: '465px', overflowY: 'auto'}} >
+            {filteredBridges.map((item, index) => (
+                this.renderBridge(item, elementId, index, canEdit(item, userInfo))
+              ))
+            }
+          </div>
         </TabPane>
-        <TabPane tab={ <span className={tabActivekey === '2' ? 'active-tab' : ''}>{'Notes (' + annotations.length + ')'} </span>} disabled={ annotations.length < 1 } key="2">
-          {this.searchFilterNotes(annotations).map((item, index) => (
-              this.renderAnnotation(item, index, canEdit(item, userInfo))
-            ))
-          }
+        <TabPane
+          tab={ <span className={tabActivekey === '2' ? 'active-tab' : ''}>{'Notes (' + filteredNotes.length + ')'} </span>}
+          key="2"
+          disabled={ annotations.length < 1 }
+        >
+          <div style={{height: '465px', overflowY: 'auto'}}>
+            {filteredNotes.map((item, index) => (
+                this.renderAnnotation(item, index, canEdit(item, userInfo))
+              ))
+            }
+          </div>
         </TabPane>
       </Tabs>
     )
@@ -607,6 +724,7 @@ class App extends Component {
       })
     })
   }
+
   searchFilterNotes = (notes) => {
     const { noteCategories, searchText, tabActivekey } = this.state
     if (searchText === '' || tabActivekey !== '2') {
@@ -622,6 +740,7 @@ class App extends Component {
       })
     })
   }
+
   getElementName = () => {
     const { element } = this.state
     if (element.name) {
@@ -633,6 +752,7 @@ class App extends Component {
       return 'An Image';
     }
   }
+
   upadteElementFollowStatus = () => {
     const { element } = this.state
     this.setState({
@@ -642,6 +762,7 @@ class App extends Component {
       }
     })
   }
+
   renderElementFollow = () => {
      const { element } = this.state
      const { t } = this.props
@@ -663,6 +784,7 @@ class App extends Component {
     </Button>
     )
   }
+
   renderModalHeader = () => {
     const { t } = this.props
     const { element } = this.state
@@ -683,32 +805,51 @@ class App extends Component {
             })}
           />
         </div>
+        <div>
+          <a
+           style={{color:'#000'}}
+            onClick={this.onClose}
+          >
+            <Icon
+              style={{
+                fontSize: '15px'
+              }}
+              type="close"
+            />
+          </a>
+        </div>
       </div>
     )
     // return (
     //   <h1> {t('relatedElements:relatedElements')} </h1>
     // );
   }
+
   render () {
     const { t } = this.props
 
     if (!this.state.ready)  return <div>Loading...</div>
-
     return (
-      <Modal
-        title={this.renderModalHeader()}
-        maskStyle={{
-          backgroundColor: 'rgba(55, 55, 55, 0.3)'
-        }}
-        visible={true}
-        width={700}
-        className="links-modal"
-        footer={null}
-        onCancel={this.onClose}
-      >
+      <div className='links-modal'>
+        {this.renderModalHeader()}
         {this.renderT()}
-      </Modal>
+      </div>
     )
+    // return (
+    //   <Modal
+    //     title={this.renderModalHeader()}
+    //     maskStyle={{
+    //       backgroundColor: 'rgba(55, 55, 55, 0.3)'
+    //     }}
+    //     visible={true}
+    //     width={700}
+    //     className="links-modal"
+    //     footer={null}
+    //     onCancel={this.onClose}
+    //   >
+    //     {this.renderT()}
+    //   </Modal>
+    // )
   }
 }
 

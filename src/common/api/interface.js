@@ -38,6 +38,7 @@ export const methods = [
   'loadNoteCategories',
   'createNoteCategory',
   'likeAction',
+  'contentReport',
   // backend API
   'createContentElement',
   'createAnnotation',

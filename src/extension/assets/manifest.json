@@ -41,6 +41,8 @@
     "upsert_category.js",
     "element_description.html",
     "element_description.js",
+    "flag_content.js",
+    "flag_content.html",
     "vendor.js",
     "antd.css"
   ],

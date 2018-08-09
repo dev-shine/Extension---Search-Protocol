@@ -232,7 +232,7 @@ class App extends Component {
               </div>
             </Form.Item>
 
-            <Form.Item label={t('createNote:relationLabel')} 
+            <Form.Item label={t('createNote:relationLabel')}
             // className="relation-form-item"
             >
               {/* <div className="relationship-row"> */}

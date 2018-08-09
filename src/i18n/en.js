@@ -126,5 +126,14 @@ export default {
     privacyPlaceholder: 'Who should see this?',
     public: 'Public',
     onlyMe: 'Only me'
+  },
+  flagContent:{
+    headingBridge: 'Give feedback on this Bridge',
+    headingNote: 'Give feedback on this Note',
+    categoryLabel: 'Select Category',
+    categoryErrMsg: 'Please select category',
+    categoryPlaceholder: 'Select category',
+    commentLabel: 'What do you think is problematic',
+    successfullyFlagged: 'We\'ve informed the admins about the content'
   }
 }

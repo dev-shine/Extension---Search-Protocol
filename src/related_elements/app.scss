@@ -9,11 +9,13 @@ body {
 
 
 .links-modal {
+  padding: 20px;
+  background: #FFF;
 
   .modal-title {
     display: flex;
     justify-content: space-between; 
-    width: 95%;
+    // width: 95%;
     .element-name {
       button {
         margin-left: 10px;

@@ -428,11 +428,40 @@ export const showBridgeCount = ({ position, text, onClick, style = {} }) => {
   }
 }
 
+export const showFlagContent = ({ content }) => {
+    const iframeAPI = createIframeWithMask({
+      url:    Ext.extension.getURL('flag_content.html'),
+      width:  500,
+      height: 450,
+      onAsk:  (cmd, args) => {
+        switch (cmd) {
+          case 'INIT':
+            return {
+              content
+            }
+          case 'CLOSE':
+            iframeAPI.destroy()
+            return true
+          case 'DONE':
+            iframeAPI.destroy()
+            return true
+        }
+      }
+    })
+
+    setStyle(iframeAPI.$iframe, {
+      position: 'fixed',
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%, -50%)',
+      border: '1px solid #ccc'
+    })
+}
 export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId, element }) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('related_elements.html'),
-    width:  clientWidth(document),
-    height: clientHeight(document),
+    width:  650 || clientWidth(document),
+    height: 600 || clientHeight(document),
     onAsk: (cmd, args) => {
       log('showBridgesModal onAsk', cmd, args)
 
@@ -490,7 +519,10 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId, el
           getCsAPI().showContentElements()
           return true
         }
-
+        case 'FLAG_CONTENT': {
+          showFlagContent({content: args.content})
+          return true
+        }
         case 'EDIT_ANNOTATION': {
           const csAPI = getCsAPI()
 
@@ -559,25 +591,32 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId, el
     }
   })
 
-  const onResize = () => {
-    setStyle(iframeAPI.$iframe, {
-      width:  pixel(clientWidth(document)),
-      height: pixel(clientHeight(document))
-    })
-  }
-  window.addEventListener('resize', onResize)
+  // const onResize = () => {
+  //   setStyle(iframeAPI.$iframe, {
+  //     width:  pixel(clientWidth(document)),
+  //     height: pixel(clientHeight(document))
+  //   })
+  // }
+  // window.addEventListener('resize', onResize)
 
+  // setStyle(iframeAPI.$iframe, {
+  //   position: 'fixed',
+  //   left: '0',
+  //   top: '0',
+  //   right: '0',
+  //   bottom: '0'
+  // })
   setStyle(iframeAPI.$iframe, {
     position: 'fixed',
-    left: '0',
-    top: '0',
-    right: '0',
-    bottom: '0'
+    left: '50%',
+    top: '43%',
+    transform: 'translate(-50%, -50%)',
+    border: '1px solid #ccc'
   })
 
   const modalAPI = {
     destroy: () => {
-      window.removeEventListener('resize', onResize)
+      // window.removeEventListener('resize', onResize)
       iframeAPI.destroy()
     }
   }
