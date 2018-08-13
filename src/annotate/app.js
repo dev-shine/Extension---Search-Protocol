@@ -114,7 +114,6 @@ class App extends Component {
     ipc.ask('INIT')
     .then(({ annotationData = {}, linkData, mode, noteCategories }) => {
       log('init got annotation', linkData, annotationData, mode, noteCategories)
-      debugger;
       this.setState({
         linkData,
         annotationData,
