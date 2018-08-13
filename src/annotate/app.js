@@ -114,6 +114,7 @@ class App extends Component {
     ipc.ask('INIT')
     .then(({ annotationData = {}, linkData, mode, noteCategories }) => {
       log('init got annotation', linkData, annotationData, mode, noteCategories)
+      debugger;
       this.setState({
         linkData,
         annotationData,
@@ -123,7 +124,7 @@ class App extends Component {
 
       this.props.form.setFieldsValue(this.decodeData({
         title:    annotationData.title || '',
-        desc:     annotationData.desc || '',
+        desc:     annotationData.desc || linkData.text || '',
         tags:     annotationData.tags || '',
         privacy:  annotationData.privacy || '0',
         relation: annotationData ? annotationData.relation : undefined
@@ -172,7 +173,18 @@ class App extends Component {
             {getFieldDecorator('desc', {
               validateTrigger: ['onBlur'],
               rules: [
-                { required: true, message: t('createNote:noteErrMsg') }
+                { required: true, message: t('createNote:noteErrMsg') },
+                {
+                  validator: (rule, value, callback) => {
+                    const { linkData } = this.state
+                    if (value === linkData.text) {
+                      const msg = t('sameDescErrMsg')
+                      return callback(msg)
+                    }
+
+                    callback()
+                  }
+                }
               ]
             })(
               <Input.TextArea
@@ -221,7 +233,13 @@ class App extends Component {
               })(
                 <Select
                   placeholder={t('privacy:privacyPlaceholder')}
-                  onChange={val => this.onUpdateField(parseInt(val, 10), 'privacy')}
+                  onChange={val => {
+                    this.props.form.setFieldsValue({
+                      relation: ''
+                    })
+                    this.onUpdateField(parseInt(val, 10), 'privacy')
+                    }
+                  }
                   style={{ width: '150px' }}
                 >
                   {C.PRIVACY_LIST.map(p => (

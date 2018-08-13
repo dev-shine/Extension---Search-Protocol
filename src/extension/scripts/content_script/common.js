@@ -23,6 +23,7 @@ import i18n from '../../../i18n'
 import config from '../../../config'
 import { MouseReveal } from './mouse_reveal'
 import throttle from 'lodash.throttle'
+import debounce from 'lodash.debounce'
 
 export const commonStyle = {
   'box-sizing':  'border-box',
@@ -698,8 +699,8 @@ export const createContextMenus = ({
   const onPressEscape = (e) => {
     return (e.keyCode === 27) ? showContextMenus({ clear: true }) : null;
   }
-  const throttledOnHoverImage = throttle(onHoverImage, 200)
-  document.addEventListener('mouseover', throttledOnHoverImage)
+  const debouncedOnHoverImage = debounce(onHoverImage, 500)
+  document.addEventListener('mouseover', debouncedOnHoverImage)
   document.addEventListener('keyup', onPressEscape)
   // Adding code end
   // document.addEventListener('contextmenu', onContextMenu)
@@ -707,7 +708,7 @@ export const createContextMenus = ({
   return {
     destroy: () => {
       // document.removeEventListener('contextmenu', onContextMenu)
-      document.removeEventListener('mouseover', throttledOnHoverImage)
+      document.removeEventListener('mouseover', debouncedOnHoverImage)
       document.removeEventListener('keyup', onPressEscape)
       mouseUpBinding()
       showContextMenus({ clear: true })

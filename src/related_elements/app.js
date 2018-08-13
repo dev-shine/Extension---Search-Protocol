@@ -362,7 +362,7 @@ class App extends Component {
               this.likeContent({type_id:annotation.id, type: 1, is_like: annotation.is_like})
             }}
           >
-            <img src="./img/like.png" style={{ height: '14px' }} />
+            <img src={annotation.is_like ? './img/liked.png' : './img/like.png'} style={{ height: '14px' }} />
             <div style={{ fontSize: '10px' }}> {annotation.like_count} </div>
           </Button>
           ) : null
@@ -617,7 +617,7 @@ class App extends Component {
               this.likeContent({type_id:bridge.id, type: 0, is_like: bridge.is_like})
             }}
           >
-            <img src="./img/like.png" style={{ height: '14px' }} />
+            <img src={bridge.is_like ? './img/liked.png' : './img/like.png'} style={{ height: '14px' }} />
             <div style={{ fontSize: '10px' }}> {bridge.like_count} </div>
           </Button>
           ) : null}
@@ -767,7 +767,7 @@ class App extends Component {
 
   searchFilterBridges = (bridges) => {
     const { relations, searchText, tabActivekey, elementId: currentElementId } = this.state
-    if (searchText === '' || tabActivekey !== '1') {
+    if (searchText === '' /* ||  tabActivekey !== '1' */) {
       return bridges
     }
     const fieldsToFilter = ['desc', 'relationName', 'tags']
@@ -784,7 +784,7 @@ class App extends Component {
 
   searchFilterNotes = (notes) => {
     const { noteCategories, searchText, tabActivekey } = this.state
-    if (searchText === '' || tabActivekey !== '2') {
+    if (searchText === '' /* || tabActivekey !== '2' */) {
       return notes
     }
     const fieldsToFilter = ['desc', 'relationName', 'tags', 'title']

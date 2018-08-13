@@ -31,6 +31,7 @@ export default {
     tags: 'Tags',
     tagsRequiredErrMsg: 'Please input tags',
     tagsCountErrMsg: 'Enter up to 5 tags separated by commas',
+    sameDescErrMsg: 'Please modify the description',
     tagsPlaceholder: 'Enter up to 5 tags separated by commas',
     tagsPlaceholderAnnotation: 'Enter up to 5 tags separated by commas. Add "keeper" tag if you want us to keep this note.',
     tagsPlaceholderBridge: 'Enter up to 5 tags separated by commas. Add "keeper" tag if you want us to keep this bridge.',
@@ -45,7 +46,7 @@ export default {
     hideThisMessage: `Do not show this message again`
   },
   elementDescription: {
-    titleLabel: 'Title',
+    titleLabel: 'Name this content element. Try to sum it up in a phrase',
     descLabel: 'Description',
     titlePlaceholder: 'Name of the Element',
     descPlaceholder: 'Add a description for this Element',
@@ -69,7 +70,7 @@ export default {
     intersectExistingErrMsg: 'New area must not intersect with existing ones'
   },
   createNote: {
-    title: 'Title',
+    title: 'Name your annotation. Try to sum it up in a phrase',
     titleErrMsg: 'Please input title',
     titlePlaceholder: 'Enter Title for this content element',
     note: 'Note',

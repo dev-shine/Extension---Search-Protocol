@@ -23,7 +23,6 @@ class App extends Component {
     API.elementFollow({element_id: linkData.id})
     .then(() => {
       let successMessage = linkData.is_follow ? t('Successfully Unfollowed') : t('Successfully Followed')
-      // successMessage += ` element ${linkData.name}`
       notifySuccess(successMessage)
       ipc.ask('DONE')
       setTimeout(() => this.onClickCancel(), 3500)
@@ -32,8 +31,6 @@ class App extends Component {
       notifyError(e.message)
       setTimeout(() => this.onClickCancel(), 3500)
     })
-    // notifySuccess(`${linkData.is_follow ? t('Successfully Unfollowed') : t('Successfully Followed')}`)
-    // notifySuccess(`${t('elementDescription:successfullyFollowed')} ${linkData.name}`)
   }
  componentDidMount () {
   ipc.ask('INIT')
@@ -49,7 +46,7 @@ class App extends Component {
       })
       this.props.form.setFieldsValue({
         title: linkData.name,
-        desc: linkData.desc || ''
+        desc: linkData.desc || linkData.text || ''
       })
     }
   })
@@ -124,7 +121,18 @@ renderForm = () => {
           {getFieldDecorator('desc', {
             validateTrigger: ['onBlur'],
             rules: [
-              { required: true, message: t('elementDescription:descErrMsg') }
+              { required: true, message: t('elementDescription:descErrMsg') },
+              {
+                validator: (rule, value, callback) => {
+                  const { elementData } = this.state
+                  if (value === elementData.text) {
+                    const msg = t('sameDescErrMsg')
+                    return callback(msg)
+                  }
+
+                  callback()
+                }
+              }
             ]
           })(
             <Input.TextArea
