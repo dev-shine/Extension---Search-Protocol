@@ -46,9 +46,9 @@ export default {
     hideThisMessage: `Do not show this message again`
   },
   elementDescription: {
-    titleLabel: 'Name this content element. Try to sum it up in a phrase',
+    titleLabel: 'Title',
     descLabel: 'Description',
-    titlePlaceholder: 'Name of the Element',
+    titlePlaceholder: 'Name this content element. Try to sum it up in a phrase',
     descPlaceholder: 'Add a description for this Element',
     titleErrMsg: 'Please input title',
     descErrMsg: 'Please input description',
@@ -70,9 +70,9 @@ export default {
     intersectExistingErrMsg: 'New area must not intersect with existing ones'
   },
   createNote: {
-    title: 'Name your annotation. Try to sum it up in a phrase',
+    title: 'Title',
     titleErrMsg: 'Please input title',
-    titlePlaceholder: 'Enter Title for this content element',
+    titlePlaceholder: 'Name your annotation. Try to sum it up in a phrase',
     note: 'Note',
     noteErrMsg: 'Please enter the text of your Note here',
     notePlaceholder: 'Enter Note for this content',
