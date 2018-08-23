@@ -863,10 +863,11 @@ export const insertStyle = (css, id) => {
 export const showMessage = (text, options = {}) => {
   const css = `
     #__message_container__ {
-      pointer-events: none;
+      /*pointer-events: none;*/
       position: fixed;
+      position: absolute;
       z-index: 99999;
-      top: 30px;
+      top: ${options.yOffset ? options.yOffset + window.scrollY - 50 : 30}px;
       bottom: 0;
       left: 0;
       right: 0;
@@ -899,9 +900,13 @@ export const showMessage = (text, options = {}) => {
     }
   `
   const containerId   = '__message_container__'
+  const cssStyleId = '__message_style__'
   const getContainer  = () => {
     const $existed    = document.getElementById(containerId)
-    if ($existed) return $existed
+    if ($existed) {
+      $existed.remove()
+      // return $existed
+    }
 
     const $container  = createEl({
       attrs: {
@@ -928,9 +933,10 @@ export const showMessage = (text, options = {}) => {
       }, animationDuration)
     }, duration + animationDuration)
   }
-
-  insertStyle(css, '__message_style__')
-  createMessage(text, 2000)
+  const styleNode = document.getElementById(cssStyleId)
+  if (styleNode) styleNode.remove()
+  insertStyle(css, cssStyleId)
+  createMessage(text, 2000 * 2)
 }
 
 export const upsertRelation = ({ onSuccess = () => {} }) => {
@@ -1386,6 +1392,13 @@ export const commonMenuItems = () => ({
       .catch(e => log.error(e.stack))
     }
   }),
+  cancel: ({ showContentElements }) => ({
+    text: i18n.t('cancel'),
+    onClick: (e) => {
+      showContentElements()
+      API.resetLocalBridge()
+    }
+  }),
   updateElementInBridge: ({ showContentElements }) => ({
     text: i18n.t('updateElementForBridge'),
     onClick: (e, { linkData }) => {
@@ -1427,7 +1440,9 @@ export const createGetMenus = ({ showContentElements, getLocalBridge, fixedMenus
       const savedItem     = localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE ? localBridgeData.links[0] : localBridgeData.lastAnnotation.target
 
       if (!isElementEqual(savedItem, menuExtra.linkData)) {
+        menus.splice(0, menus.length)
         menus.push(commonMenuItems().buildBridge({ showContentElements }))
+        menus.push(commonMenuItems().cancel({ showContentElements }))
       }
     }
 
@@ -1464,7 +1479,8 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
     isSelectionRangeValid: isSelectionRangeValid(getCurrentPage()),
     isImageValid: ($img) => {
       const { width, height } = imageSize($img)
-      return width * height > config.settings.minImageArea
+      return width > config.settings.minImageWidth && height > config.settings.minImageHeight
+      // return width * height > config.settings.minImageArea
     },
     processLinkData: (linkData) => {
       const { elements = [] } = getCurrentPage()
@@ -1478,8 +1494,8 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
         showContentElements,
         getLocalBridge,
         fixedMenus: [
-          commonMenuItems().annotate({ showContentElements }),
           commonMenuItems().createBridge(),
+          commonMenuItems().annotate({ showContentElements }),
           commonMenuItems().followElement({ showContentElements })
         ],
         decorate: (menuItem) => {
@@ -1518,8 +1534,8 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
         getLocalBridge,
         fixedMenus: [
           commonMenuItems().selectImageArea({ getCurrentPage, showContentElements }),
-          commonMenuItems().annotate({ showContentElements }),
           commonMenuItems().createBridge(),
+          commonMenuItems().annotate({ showContentElements }),
           commonMenuItems().followElement({ showContentElements })
         ]
       })
@@ -1570,8 +1586,8 @@ export const addSubmenuForBadge = ({ link, getLocalBridge, showContentElements }
               showContentElements,
               getLocalBridge,
               fixedMenus: [
-                commonMenuItems().annotate({ showContentElements }),
                 commonMenuItems().createBridge(),
+                commonMenuItems().annotate({ showContentElements }),
                 commonMenuItems().followElement({ showContentElements, linkData: link.getElement() })
               ]
             })
@@ -1632,7 +1648,9 @@ export const bindSelectionEvent = ({ getCurrentPage }) => {
   bindSelectionEnd((e, selection) => {
     if (hasPartialWords(selection)) {
       selection.collapse(null)
-      showMessage('Invalid Selection: Selection cannot include a partial word')
+      console.log(e.clientX)
+      console.log(e.clientY)
+      showMessage('Invalid Selection: Selection cannot include a partial word', { yOffset: e.clientY })
       return
     }
 

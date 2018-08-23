@@ -12,19 +12,22 @@ import './app.scss'
 
 const ipc = ipcForIframe()
 
-const noteCategories = [
-  'sexual content',
-  'violent content',
-  'hate speech',
-  'language issues',
-  'gibberish'
-]
-const bridgeCategories = [
-  'inaccurate relationship',
-  'problematic content',
-  'subpar content element placement',
-  'language issues, gibberish'
-]
+// const noteCategories = [
+//   'sexual content',
+//   'violent content',
+//   'hate speech',
+//   'language issues',
+//   'gibberish'
+// ]
+// const bridgeCategories = [
+//   'inaccurate relationship',
+//   'problematic content',
+//   'subpar content element placement',
+//   'language issues, gibberish'
+// ]
+
+const NOTE_CATEGORY_COUNT = 5
+const BRIDGE_CATEGORY_COUNT = 4
 class App extends Component {
   state = {
     content: {
@@ -32,6 +35,19 @@ class App extends Component {
     },
     report: ''
   }
+
+ constructor (props) {
+  super(props);
+  const { t } = props
+  this.noteCategories = []
+  this.bridgeCategories = []
+  for (let i = 0; i < NOTE_CATEGORY_COUNT; i++) {
+    this.noteCategories.push(t(`flagNoteCategories.${i}`))
+  }
+  for (let i = 0; i < BRIDGE_CATEGORY_COUNT; i++) {
+    this.bridgeCategories.push(t(`flagBridgeCategories.${i}`))
+  }
+ }
  componentDidMount () {
   ipc.ask('INIT')
   .then(({content}) => {
@@ -68,7 +84,7 @@ renderForm = () => {
   const { t } = this.props
   const { getFieldDecorator } = this.props.form
   const { content } = this.state
-  const selectCategories = content.type === 0 ? bridgeCategories : noteCategories;
+  const selectCategories = content.type === 0 ? this.bridgeCategories : this.noteCategories;
   return (
     <Fragment>
       <h3>

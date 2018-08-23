@@ -427,7 +427,35 @@ export const showBridgeCount = ({ position, text, onClick, style = {} }) => {
     }
   }
 }
+export const showShareContent = ({ shareContent }) => {
+  const iframeAPI = createIframeWithMask({
+    url:    Ext.extension.getURL('share_content.html'),
+    width:  500,
+    height: 450,
+    onAsk:  (cmd, args) => {
+      switch (cmd) {
+        case 'INIT':
+          return {
+            shareContent
+          }
+        case 'CLOSE':
+          iframeAPI.destroy()
+          return true
+        case 'DONE':
+          iframeAPI.destroy()
+          return true
+      }
+    }
+  })
 
+  setStyle(iframeAPI.$iframe, {
+    position: 'fixed',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    border: '1px solid #ccc'
+  })
+}
 export const showFlagContent = ({ content }) => {
     const iframeAPI = createIframeWithMask({
       url:    Ext.extension.getURL('flag_content.html'),
@@ -521,6 +549,10 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId, el
         }
         case 'FLAG_CONTENT': {
           showFlagContent({content: args.content})
+          return true
+        }
+        case 'SHARE_CONTENT': {
+          showShareContent({shareContent: args.shareContent})
           return true
         }
         case 'EDIT_ANNOTATION': {

@@ -25,7 +25,8 @@ module.exports = {
     upsert_category:  './src/upsert_category/index.js',
     after_create_bridge: './src/after_create_bridge/index.js',
     element_description: './src/element_description/index.js',
-    flag_content: './src/flag_content/index.js'
+    flag_content: './src/flag_content/index.js',
+    share_content: './src/share_content/index.js'
   },
   output: {
     path: path.join(__dirname, 'dist'),

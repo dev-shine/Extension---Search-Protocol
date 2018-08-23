@@ -11,6 +11,7 @@ import * as C from '../common/constant'
 import { compose, updateIn } from '../common/utils';
 import { EDIT_BRIDGE_TARGET } from '../common/models/local_model';
 
+const CONTENT_CATEGORY_COUNT = 15
 class CreateLinkComp extends React.Component {
   static propTypes = {
     mode:           PropTypes.string.isRequired,
@@ -28,6 +29,14 @@ class CreateLinkComp extends React.Component {
     exchangePosition: false
   }
 
+  constructor (props) {
+    super(props);
+    const { t } = props;
+    this.contentCategories = []
+    for (let i = 0; i < CONTENT_CATEGORY_COUNT; i++) {
+      this.contentCategories.push(t(`contentCategories.${i}`))
+    }
+  }
   encodeData = (values) => {
     return compose(
       updateIn(['relation'], x => parseInt(x, 10)),
@@ -64,7 +73,8 @@ class CreateLinkComp extends React.Component {
           desc:       this.props.bridge.desc,
           tags:       this.props.bridge.tags,
           relation:   this.props.bridge.relation,
-          privacy:    this.props.bridge.privacy
+          privacy:    this.props.bridge.privacy,
+          category:   this.props.bridge.category
         })
         this.props.form.setFieldsValue(values)
       }, 60)
@@ -77,7 +87,8 @@ class CreateLinkComp extends React.Component {
         desc:       nextProps.bridge.desc,
         tags:       nextProps.bridge.tags,
         relation:   nextProps.bridge.relation,
-        privacy:    nextProps.bridge.privacy
+        privacy:    nextProps.bridge.privacy,
+        category:   nextProps.bridge.category
       }))
     }
 

@@ -16,9 +16,9 @@ export default {
     delete: 'Delete',
     save: 'Save',
     cancel: 'Cancel',
-    annotate: 'Annotate',
-    createBridge: 'Create Bridge',
-    buildBridge: 'Build Bridge',
+    annotate: 'Make a Note',
+    createBridge: 'Begin Bridge',
+    buildBridge: 'Build It!',
     follow: 'Follow',
     unfollow: 'Unfollow',
     selectImageArea: 'Select Area',
@@ -36,7 +36,37 @@ export default {
     tagsPlaceholderAnnotation: 'Enter up to 5 tags separated by commas. Add "keeper" tag if you want us to keep this note.',
     tagsPlaceholderBridge: 'Enter up to 5 tags separated by commas. Add "keeper" tag if you want us to keep this bridge.',
     invalidSelectionCross: 'Invalid Selection: Selection cannot cross content element boundaries',
-    userDefined: 'User Defined'
+    userDefined: 'User Defined',
+    contentCategories: {
+      '0':'Film & Animation',
+      '1':'Autos & Vehicles',
+      '2':'Music',
+      '3':'Pets & Animals',
+      '4':'Sports',
+      '5':'Travel & Events',
+      '6':'Gaming',
+      '7':'People & Blogs',
+      '8':'Comedy',
+      '9':'Entertainment',
+      '10':'News & Politics',
+      '11':'Howto & Style',
+      '12':'Education',
+      '13':'Science & Technology',
+      '14':'Nonprofits & Activism'
+    },
+    flagBridgeCategories: {
+      '0':'inaccurate relationship',
+      '1':'problematic content',
+      '2':'subpar content element placement',
+      '3':'language issues, gibberish'
+    },
+    flagNoteCategories: {
+      '0':'sexual content',
+      '1':'violent content',
+      '2':'hate speech',
+      '3':'language issues',
+      '4':'gibberish'
+    }
   },
   afterCreateBridge: {
     awesomeText: `Awesome! You've selected the content element that is one side of the bridge. Now you need to select the content element that will be the other side of the bridge.`,

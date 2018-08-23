@@ -4,6 +4,10 @@ body {
   padding: 20px;
 }
 
+::placeholder{
+	font-size: 14px;
+}
+
 .upsert-relation-wrapper {
   h2 {
     color: $primary-color;

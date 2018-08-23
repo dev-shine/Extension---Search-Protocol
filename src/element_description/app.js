@@ -11,7 +11,6 @@ import { ELEMENT_TYPE } from '../common/models/element_model'
 import './app.scss'
 
 const ipc = ipcForIframe()
-
 class App extends Component {
   state = {
     elementData: {},

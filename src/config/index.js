@@ -8,6 +8,8 @@ export default {
   },
   settings: {
     minImageAreaRatio: 0.05,
-    minImageArea: 2500
+    minImageArea: 2500 * 4,
+    minImageHeight: 104,
+    minImageWidth: 104
   }
 }

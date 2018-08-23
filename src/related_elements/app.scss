@@ -25,6 +25,7 @@ body {
     padding: 20px;
     height: 465px; 
     overflow-y: auto;
+    overflow-x: hidden;
   }
   .modal-title {
     padding: 20px;
@@ -280,13 +281,25 @@ body {
   .extra {
     display: flex;
     align-items: center;
-
+    white-space: nowrap;
+    overflow-x: auto;
+    width: 300px;
+    padding-bottom: 5px;
     .lock-icon {
       height: 20px;
       margin-right: 10px;
     }
   }
-
+  .extra::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    background-color: #F5F5F5;
+}
+  .extra::-webkit-scrollbar-thumb {
+       box-shadow: inset 0 0 2px rgba(0,0,0,.3); 
+       border-radius: 10px;
+    background-color:#EF5D8F;
+  }
   .creator-info {
     color: $primary-color;
     font-weight: normal;

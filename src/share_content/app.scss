@@ -1,0 +1,48 @@
+$item-height: 90px;
+
+.msg-wrapper {
+  padding: 25px 25px 0;
+  font-size: 14px;
+
+  p {
+    margin-bottom: 20px;
+    line-height: 1.8em;
+
+    &.actions {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+}
+
+body {
+  padding: 20px;
+}
+
+.social-share {
+  vertical-align: top;
+  display: inline-block;
+  margin-right: 30px;
+  text-align: center;
+}
+
+.social-share-count {
+  margin-top: 3px;
+  font-size: 12px;
+}
+
+.social-share-button {
+  cursor: pointer;
+}
+.element-wrapper {
+  .actions {
+    button {
+      margin-right: 15px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

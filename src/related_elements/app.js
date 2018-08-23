@@ -12,6 +12,12 @@ import 'antd/dist/antd.less'
 import './app.scss'
 import throttle from 'lodash.throttle'
 
+const domainFromUrl = (data) => {
+  var a = document.createElement('a');
+  a.href = data;
+  return a.hostname;
+}
+
 const ipc = ipcForIframe()
 
 API.addGAMessage = API.addGAMessage ? API.addGAMessage : () => {
@@ -148,7 +154,9 @@ class App extends Component {
   openFlagContent = content => {
     ipc.ask('FLAG_CONTENT', { content })
   }
-
+  openShareContent = shareContent => {
+    ipc.ask('SHARE_CONTENT', { shareContent })
+  }
   likeContent (obj) {
     const { type, type_id:id, is_like: isLike } = obj
     let { bridges, annotations } = this.state
@@ -303,12 +311,6 @@ class App extends Component {
           </ClampPre>
         </div>
         <div className="actions">
-          {/* <Button
-            type="default"
-            onClick={() => {}}
-          >
-            <img src="./img/share.png" style={{ height: '14px' }} />
-          </Button> */}
           <Dropdown
             overlay={menu}
             // trigger={['click']}
@@ -356,6 +358,12 @@ class App extends Component {
               </Button>
             </Popconfirm>
           ) : null */}
+          {/* <Button
+            type="default"
+            onClick={() => { this.openShareContent({...annotation, type: 1}) }}
+          >
+            <img src="./img/share.png" style={{ height: '14px' }} />
+          </Button> */}
           {isLoggedIn ? (<Button
             type="default"
             onClick={() => {
@@ -398,9 +406,9 @@ class App extends Component {
     const cpartId   = bridge.from !== currentElementId ? bridge.from : bridge.to
     const cpart     = this.state.elementDict[cpartId]
     const source    = new URL(cpart.url).origin.replace(/^.*?:\/\//, '')
-    let bridgeToDomain = source // domainFromUrl(bridge.toElement.url);
-    let splitArr = bridgeToDomain.split('.')
-    bridgeToDomain = splitArr.slice(0, splitArr.length - 1).join('')
+    let bridgeToDomain = source // domainFromUrl(bridge.toElement.url)
+    // let splitArr = bridgeToDomain.split('.')
+    // bridgeToDomain = splitArr.slice(0, splitArr.length - 1).join('')
     const typeImage = (function () {
       switch (cpart.type) {
         case ELEMENT_TYPE.IMAGE:

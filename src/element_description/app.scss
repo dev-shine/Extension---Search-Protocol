@@ -1,4 +1,7 @@
 $item-height: 90px;
+::placeholder{
+	font-size: 14px;
+}
 
 .msg-wrapper {
   padding: 25px 25px 0;
