@@ -37,16 +37,16 @@ class App extends Component {
   }
 
  constructor (props) {
-  super(props);
+  super(props)
   const { t } = props
-  this.noteCategories = []
-  this.bridgeCategories = []
-  for (let i = 0; i < NOTE_CATEGORY_COUNT; i++) {
-    this.noteCategories.push(t(`flagNoteCategories.${i}`))
-  }
-  for (let i = 0; i < BRIDGE_CATEGORY_COUNT; i++) {
-    this.bridgeCategories.push(t(`flagBridgeCategories.${i}`))
-  }
+   this.noteCategories = t(`flagContent:noteCategory`, { returnObjects: true })
+   this.bridgeCategories = t(`flagContent:bridgeCategory`, { returnObjects: true })
+  // for (let i = 0; i < NOTE_CATEGORY_COUNT; i++) {
+  //   this.noteCategories.push(t(`flagNoteCategories.${i}`))
+  // }
+  // for (let i = 0; i < BRIDGE_CATEGORY_COUNT; i++) {
+  //   this.bridgeCategories.push(t(`flagBridgeCategories.${i}`))
+  // }
  }
  componentDidMount () {
   ipc.ask('INIT')

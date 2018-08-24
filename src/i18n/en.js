@@ -18,7 +18,7 @@ export default {
     cancel: 'Cancel',
     annotate: 'Make a Note',
     createBridge: 'Begin Bridge',
-    buildBridge: 'Build It!',
+    buildBridge: 'Bridge It!',
     follow: 'Follow',
     unfollow: 'Unfollow',
     selectImageArea: 'Select Area',
@@ -167,6 +167,19 @@ export default {
     categoryErrMsg: 'Please select category',
     categoryPlaceholder: 'Select category',
     commentLabel: 'What do you think is problematic',
-    successfullyFlagged: 'We\'ve informed the admins about the content'
+    successfullyFlagged: 'We\'ve informed the admins about the content',
+    bridgeCategory: [
+      'inaccurate relationship',
+      'problematic content',
+      'subpar content element placement',
+      'language issues, gibberish'
+    ],
+    noteCategory: [
+      'sexual content',
+      'violent content',
+      'hate speech',
+      'language issues',
+      'gibberish'
+    ]
   }
 }
