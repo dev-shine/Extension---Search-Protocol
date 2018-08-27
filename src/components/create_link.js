@@ -169,7 +169,6 @@ class CreateLinkComp extends React.Component {
     const { t } = this.props
     const { getFieldDecorator } = this.props.form
     const pair = this.props.linkPair.data
-
     if (!pair.links || !pair.links.length)  return null
 
     return (
@@ -298,18 +297,19 @@ class CreateLinkComp extends React.Component {
               <div style={{ display: 'flex' }}>
                 {getFieldDecorator('category', {
                   validateTrigger: ['onBlur'],
+                  initialValue: pair.category,
                   rules: [
                     { required: true, message: t('contentCategory:categoryErrMsg') }
                   ]
                 })(
                   <Select
                     placeholder={t('contentCategory:categoryPlaceholder')}
-                    // defaultValue="0"
+                    defaultValue="0"
                     onChange={val => this.props.onUpdateField(parseInt(val, 10), 'category')}
                     style={{ width: '150px' }}
                   >
-                    {this.contentCategories.map((c, i) => (
-                      <Select.Option key={c} value={'' + i}>{c}</Select.Option>
+                    {C.CATEGORY_LIST.map((c) => (
+                    <Select.Option key={c.key} value={'' + c.value}>{t(`contentCategory:category.${c.key}`)}</Select.Option>
                     ))}
                   </Select>
                 )}

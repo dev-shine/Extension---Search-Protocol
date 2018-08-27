@@ -54,23 +54,33 @@ export default {
     //   '13':'Science & Technology',
     //   '14':'Nonprofits & Activism'
     // },
-    contentCategories: [
-      'Autos & Vehicles',
-      'Film & Animation',
-      'Music',
-      'Pets & Animals',
-      'Sports',
-      'Travel & Events',
-      'Gaming',
-      'People & Blogs',
-      'Comedy',
-      'Entertainment',
-      'News & Politics',
-      'Howto & Style',
-      'Education',
-      'Science & Technology',
-      'Nonprofits & Activism'
-    ]
+    // contentCategories: [
+    //   {
+    //     key:0,
+    //     value:'Autos & Vehicles'
+    //   },
+
+    //   {
+    //     key: 1,
+    //     value: 'Film & Animation'
+    //   },
+    //   {
+    //     key: 2,
+    //     value: 'Music'
+    //   }
+    //   // 'Pets & Animals',
+    //   // 'Sports',
+    //   // 'Travel & Events',
+    //   // 'Gaming',
+    //   // 'People & Blogs',
+    //   // 'Comedy',
+    //   // 'Entertainment',
+    //   // 'News & Politics',
+    //   // 'Howto & Style',
+    //   // 'Education',
+    //   // 'Science & Technology',
+    //   // 'Nonprofits & Activism'
+    // ]
   },
   afterCreateBridge: {
     awesomeText: `Awesome! You've selected the content element that is one side of the bridge. Now you need to select the content element that will be the other side of the bridge.`,
@@ -110,9 +120,9 @@ export default {
     note: 'Note',
     noteErrMsg: 'Please enter the text of your Note here',
     notePlaceholder: 'Enter Note for this content',
-    relationErrMsg: 'Please select a category',
-    relationLabel: 'Category',
-    relationPlaceholder: 'Choose a category'
+    relationErrMsg: 'Please select a type',
+    relationLabel: 'Type',
+    relationPlaceholder: 'Choose a type'
   },
   relatedElements: {
     source: 'Source',
@@ -151,11 +161,11 @@ export default {
     passiveNameErrMsg: 'Please input passive name',
     passiveNamePlaceholder: 'Enter the active form of the relationship. E.g., Is Supported By'
   },
-  upsertCategory: {
-    addCategory: 'Add Category',
+  upsertNoteType: {
+    addCategory: 'Add Note Type',
     name: 'Name',
-    nameErrMsg: 'Please input name',
-    namePlaceHolder: 'Enter the name of category'
+    nameErrMsg: 'Please input note type',
+    namePlaceHolder: 'Enter a note type'
   },
   privacy: {
     privacyLabel: 'Who should see this?',
@@ -163,11 +173,27 @@ export default {
     privacyPlaceholder: 'Who should see this?',
     public: 'Public',
     onlyMe: 'Only me'
-  },
+   },
   contentCategory: {
     categorylabel: 'Category',
     categoryErrMsg: 'Please select category',
-    categoryPlaceholder: 'Category'
+    categoryPlaceholder: 'Category',
+    category: {
+      '1': 'Autos & Vehicles',
+      '2': 'File & Animation',
+      '3': 'Music',
+      '4': 'Pets & Animals',
+      '5': 'Travel & Events',
+      '6': 'Gaming',
+      '7': 'People & Blogs',
+      '8': 'Comedy',
+      '9': 'Entertainment',
+      '10': 'News & Politics',
+      '11': 'Howto & Style',
+      '12': 'Education',
+      '13': 'Sciene & Technology',
+      '14': 'Nonprofits & Activism'
+    }
   },
   flagContent:{
     headingBridge: 'Give feedback on this Bridge',

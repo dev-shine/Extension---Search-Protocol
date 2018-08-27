@@ -20,7 +20,7 @@ class App extends Component {
 
       API.createNoteCategory(values)
       .then(relation => {
-        ipc.ask('DONE_UPSERT_CATEGORY', { relation })
+        ipc.ask('DONE_UPSERT_NOTE_TYPE', { relation })
         notifySuccess(t('successfullySaved'))
         setTimeout(() => this.onClickCancel(), 1500)
       })
@@ -28,7 +28,7 @@ class App extends Component {
   }
 
   onClickCancel = () => {
-    ipc.ask('CLOSE_UPSERT_CATEGORY')
+    ipc.ask('CLOSE_UPSERT_NOTE_TYPE')
   }
 
   render () {
@@ -37,17 +37,17 @@ class App extends Component {
 
     return (
       <div className="upsert-relation-wrapper">
-        <h2>{t('upsertCategory:addCategory')}</h2>
+        <h2>{t('upsertNoteType:addCategory')}</h2>
         <Form>
-          <Form.Item label={t('upsertCategory:name')}>
+          <Form.Item label={t('upsertNoteType:name')}>
             {getFieldDecorator('name', {
               validateTrigger: ['onBlur'],
               rules: [
-                { required: true, message: t('upsertCategory:nameErrMsg') }
+                { required: true, message: t('upsertNoteType:nameErrMsg') }
               ]
             })(
               <Input
-                placeholder={t('upsertCategory:namePlaceHolder')}
+                placeholder={t('upsertNoteType:namePlaceHolder')}
               />
             )}
           </Form.Item>
@@ -77,5 +77,5 @@ class App extends Component {
 
 export default compose(
   Form.create(),
-  translate(['common', 'upsertCategory'])
+  translate(['common', 'upsertNoteType'])
 )(App)

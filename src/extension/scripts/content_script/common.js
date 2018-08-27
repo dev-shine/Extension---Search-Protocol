@@ -967,18 +967,18 @@ export const upsertRelation = ({ onSuccess = () => {} }) => {
   })
 }
 
-export const upsertCategory = ({ onSuccess = () => {} }) => {
+export const upsertNoteType = ({ onSuccess = () => {} }) => {
   const iframeAPI = createIframeWithMask({
-    url:    Ext.extension.getURL('upsert_category.html'),
+    url:    Ext.extension.getURL('upsert_note_type.html'),
     width:  500,
     height: 300,
     onAsk:  (cmd, args) => {
       switch (cmd) {
-        case 'CLOSE_UPSERT_CATEGORY':
+        case 'CLOSE_UPSERT_NOTE_TYPE':
           iframeAPI.destroy()
           return true
 
-        case 'DONE_UPSERT_CATEGORY': {
+        case 'DONE_UPSERT_NOTE_TYPE': {
           onSuccess(args)
           return true
         }
@@ -1308,10 +1308,10 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
           iframeAPI.destroy()
           return true
 
-        case 'ADD_CATEGORY':
-          upsertCategory({
+        case 'ADD_NOTE_TYPE':
+          upsertNoteType({
             onSuccess: ({ relation }) => {
-              iframeAPI.ask('SELECT_NEW_CATEGORY', { relation })
+              iframeAPI.ask('SELECT_NEW_NOTE_TYPE', { relation })
             }
           })
           return true

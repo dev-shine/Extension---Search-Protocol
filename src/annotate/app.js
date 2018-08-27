@@ -23,6 +23,7 @@ class App extends Component {
   encodeData = (values) => {
     return compose(
       updateIn(['relation'], x => parseInt(x, 10)),
+      updateIn(['category'], x => parseInt(x, 10)),
       updateIn(['privacy'], x => parseInt(x, 10))
     )(values)
   }
@@ -30,6 +31,7 @@ class App extends Component {
   decodeData = (values) => {
     return compose(
       updateIn(['relation'], x => x && ('' + x)),
+      updateIn(['category'], x => x && ('' + x)),
       updateIn(['privacy'], x => x ? ('' + x) : '0')
     )(values)
   }
@@ -102,8 +104,8 @@ class App extends Component {
   }
 
   onAddNoteCategory = () => {
-    // ADD_CATEGORY
-    ipc.ask('ADD_CATEGORY')
+    // ADD_NOTE_TYPE
+    ipc.ask('ADD_NOTE_TYPE')
   }
 
   onUpdateField = (val, key) => {
@@ -126,13 +128,14 @@ class App extends Component {
         desc:     annotationData.desc || linkData.text || '',
         tags:     annotationData.tags || '',
         privacy:  annotationData.privacy || '0',
-        relation: annotationData ? annotationData.relation : undefined
+        relation: annotationData ? annotationData.relation : undefined,
+        category: annotationData.category || undefined
       }))
     })
 
     ipc.onAsk((cmd, args) => {
       switch (cmd) {
-        case 'SELECT_NEW_CATEGORY': { // SELECT_NEW_CATEGORY
+        case 'SELECT_NEW_NOTE_TYPE': { // SELECT_NEW_NOTE_TYPE
           // log('SELECT_NEW_RELATION', cmd, args)
           this.setState({
             noteCategories: [...this.state.noteCategories, args.relation],
@@ -247,6 +250,30 @@ class App extends Component {
                   </Select>
                 )}
                 </div>
+            </Form.Item>
+
+            <Form.Item label={t('contentCategory:categorylabel')}>
+              <div style={{ display: 'flex' }}>
+                {getFieldDecorator('category', {
+                  validateTrigger: ['onBlur'],
+                  rules: [
+                    { required: true, message: t('contentCategory:categoryErrMsg') }
+                  ]
+                })(
+                  <Select
+                    placeholder={t('contentCategory:categoryPlaceholder')}
+                    onChange={val => {
+                      this.onUpdateField(parseInt(val, 10), 'category')
+                      }
+                    }
+                    style={{ width: '150px' }}
+                  >
+                    {C.CATEGORY_LIST.map((c) => (
+                      <Select.Option key={c.key} value={'' + c.value}>{t(`contentCategory:category.${c.key}`)}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </div>
             </Form.Item>
 
             <Form.Item label={t('createNote:relationLabel')}
