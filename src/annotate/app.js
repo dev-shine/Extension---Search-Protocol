@@ -223,30 +223,30 @@ class App extends Component {
           </Form.Item>
           <div style={{display:'flex', justifyContent: 'space-between'}}>
             <Form.Item label={t('privacy:privacyLabel')}>
-            <div style={{ display: 'flex' }}>
-              {getFieldDecorator('privacy', {
-                validateTrigger: ['onBlur'],
-                rules: [
-                  { required: true, message: t('privacy:privacyErrMsg') }
-                ]
-              })(
-                <Select
-                  placeholder={t('privacy:privacyPlaceholder')}
-                  onChange={val => {
-                    this.props.form.setFieldsValue({
-                      relation: ''
-                    })
-                    this.onUpdateField(parseInt(val, 10), 'privacy')
+              <div style={{ display: 'flex' }}>
+                {getFieldDecorator('privacy', {
+                  validateTrigger: ['onBlur'],
+                  rules: [
+                    { required: true, message: t('privacy:privacyErrMsg') }
+                  ]
+                })(
+                  <Select
+                    placeholder={t('privacy:privacyPlaceholder')}
+                    onChange={val => {
+                      this.props.form.setFieldsValue({
+                        relation: ''
+                      })
+                      this.onUpdateField(parseInt(val, 10), 'privacy')
+                      }
                     }
-                  }
-                  style={{ width: '150px' }}
-                >
-                  {C.PRIVACY_LIST.map(p => (
-                    <Select.Option key={p.value} value={'' + p.value}>{t(`privacy:${p.key}`)}</Select.Option>
-                  ))}
-                </Select>
-              )}
-              </div>
+                    style={{ width: '150px' }}
+                  >
+                    {C.PRIVACY_LIST.map(p => (
+                      <Select.Option key={p.value} value={'' + p.value}>{t(`privacy:${p.key}`)}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+                </div>
             </Form.Item>
 
             <Form.Item label={t('createNote:relationLabel')}

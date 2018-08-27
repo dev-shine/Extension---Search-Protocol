@@ -10,8 +10,6 @@ import log from '../common/log';
 import * as C from '../common/constant'
 import { compose, updateIn } from '../common/utils';
 import { EDIT_BRIDGE_TARGET } from '../common/models/local_model';
-
-const CONTENT_CATEGORY_COUNT = 15
 class CreateLinkComp extends React.Component {
   static propTypes = {
     mode:           PropTypes.string.isRequired,
@@ -33,21 +31,21 @@ class CreateLinkComp extends React.Component {
     super(props);
     const { t } = props;
     this.contentCategories = []
-    for (let i = 0; i < CONTENT_CATEGORY_COUNT; i++) {
-      this.contentCategories.push(t(`contentCategories.${i}`))
-    }
+    this.contentCategories = t(`contentCategories`, { returnObjects: true })
   }
   encodeData = (values) => {
     return compose(
       updateIn(['relation'], x => parseInt(x, 10)),
-      updateIn(['privacy'], x => parseInt(x, 10))
+      updateIn(['privacy'], x => parseInt(x, 10)),
+      updateIn(['category'], x => parseInt(x, 10))
     )(values)
   }
 
   decodeData = (values) => {
     return compose(
       updateIn(['relation'], x => x && ('' + x)),
-      updateIn(['privacy'], x => x ? ('' + x) : '0')
+      updateIn(['privacy'], x => x ? ('' + x) : '0'),
+      updateIn(['category'], x => x && ('' + x))
     )(values)
   }
 
@@ -273,26 +271,51 @@ class CreateLinkComp extends React.Component {
               />
             )}
           </Form.Item>
+          <div style={{display:'flex', justifyContent: 'space-between'}}>
+            <Form.Item label={t('privacy:privacyLabel')}>
+              <div style={{ display: 'flex' }}>
+                {getFieldDecorator('privacy', {
+                  validateTrigger: ['onBlur'],
+                  rules: [
+                    { required: true, message: t('privacy:privacyErrMsg') }
+                  ]
+                })(
+                  <Select
+                    placeholder={t('privacy:privacyPlaceholder')}
+                    defaultValue="0"
+                    onChange={val => this.props.onUpdateField(parseInt(val, 10), 'privacy')}
+                    style={{ width: '150px' }}
+                  >
+                    {C.PRIVACY_LIST.map(p => (
+                      <Select.Option key={p.value} value={'' + p.value}>{t(`privacy:${p.key}`)}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </div>
+            </Form.Item>
 
-          <Form.Item label={t('privacy:privacyLabel')}>
-            {getFieldDecorator('privacy', {
-              validateTrigger: ['onBlur'],
-              rules: [
-                { required: true, message: t('privacy:privacyErrMsg') }
-              ]
-            })(
-              <Select
-                placeholder={t('privacy:privacyPlaceholder')}
-                defaultValue="0"
-                onChange={val => this.props.onUpdateField(parseInt(val, 10), 'privacy')}
-                style={{ width: '150px' }}
-              >
-                {C.PRIVACY_LIST.map(p => (
-                  <Select.Option key={p.value} value={'' + p.value}>{t(`privacy:${p.key}`)}</Select.Option>
-                ))}
-              </Select>
-            )}
-          </Form.Item>
+            <Form.Item label={t('contentCategory:categorylabel')}>
+              <div style={{ display: 'flex' }}>
+                {getFieldDecorator('category', {
+                  validateTrigger: ['onBlur'],
+                  rules: [
+                    { required: true, message: t('contentCategory:categoryErrMsg') }
+                  ]
+                })(
+                  <Select
+                    placeholder={t('contentCategory:categoryPlaceholder')}
+                    // defaultValue="0"
+                    onChange={val => this.props.onUpdateField(parseInt(val, 10), 'category')}
+                    style={{ width: '150px' }}
+                  >
+                    {this.contentCategories.map((c, i) => (
+                      <Select.Option key={c} value={'' + i}>{c}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </div>
+            </Form.Item>
+          </div>
         </Form>
 
         <div className="actions">
@@ -320,5 +343,5 @@ class CreateLinkComp extends React.Component {
 
 export default compose(
   Form.create(),
-  translate(['common', 'buildBridge', 'privacy'])
+  translate(['common', 'buildBridge', 'privacy', 'contentCategory'])
 )(CreateLinkComp)

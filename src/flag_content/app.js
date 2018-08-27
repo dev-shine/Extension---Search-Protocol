@@ -41,12 +41,6 @@ class App extends Component {
   const { t } = props
    this.noteCategories = t(`flagContent:noteCategory`, { returnObjects: true })
    this.bridgeCategories = t(`flagContent:bridgeCategory`, { returnObjects: true })
-  // for (let i = 0; i < NOTE_CATEGORY_COUNT; i++) {
-  //   this.noteCategories.push(t(`flagNoteCategories.${i}`))
-  // }
-  // for (let i = 0; i < BRIDGE_CATEGORY_COUNT; i++) {
-  //   this.bridgeCategories.push(t(`flagBridgeCategories.${i}`))
-  // }
  }
  componentDidMount () {
   ipc.ask('INIT')
