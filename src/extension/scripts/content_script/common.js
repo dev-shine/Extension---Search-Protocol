@@ -1002,8 +1002,8 @@ export const showMsgAfterCreateBridge = () => {
 
     const iframeAPI = createIframeWithMask({
       url:    Ext.extension.getURL('after_create_bridge.html'),
-      width:  500,
-      height: 300,
+      width:  520,
+      height: 380,
       onAsk:  (cmd, args) => {
         switch (cmd) {
           case 'CLOSE':

@@ -36,7 +36,7 @@ export default {
     tagsPlaceholderAnnotation: 'Enter up to 5 tags separated by commas. Add "keeper" tag if you want us to keep this note.',
     tagsPlaceholderBridge: 'Enter up to 5 tags separated by commas. Add "keeper" tag if you want us to keep this bridge.',
     invalidSelectionCross: 'Invalid Selection: Selection cannot cross content element boundaries',
-    userDefined: 'User Defined',
+    userDefined: 'User Defined'
     // contentCategories: {
     //   '0':'Film & Animation',
     //   '1':'Autos & Vehicles',
@@ -85,8 +85,10 @@ export default {
   afterCreateBridge: {
     awesomeText: `Awesome! You've selected the content element that is one side of the bridge. Now you need to select the content element that will be the other side of the bridge.`,
     pleaseText: `Please do one of the following:`,
-    callToAction1: `Select a new content element, right click, and select "Build Bridge"`,
-    callToAction2: `Move to the circular indicator associated with an existing content element and select "Build Bridge"`,
+    callToAction1: `Select some words to make a new text highlight, and select "Bridgit It!"`,
+    callToAction2: `Hover over an image, and select "Bridgit It!"`,
+    callToAction3: `Hover over an image, choose "Select Area," select part of the image, and select "Bridgit It!"`,
+    callToAction4: `Move to the circular indicator of an existing highlight, and select "Bridgit It!"`,
     hideThisMessage: `Do not show this message again`
   },
   elementDescription: {

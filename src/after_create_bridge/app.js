@@ -25,6 +25,8 @@ class App extends Component {
           <b>{t('afterCreateBridge:pleaseText')}</b>
           <br/>a) {t('afterCreateBridge:callToAction1')}
           <br/>b) {t('afterCreateBridge:callToAction2')}
+          <br/>c) {t('afterCreateBridge:callToAction3')}
+          <br/>d) {t('afterCreateBridge:callToAction4')}
         </p>
 
         <p className="actions">
