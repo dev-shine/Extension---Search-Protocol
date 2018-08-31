@@ -4,8 +4,8 @@ import { uid, noop } from '../../../common/utils'
 import { scrollLeft, scrollTop, clientWidth, clientHeight, pageX, pageY } from '../../../common/dom_utils'
 import { POSITION_TYPE } from './position'
 
-const TROTTLE_INTERVAL = 200
-
+const TROTTLE_INTERVAL = 300
+const SCROLL_THROTTLE_INTERVAL = 500
 export class MouseReveal {
   constructor ({ items, distance, duration = 2, doc = document, onDestroy = noop }) {
     this.distance     = distance
@@ -23,7 +23,7 @@ export class MouseReveal {
     if (this.disabled)  return
     this.updateCandidates()
     this.updateCandidatesVisiblitiy()
-  }, TROTTLE_INTERVAL)
+  }, SCROLL_THROTTLE_INTERVAL)
 
   onMouseMove = throttle((e) => {
     this.mousePosition = {

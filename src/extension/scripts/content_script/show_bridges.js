@@ -488,8 +488,8 @@ export const showFlagContent = ({ content }) => {
 export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId, element }) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('related_elements.html'),
-    width:  650 || clientWidth(document),
-    height: 600 || clientHeight(document),
+    width:  clientWidth(document),
+    height: clientHeight(document),
     onAsk: (cmd, args) => {
       log('showBridgesModal onAsk', cmd, args)
 
@@ -623,32 +623,25 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId, el
     }
   })
 
-  // const onResize = () => {
-  //   setStyle(iframeAPI.$iframe, {
-  //     width:  pixel(clientWidth(document)),
-  //     height: pixel(clientHeight(document))
-  //   })
-  // }
-  // window.addEventListener('resize', onResize)
+  const onResize = () => {
+    setStyle(iframeAPI.$iframe, {
+      width:  pixel(clientWidth(document)),
+      height: pixel(clientHeight(document))
+    })
+  }
+  window.addEventListener('resize', onResize)
 
-  // setStyle(iframeAPI.$iframe, {
-  //   position: 'fixed',
-  //   left: '0',
-  //   top: '0',
-  //   right: '0',
-  //   bottom: '0'
-  // })
   setStyle(iframeAPI.$iframe, {
     position: 'fixed',
-    left: '50%',
-    top: '43%',
-    transform: 'translate(-50%, -50%)',
-    border: '1px solid #ccc'
+    left: '0',
+    top: '0',
+    right: '0',
+    bottom: '0'
   })
 
   const modalAPI = {
     destroy: () => {
-      // window.removeEventListener('resize', onResize)
+      window.removeEventListener('resize', onResize)
       iframeAPI.destroy()
     }
   }

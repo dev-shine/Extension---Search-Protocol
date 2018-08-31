@@ -864,7 +864,7 @@ export const showMessage = (text, options = {}) => {
   const css = `
     #__message_container__ {
       /*pointer-events: none;*/
-      position: fixed;
+      /*position: fixed;*/
       position: absolute;
       z-index: 99999;
       top: ${options.yOffset ? options.yOffset + window.scrollY - 50 : 30}px;
@@ -930,6 +930,7 @@ export const showMessage = (text, options = {}) => {
       $msg.classList.add('__after__')
       setTimeout(() => {
         $msg.remove()
+        getContainer().remove()
       }, animationDuration)
     }, duration + animationDuration)
   }
@@ -1353,6 +1354,7 @@ export const commonMenuOptions = {
 export const commonMenuItems = () => ({
   annotate: ({ showContentElements }) => ({
     text: i18n.t('annotate'),
+    key: 'annotate',
     onClick: (e, { linkData }) => {
       log('annotate menu clicked', linkData)
       annotate({ linkData, onSuccess: showContentElements })
@@ -1360,6 +1362,7 @@ export const commonMenuItems = () => ({
   }),
   followElement: ({ showContentElements, linkData = {} }) => ({
     text: linkData.is_follow ? i18n.t('Unfollow') : i18n.t('Follow'),
+    key: 'follow',
     onClick: (e, { linkData }) => {
       if (linkData.is_follow) { // call the unfollow api directly using linkData.id
         API.elementFollow({element_id: linkData.id})
@@ -1374,6 +1377,7 @@ export const commonMenuItems = () => ({
   }),
   createBridge: () => ({
     text: i18n.t('createBridge'),
+    key: 'createBridge',
     onClick: (e, { linkData }) => {
       API.resetLocalBridge()
       .then(() => API.createLocalBridge(linkData))
@@ -1383,6 +1387,7 @@ export const commonMenuItems = () => ({
   }),
   buildBridge: ({ showContentElements }) => ({
     text: i18n.t('buildBridge'),
+    key: 'buildBridge',
     onClick: (e, { linkData }) => {
       API.buildLocalBridge(linkData)
       .then(() => buildBridge({
@@ -1394,6 +1399,7 @@ export const commonMenuItems = () => ({
   }),
   cancel: ({ showContentElements }) => ({
     text: i18n.t('cancel'),
+    key: 'cancel',
     onClick: (e) => {
       showContentElements()
       API.resetLocalBridge()
@@ -1401,6 +1407,7 @@ export const commonMenuItems = () => ({
   }),
   updateElementInBridge: ({ showContentElements }) => ({
     text: i18n.t('updateElementForBridge'),
+    key: 'updateElementForBridge',
     onClick: (e, { linkData }) => {
       API.updateElementInLocalBridge(linkData)
       .then(() => API.getLocalBridgeStatus())
@@ -1422,6 +1429,7 @@ export const commonMenuItems = () => ({
   }),
   selectImageArea: ({ getCurrentPage, showContentElements }) => ({
     text: i18n.t('selectImageArea'),
+    key: 'selectImageArea',
     onClick: (e, { linkData, $img }) => {
       selectImageArea({ linkData, $img, getCurrentPage, showContentElements })
     }
@@ -1440,7 +1448,8 @@ export const createGetMenus = ({ showContentElements, getLocalBridge, fixedMenus
       const savedItem     = localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE ? localBridgeData.links[0] : localBridgeData.lastAnnotation.target
 
       if (!isElementEqual(savedItem, menuExtra.linkData)) {
-        menus.splice(0, menus.length)
+        debugger;
+        menus[0].key === 'selectImageArea' ? menus.splice(1, menus.length) : menus.splice(0, menus.length)
         menus.push(commonMenuItems().buildBridge({ showContentElements }))
         menus.push(commonMenuItems().cancel({ showContentElements }))
       }
@@ -1690,13 +1699,11 @@ export const genShowContentElements = ({
 } = {}) => (() => {
   let linksAPI
 
-  const fn = ({ hide = false, isLoggedIn = false } = {}) => {
+  const fn = ({ hide = false, isLoggedIn = true } = {}) => {
     const url = window.location.href
     const showElementsOnMouseReveal = (data, url) => {
       if (linksAPI) linksAPI.destroy()
-
       onUpdateCurrentPage(data)
-
       const oldAPI = showLinks({
         ...data,
         url,

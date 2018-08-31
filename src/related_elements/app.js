@@ -870,7 +870,7 @@ class App extends Component {
             })}
           />
         </div>
-        <div>
+        {/* <div>
           <a
            style={{color:'#000'}}
             onClick={this.onClose}
@@ -882,7 +882,7 @@ class App extends Component {
               type="close"
             />
           </a>
-        </div>
+        </div> */}
       </div>
     )
     // return (
@@ -893,28 +893,47 @@ class App extends Component {
   render () {
     const { t } = this.props
 
-    if (!this.state.ready)  return <div className='loading-container'>Loading...</div>
-    return (
-      <div className='links-modal'>
-        {this.renderModalHeader()}
-        {this.renderT()}
-      </div>
-    )
+    if (!this.state.ready)  {
+      return (
+        <div>
+          {/* <div style={{display:'flex', justifyContent:'flex-end', marginRight:'30px', marginTop: '80px'}}>
+            <a
+              style={{color:'#000'}}
+              onClick={this.onClose}
+            >
+              <Icon
+                style={{
+                  fontSize: '15px'
+                }}
+                type="close"
+              />
+            </a>
+          </div> */}
+          <div className='loading-container1'>Loading...</div>
+        </div>
+    );
+    }
     // return (
-    //   <Modal
-    //     title={this.renderModalHeader()}
-    //     maskStyle={{
-    //       backgroundColor: 'rgba(55, 55, 55, 0.3)'
-    //     }}
-    //     visible={true}
-    //     width={700}
-    //     className="links-modal"
-    //     footer={null}
-    //     onCancel={this.onClose}
-    //   >
+    //   <div className='links-modal'>
+    //     {this.renderModalHeader()}
     //     {this.renderT()}
-    //   </Modal>
+    //   </div>
     // )
+    return (
+      <Modal
+        title={this.renderModalHeader()}
+        maskStyle={{
+          backgroundColor: 'rgba(55, 55, 55, 0.3)'
+        }}
+        visible={true}
+        width={700}
+        className="links-modal"
+        footer={null}
+        onCancel={this.onClose}
+      >
+        {this.renderT()}
+      </Modal>
+    )
   }
 }
 

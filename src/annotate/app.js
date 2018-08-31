@@ -47,13 +47,13 @@ class App extends Component {
       ipc.ask('DONE', { annotation })
 
       // Note: record last annotation, it will add 'build bridge' menu item for further selection on text / image
-      API.recordLastAnnotation({
-        ...annotation,
-        target: {
-          ...this.state.linkData,
-          id: annotation.target
-        }
-      })
+      // API.recordLastAnnotation({
+      //   ...annotation,
+      //   target: {
+      //     ...this.state.linkData,
+      //     id: annotation.target
+      //   }
+      // })
       notifySuccess(t('successfullySaved'))
       setTimeout(() => this.onClickCancel(), 1500)
     })
