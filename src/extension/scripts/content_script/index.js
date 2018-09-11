@@ -88,7 +88,7 @@ const init = ({ isLoggedIn = false }) => {
   })
 
   bindEvents()
-  bindSelectionEvent({ getCurrentPage })
+  isLoggedIn && bindSelectionEvent({ getCurrentPage })
   bindSocialLoginEvent(ipc)
 
   API.getUserSettings()

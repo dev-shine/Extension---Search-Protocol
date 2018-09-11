@@ -435,8 +435,24 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4 
       setStyle($root, { display: 'none' })
       return api
     },
+    fade: () => {
+      let opacity = 1.0;
+      if ($root.style.opacity && parseInt($root.style.opacity) !== 1) {
+        return;
+      }
+      let fadeEffect = setInterval(() => {
+        if (opacity > 0) {
+          opacity -= 0.25;
+        } else {
+          setStyle($root, { display: 'none' })
+          clearInterval(fadeEffect);
+          return;
+        }
+        setStyle($root, { opacity: opacity })
+      }, 100)
+    },
     show: () => {
-      setStyle($root, { display: 'block' })
+      setStyle($root, { display: 'block', opacity: 1 })
       return api
     },
     setStyle: (style) => {
@@ -1448,7 +1464,6 @@ export const createGetMenus = ({ showContentElements, getLocalBridge, fixedMenus
       const savedItem     = localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE ? localBridgeData.links[0] : localBridgeData.lastAnnotation.target
 
       if (!isElementEqual(savedItem, menuExtra.linkData)) {
-        debugger;
         menus[0].key === 'selectImageArea' ? menus.splice(1, menus.length) : menus.splice(0, menus.length)
         menus.push(commonMenuItems().buildBridge({ showContentElements }))
         menus.push(commonMenuItems().cancel({ showContentElements }))

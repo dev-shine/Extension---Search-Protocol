@@ -37,58 +37,25 @@ export default {
     tagsPlaceholderBridge: 'Enter up to 5 tags separated by commas. Add "keeper" tag if you want us to keep this bridge.',
     invalidSelectionCross: 'Invalid Selection: Selection cannot cross content element boundaries',
     userDefined: 'User Defined'
-    // contentCategories: {
-    //   '0':'Film & Animation',
-    //   '1':'Autos & Vehicles',
-    //   '2':'Music',
-    //   '3':'Pets & Animals',
-    //   '4':'Sports',
-    //   '5':'Travel & Events',
-    //   '6':'Gaming',
-    //   '7':'People & Blogs',
-    //   '8':'Comedy',
-    //   '9':'Entertainment',
-    //   '10':'News & Politics',
-    //   '11':'Howto & Style',
-    //   '12':'Education',
-    //   '13':'Science & Technology',
-    //   '14':'Nonprofits & Activism'
-    // },
-    // contentCategories: [
-    //   {
-    //     key:0,
-    //     value:'Autos & Vehicles'
-    //   },
-
-    //   {
-    //     key: 1,
-    //     value: 'Film & Animation'
-    //   },
-    //   {
-    //     key: 2,
-    //     value: 'Music'
-    //   }
-    //   // 'Pets & Animals',
-    //   // 'Sports',
-    //   // 'Travel & Events',
-    //   // 'Gaming',
-    //   // 'People & Blogs',
-    //   // 'Comedy',
-    //   // 'Entertainment',
-    //   // 'News & Politics',
-    //   // 'Howto & Style',
-    //   // 'Education',
-    //   // 'Science & Technology',
-    //   // 'Nonprofits & Activism'
-    // ]
   },
   afterCreateBridge: {
     awesomeText: `Awesome! You've selected the content element that is one side of the bridge. Now you need to select the content element that will be the other side of the bridge.`,
     pleaseText: `Please do one of the following:`,
-    callToAction1: `Select some words to make a new text highlight, and select "Bridgit It!"`,
-    callToAction2: `Hover over an image, and select "Bridgit It!"`,
-    callToAction3: `Hover over an image, choose "Select Area," select part of the image, and select "Bridgit It!"`,
-    callToAction4: `Move to the circular indicator of an existing highlight, and select "Bridgit It!"`,
+    callToAction1: `Navigate to where the other content element is`,
+    callToAction2: `Identify the other content element based on its type:`,
+    callToAction2ah: `Existing highlight:`,
+    callToAction2at: `Hover on the circle badge`,
+    callToAction2bh: `Text:`,
+    callToAction2bt: `Select some words to make a new text highlight`,
+    callToAction2ch: `Image:`,
+    callToAction2ct: `Hover on image`,
+    callToAction2dh: `Partial Image:`,
+    callToAction2dt: `Hover on image, choose "Select Area" and make selection`,
+    callToAction3: `Select "Bridgit!" from the menu that displays`,
+    // callToAction1: `Select some words to make a new text highlight, and select "Bridgit It!"`,
+    // callToAction2: `Hover over an image, and select "Bridgit It!"`,
+    // callToAction3: `Hover over an image, choose "Select Area," select part of the image, and select "Bridgit It!"`,
+    // callToAction4: `Move to the circular indicator of an existing highlight, and select "Bridgit It!"`,
     hideThisMessage: `Do not show this message again`
   },
   elementDescription: {
@@ -191,9 +158,9 @@ export default {
       '8': 'Comedy',
       '9': 'Entertainment',
       '10': 'News & Politics',
-      '11': 'Howto & Style',
+      '11': 'HowTo & Style',
       '12': 'Education',
-      '13': 'Sciene & Technology',
+      '13': 'Science & Technology',
       '14': 'Nonprofits & Activism'
     }
   },

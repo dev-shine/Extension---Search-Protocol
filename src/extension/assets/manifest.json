@@ -14,7 +14,8 @@
     "default_title": "Bridgit",
     "default_popup": "popup.html",
     "default_icon": {
-      "38": "icon.png"
+      "38": "icon.png",
+      "128": "icon.png"
     }
   },
 

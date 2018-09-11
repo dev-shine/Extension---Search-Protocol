@@ -95,7 +95,6 @@ class App extends Component {
     ipc.ask('INIT')
     .then(({ bridgeData, linkPair, mode, relations }) => {
       log('buildBridge, INIT GOT', { bridgeData, linkPair, mode })
-
       this.setState({
         mode,
         bridgeData,

@@ -14,20 +14,42 @@ class App extends Component {
 
   render () {
     const { t } = this.props
-
+    const olStyle = {
+      fontWeight: 'bold',
+      listStyle: 'decimal',
+      marginBottom: '15px',
+      paddingLeft: '15px'
+    }
+    const normalStyle = {
+      fontWeight: 'initial'
+    }
+    const ulStyle = {
+      listStyle: 'disc',
+      margin: '9px 35px'
+    }
     return (
       <div className="msg-wrapper">
         <p>
           {t('afterCreateBridge:awesomeText')}
         </p>
-
-        <p>
-          <b>{t('afterCreateBridge:pleaseText')}</b>
-          <br/>a) {t('afterCreateBridge:callToAction1')}
+        {/* <b>{t('afterCreateBridge:pleaseText')}</b> <br/> */}
+        <ol style={olStyle}>
+          <li>{t('afterCreateBridge:callToAction1')}</li>
+          <li>
+            {t('afterCreateBridge:callToAction2')}
+            <ul style={ulStyle}>
+              <li>{t('afterCreateBridge:callToAction2ah')} {' '} <span style={normalStyle}>{t('afterCreateBridge:callToAction2at')} </span></li>
+              <li>{t('afterCreateBridge:callToAction2bh')} {' '} <span style={normalStyle}>{t('afterCreateBridge:callToAction2bt')} </span></li>
+              <li>{t('afterCreateBridge:callToAction2ch')} {' '} <span style={normalStyle}>{t('afterCreateBridge:callToAction2ct')} </span></li>
+              <li>{t('afterCreateBridge:callToAction2dh')} {' '} <span style={normalStyle}>{t('afterCreateBridge:callToAction2dt')} </span></li>
+            </ul>
+          </li>
+          <li>{t('afterCreateBridge:callToAction3')}</li>
+        </ol>
+          {/* a) {t('afterCreateBridge:callToAction1')}
           <br/>b) {t('afterCreateBridge:callToAction2')}
           <br/>c) {t('afterCreateBridge:callToAction3')}
-          <br/>d) {t('afterCreateBridge:callToAction4')}
-        </p>
+          <br/>d) {t('afterCreateBridge:callToAction4')} */}
 
         <p className="actions">
           <Checkbox

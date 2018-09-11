@@ -16,6 +16,7 @@ import {
   createOverlayForRects
 } from './common'
 import { rectsPointPosition } from './position'
+import { setInterval, clearInterval } from 'timers';
 
 export const showLinks = ({ elements, bridges, annotations, url, onCreate, getCsAPI }) => {
   const links = elements.map(item => {
@@ -149,7 +150,8 @@ export const showHyperLinkBadge = ({ totalCount, url, $el }) => {
           badgeAPI.show()
         },
         hide: () => {
-          badgeAPI.hide()
+          // badgeAPI.hide()
+          badgeAPI.fade()
         },
         destroy: () => {
           badgeAPI.destroy()
@@ -233,6 +235,7 @@ export const showImage = ({ link, getLinksAPI, getCsAPI, color, opacity, needBad
       }) : {
         show: () => {},
         hide: () => {},
+        fade: () => {},
         destroy: () => {}
       }
 
@@ -252,8 +255,10 @@ export const showImage = ({ link, getLinksAPI, getCsAPI, color, opacity, needBad
           badgeAPI.show()
         },
         hide: () => {
-          overlayAPI.hide()
-          badgeAPI.hide()
+          // overlayAPI.hide()
+          overlayAPI.fade()
+          badgeAPI.fade()
+          // badgeAPI.hide()
         },
         destroy: () => {
           overlayAPI.destroy()
@@ -334,6 +339,7 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
       }) : {
         show: () => {},
         hide: () => {},
+        fade: () => {},
         destroy: () => {}
       }
 
@@ -353,8 +359,10 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
           badgeAPI.show()
         },
         hide: () => {
-          overlayAPI.hide()
-          badgeAPI.hide()
+          // overlayAPI.hide()
+          // badgeAPI.hide()
+          overlayAPI.fade()
+          badgeAPI.fade()
         },
         destroy: () => {
           overlayAPI.destroy()
@@ -418,8 +426,24 @@ export const showBridgeCount = ({ position, text, onClick, style = {} }) => {
     hide: () => {
       setStyle($el, { display: 'none' })
     },
+    fade: () => {
+      let opacity = 1.0;
+      if ($el.style.opacity && parseInt($el.style.opacity) !== 1) {
+        return;
+      }
+      let fadeEffect = setInterval(() => {
+        if (opacity > 0) {
+          opacity -= 0.25;
+        } else {
+          setStyle($el, { display: 'none' })
+          clearInterval(fadeEffect);
+          return;
+        }
+        setStyle($el, { opacity: opacity })
+      }, 100)
+    },
     show: () => {
-      setStyle($el, { display: 'block' })
+      setStyle($el, { display: 'block', opacity: 1 })
     },
     destroy: () => {
       $el.removeEventListener('click', onClick)
