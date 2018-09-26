@@ -72,6 +72,8 @@ const bindEvents = () => {
 let linksAPI
 let destroyMenu
 let showContentElements
+
+bindSocialLoginEvent(ipc)
 const init = ({ isLoggedIn = false }) => {
   const getCsAPI = () => ({
     annotate,
@@ -89,8 +91,6 @@ const init = ({ isLoggedIn = false }) => {
 
   bindEvents()
   isLoggedIn && bindSelectionEvent({ getCurrentPage })
-  bindSocialLoginEvent(ipc)
-
   API.getUserSettings()
   .then(settings => {
     i18n.changeLanguage(settings.language)
