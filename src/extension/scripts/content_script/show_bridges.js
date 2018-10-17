@@ -228,9 +228,9 @@ export const showImage = ({ link, getLinksAPI, getCsAPI, color, opacity, needBad
         text:     '' + totalCount,
         position: topRight,
         onClick:  () => {
-          if (totalCount > 0) {
+          // if (totalCount > 0) {
             showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id, element: link })
-          }
+          // }
         }
       }) : {
         show: () => {},
@@ -332,9 +332,9 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
         text:     '' + totalCount,
         position: topRight,
         onClick:  () => {
-          if (totalCount > 0) {
+          // if (totalCount > 0) {
             showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id, element: link })
-          }
+          // }
         }
       }) : {
         show: () => {},

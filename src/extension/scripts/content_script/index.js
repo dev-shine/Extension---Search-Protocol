@@ -216,15 +216,69 @@ const onBgRequest = (cmd, args) => {
 const checkUserBeforeInit = () => {
   API.checkUser().then(user => {
     init({isLoggedIn:true})
+    setCookieToWebBridgit();
   })
   .catch(e => {
     init({isLoggedIn:false})
+    removeCookieFromWebBridgit();
   })
 }
+
+const setCookieToWebBridgit = () => {
+
+  API.getUserToken()
+  .then(token => {
+    let cookies = `bridgit_extension_token=${token};domain=demo.bridgit.io;path=/`;
+    document.cookie = cookies;
+  });
+
+}
+
+const removeCookieFromWebBridgit = () => {
+
+  let cookies = `bridgit_extension_token=;domain=demo.bridgit.io;path=/`;
+  document.cookie = cookies;
+  
+}
+
+const listen_token_message = () => {
+
+  window.addEventListener("message", event => {
+
+    let data = event.data;
+    if (data.type && data.type == "BRIDGIT-WEB" ) {
+
+      if (data.token) {
+
+        API.loginWithToken({token: data.token})
+        .then(status => {
+          checkUserBeforeInit();
+        })
+        .catch(err => {
+          checkUserBeforeInit();
+        })
+    }
+    else {
+      API.removeAccessToken();
+      API.removeUserInfo();
+      setTimeout(() => {
+        checkUserBeforeInit();
+      }, 2000);
+    }
+  }
+    
+});
+
+}
+
 // document.body.setAttribute('bridgit-installed', true)
 localStorage.setItem('bridgit-installed', true)
 document.addEventListener('DOMContentLoaded', () => {
-  checkUserBeforeInit()
+  console.log("DOMContentLoaded :: ");
+
+  listen_token_message();
+  checkUserBeforeInit();
+
   // Run your code here...
 });
 

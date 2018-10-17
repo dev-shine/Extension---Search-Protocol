@@ -81,16 +81,20 @@ export const onMessage = (win, fn) => {
       })
       .then(
         (res) => {
-          e.source.postMessage({
-            ...tpl,
-            payload: res
-          }, '*')
+          if (e.source) {
+            e.source.postMessage({
+              ...tpl,
+              payload: res
+            }, '*')
+          }
         },
         (err) => {
-          e.source.postMessage({
-            ...tpl,
-            error: err.message
-          }, '*')
+          if (e.source) {
+            e.source.postMessage({
+              ...tpl,
+              error: err.message
+            }, '*')
+        }
         }
       )
     }
@@ -100,7 +104,7 @@ export const onMessage = (win, fn) => {
   return () => win.removeEventListener('message', onMsg)
 }
 
-export const ipcForIframe = ({ targetWindow = window.top, timeout = 10000 } = {}) => {
+export const ipcForIframe = ({ targetWindow = window.top, timeout = 10000 } = {}) => {  
   let onAsk         = () => {}
   const listener    = ({ cmd, args }) => onAsk(cmd, args)
   const removeOnMsg = onMessage(window, listener)

@@ -149,7 +149,7 @@ export default {
     categoryPlaceholder: 'Category',
     category: {
       '1': 'Autos & Vehicles',
-      '2': 'File & Animation',
+      '2': 'Film & Animation',
       '3': 'Music',
       '4': 'Pets & Animals',
       '5': 'Travel & Events',
@@ -161,8 +161,9 @@ export default {
       '11': 'HowTo & Style',
       '12': 'Education',
       '13': 'Science & Technology',
-      '14': 'Nonprofits & Activism'
-    }
+      '14': 'Nonprofits & Activism',
+      '15': 'Art & Performing Arts'
+      }
   },
   flagContent:{
     headingBridge: 'Give feedback on this Bridge',

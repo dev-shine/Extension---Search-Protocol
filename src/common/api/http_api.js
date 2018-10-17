@@ -49,7 +49,7 @@ const onApiError = (e) => {
 
 const onApiReturn = (res) => {
   const body = res.body
-
+  
   if (body.error_code !== 0) {
     throw new Error(body.message)
   }
@@ -75,6 +75,11 @@ const fetchUserInfo = () => {
   return storage.get('userInfo')
 }
 
+export const removeUserInfo = () => {
+  storeUserInfo(null);
+  return true;
+}
+
 const ensureLoggedIn = (fn) => {
   return (...args) => {
     return fetchUserInfo()
@@ -90,10 +95,23 @@ export const saveAccessToken = (token) => {
   return true
 }
 
+export const removeAccessToken = () => {
+  jwtRequest.clearToken();
+  return true
+}
+
 export const login = ({ email, password }) => {
   return jwtRequest.post(apiUrl('/login'))
   .type('form')
   .send({ email, password })
+  .then(storeAccessToken)
+  .catch(onApiError)
+}
+
+export const loginWithToken = ({ token }) => {
+  if (token) saveAccessToken(token);
+
+  return jwtRequest.get(apiUrl('/login'))
   .then(storeAccessToken)
   .catch(onApiError)
 }
@@ -112,7 +130,7 @@ export const signInWithGoogle = ({ name, email }) => {
   .send({ name, email, googleSignin: true })
   .then(onApiReturn)
   .catch(onApiError)
-  .then((data) => {
+  .then((data) => {    
     return storeUserInfo({
       ...data,
       user_password: ''
@@ -131,6 +149,9 @@ export const checkUser = () => {
   })
 }
 
+export const getUserToken = () => {
+  return jwtRequest.getToken();
+}
 export const logout = () => {
   jwtRequest.clearToken()
   storeUserInfo(null)
@@ -205,7 +226,7 @@ export const listNotes = wrap((where) => {
 })
 
 // Bridges
-export const getBridgeById = wrap((id) => {
+export const getBridgeById = wrap((id) => {  
   return jwtRequest.get(apiUrl(`/bridges/${id}`))
 })
 
@@ -221,6 +242,10 @@ export const updateBridge = wrap((id, data) => {
 
 export const deleteBridge = wrap((id) => {
   return jwtRequest.delete(apiUrl(`/bridges/${id}`))
+})
+
+export const deleteElement = wrap((id) => {
+  return jwtRequest.delete(apiUrl(`/deleteElement/${id}`))
 })
 
 export const listBridges = wrap((where) => {

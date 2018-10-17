@@ -35,5 +35,6 @@ export const CATEGORY_LIST = [
   { key: '11', value: 11 },
   { key: '12', value: 12 },
   { key: '13', value: 13 },
-  { key: '14', value: 14 }
+  { key: '14', value: 14 },
+  { key: '15', value: 15 }
 ]

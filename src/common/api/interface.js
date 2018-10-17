@@ -15,9 +15,12 @@ export const methods = [
   'openSocialLogin',
   'changeLanguage',
   'addGAMessage',
+  'removeAccessToken',
+  'removeUserInfo',
 
   // http API
   'login',
+  'loginWithToken',
   'logout',
   'register',
   'signInWithGoogle',
@@ -31,6 +34,7 @@ export const methods = [
   'deleteNote',
   'updateBridge',
   'deleteBridge',
+  'deleteElement',
   'userFollow',
   'createElementDescription',
   'elementFollow',
@@ -64,7 +68,8 @@ export const methods = [
   'hackHeader',
   'resetUserSettings',
   'getUserSettings',
-  'updateUserSettings'
+  'updateUserSettings',
+  'getUserToken'
 ]
 
 export const mockAPIWithIPC = (ipc) => {

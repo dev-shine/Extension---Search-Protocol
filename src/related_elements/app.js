@@ -229,7 +229,7 @@ class App extends Component {
                     // Note: tell page to reload bridges and notes
                     ipc.ask('RELOAD_BRIDGES_AND_NOTES')
 
-                    // Note: update local data
+                    // Note: update local data                    
                     this.setState({
                       annotations: this.state.annotations.filter(item => item.id !== annotation.id)
                     })
@@ -890,9 +890,28 @@ class App extends Component {
     // );
   }
 
+  deleteLink = () => {
+
+    const { t } = this.props;
+    API.deleteElement(this.state.elementId)
+    .then(() => {
+      notifySuccess(t('successfullyDeleted'))
+      // Note: tell page to reload elements
+      ipc.ask('RELOAD_BRIDGES_AND_NOTES')
+      setTimeout(() => {
+        this.onClose();
+      }, 2000);
+    })
+    .catch(e => {
+      console.log("In Error :: ", e);
+      notifyError(e.message)
+    })    
+  }
+
   render () {
     const { t } = this.props
-
+    const {element, bridges, annotations, userInfo} = this.state;
+    
     if (!this.state.ready)  {
       return (
         <div>
@@ -928,7 +947,12 @@ class App extends Component {
         visible={true}
         width={700}
         className="links-modal"
-        footer={null}
+        // footer={null}
+        footer={(userInfo && userInfo.admin == 1 && element && annotations.length === 0 && bridges.length === 0 && element.is_follow === false ) ? [
+          <Button key="Delete" type="primary"  onClick={this.deleteLink}>
+            Delete
+          </Button>
+        ]: null}
         onCancel={this.onClose}
       >
         {this.renderT()}
