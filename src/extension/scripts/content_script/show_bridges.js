@@ -401,7 +401,7 @@ export const showBridgeCount = ({ position, text, onClick, style = {} }) => {
       'user-select': 'none',
       transform:  'translate(-80%, -80%)',
       position:   'absolute',
-      'z-index':     100001,
+      'z-index':     1,
       width:      `${size}px`,
       height:     `${size}px`,
       'line-height': `${size}px`,

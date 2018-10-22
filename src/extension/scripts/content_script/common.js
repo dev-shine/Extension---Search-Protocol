@@ -401,13 +401,14 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4 
 
 // log('createOverlayForRange rects', rects, sx, sy)
 
+  // element overlay css
   const $overlays = reduceRects(rects).map(rect => {
     const $dom = createEl({
       style: {
         opacity,
         'background-color':  color,
         position:         'absolute',
-        'z-index':           100000,
+        'z-index':           1,
         top:              pixel(rect.top + sy),
         left:             pixel(rect.left + sx),
         width:            pixel(Math.abs(rect.width)),
@@ -732,7 +733,7 @@ export const createContextMenus = ({
   }
 }
 
-export const createIframeWithMask = (function () {
+export const createIframeWithMask = (function () {  
   let curZIndex = 110000
 
   return (...args) => {
@@ -882,7 +883,7 @@ export const showMessage = (text, options = {}) => {
       /*pointer-events: none;*/
       /*position: fixed;*/
       position: absolute;
-      z-index: 99999;
+      z-index: 5;
       top: ${options.yOffset ? options.yOffset + window.scrollY - 50 : 30}px;
       bottom: 0;
       left: 0;
