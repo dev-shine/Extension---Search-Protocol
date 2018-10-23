@@ -109,10 +109,10 @@ export const login = ({ email, password }) => {
 }
 
 export const loginWithToken = ({ token }) => {
-  if (token) saveAccessToken(token);
+  saveAccessToken(token)
 
   return jwtRequest.get(apiUrl('/login'))
-  .then(storeAccessToken)
+  .then(onApiReturn)
   .catch(onApiError)
 }
 

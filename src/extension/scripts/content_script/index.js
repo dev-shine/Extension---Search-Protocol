@@ -138,7 +138,7 @@ const onBgRequest = (cmd, args) => {
           destroyMenu()
         }
         showContentElements({ hide : true })
-        checkUserBeforeInit()
+        checkUserBeforeInit({fromListening: 0})
         // init()
       }
       setStateWithSettings(args.settings)
@@ -213,32 +213,38 @@ const onBgRequest = (cmd, args) => {
 //     }
 //   })
 // }
-const checkUserBeforeInit = () => {
+
+/*
+fromListening = 0 (Normal flag, when something happen from extension only )
+fromListening = 1 (Normal flag, when something happen from web login )
+*/
+const checkUserBeforeInit = ({fromListening}) => {
   API.checkUser().then(user => {
     init({isLoggedIn:true})
-    setCookieToWebBridgit();
+
+    // POSTMessage should pass in only case when event from extension only
+    if (fromListening === 0) {
+      getLocalStoreFromExtension()
+      .then(token => {
+        window.postMessage({type: "BRIDGIT-EXTENSION", token: token},'*');
+      })
+    }
+
   })
   .catch(e => {
     init({isLoggedIn:false})
-    removeCookieFromWebBridgit();
+    if (fromListening === 0) window.postMessage({type: "BRIDGIT-EXTENSION", token: ""},'*');
   })
 }
 
-const setCookieToWebBridgit = () => {
+const getLocalStoreFromExtension = () => {
+  return new Promise((resolve, rejecct) => {
+    API.getUserToken()
+    .then(token => {
+      resolve(token);
+    })  
+})
 
-  API.getUserToken()
-  .then(token => {
-    let cookies = `bridgit_extension_token=${token};domain=demo.bridgit.io;path=/`;
-    document.cookie = cookies;
-  });
-
-}
-
-const removeCookieFromWebBridgit = () => {
-
-  let cookies = `bridgit_extension_token=;domain=demo.bridgit.io;path=/`;
-  document.cookie = cookies;
-  
 }
 
 const listen_token_message = () => {
@@ -250,21 +256,21 @@ const listen_token_message = () => {
 
       if (data.token) {
 
-        API.loginWithToken({token: data.token})
-        .then(status => {
-          checkUserBeforeInit();
-        })
-        .catch(err => {
-          checkUserBeforeInit();
-        })
-    }
-    else {
-      API.removeAccessToken();
-      API.removeUserInfo();
-      setTimeout(() => {
-        checkUserBeforeInit();
-      }, 2000);
-    }
+          API.loginWithToken({token: data.token})
+          .then(status => {
+            checkUserBeforeInit({fromListening: 1});
+          })
+          .catch(err => { 
+            checkUserBeforeInit({fromListening: 1})
+          })
+      }
+      else {
+        API.removeAccessToken();
+        API.removeUserInfo();
+        setTimeout(() => {
+          checkUserBeforeInit({fromListening: 1});
+        }, 2000);
+      }
   }
     
 });
@@ -277,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log("DOMContentLoaded :: ");
 
   listen_token_message();
-  checkUserBeforeInit();
+  checkUserBeforeInit({fromListening: 1}); // fromListening: 1  is for solving reloading issue in login uniform fnctionality 
 
   // Run your code here...
 });
