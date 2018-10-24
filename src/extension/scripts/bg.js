@@ -31,12 +31,45 @@ const bindEvents = () => {
     tabIpcStore.set(tabId, ipc)
     ipc.onAsk(onCsRequest)
   })
+  let settings = {}, isLoggedIn = false ;
   storage.addListener(changes => {
-    const settingsChange = changes.find(c => c.key === 'user_settings')
-    if (!settingsChange)  return
+    console.log("Changes :: ", changes);
+    
+    let triggerEvent = false;
 
-    const settings = settingsChange.newValue
-    tabIpcStore.forEach(ipc => ipc.ask('UPDATE_SETTINGS', { settings }))
+    // const settingsChange = changes.find(c => (c.key === 'user_settings' ) )
+    // if (!settingsChange)  return
+    const settingsChange = changes[0];
+    
+    if(settingsChange && settingsChange.key) {
+      const token = localStorage.getItem("bearer_token")
+
+      if (settingsChange.key === "userInfo") {
+        isLoggedIn = (token) ? true : false;
+        triggerEvent = true;
+      }
+      else if(settingsChange.key === "user_settings") {
+        settings = settingsChange.newValue;
+        const newValue = settingsChange.newValue;
+        const oldValue = settingsChange.oldValue;
+        const keys = Object.keys(settingsChange.newValue);
+        keys.some(key => {          
+          if (key !== "dummyField" && newValue[key] !== oldValue[key])  {
+            triggerEvent = true;
+            return true;
+          }
+        })
+        if (!isLoggedIn && token) {
+          isLoggedIn = true;
+          triggerEvent = true;
+        }
+      }
+
+    }
+    
+    // const settings = settingsChange.newValue
+
+    if (triggerEvent === true) tabIpcStore.forEach(ipc => ipc.ask('UPDATE_SETTINGS', { settings })) //if (triggerEvent == "true")
   })
 }
 
