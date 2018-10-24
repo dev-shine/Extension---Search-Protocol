@@ -152,7 +152,7 @@ const onBgRequest = (cmd, args) => {
     }
 
     case 'googleLogin': {
-      checkUserBeforeInit({fromListening: 1});
+      checkUserBeforeInit({fromListening: 0});
       return true;
     }
 
