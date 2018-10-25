@@ -80,6 +80,7 @@ const onPopupRequest = (cmd, args) => {
 const onCsRequest = (cmd, args) => {
   switch (cmd) {
     case 'CLOSE_ME':
+      tabIpcStore.forEach(ipc => ipc.ask('googleLogin'))
       return Ext.tabs.remove(args.sender.tab.id)
   }
 }

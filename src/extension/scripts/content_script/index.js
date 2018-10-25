@@ -150,6 +150,12 @@ const onBgRequest = (cmd, args) => {
 
       return true
     }
+
+    case 'googleLogin': {
+      checkUserBeforeInit({fromListening: 0});
+      return true;
+    }
+
     case 'HIGHLIGHT_ELEMENT': {
       const { element } = args
 
