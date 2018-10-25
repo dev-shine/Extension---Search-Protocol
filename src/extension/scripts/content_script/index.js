@@ -232,6 +232,7 @@ const checkUserBeforeInit = ({fromListening}) => {
     if (fromListening === 0) {
       getLocalStoreFromExtension()
       .then(token => {
+        setLocalStore(token);
         window.postMessage({type: "BRIDGIT-EXTENSION", token: token},'*');
       })
     }
@@ -239,8 +240,17 @@ const checkUserBeforeInit = ({fromListening}) => {
   })
   .catch(e => {
     init({isLoggedIn:false})
+    removeLocalStore();
     if (fromListening === 0) window.postMessage({type: "BRIDGIT-EXTENSION", token: ""},'*');
   })
+}
+
+const setLocalStore = (token) => {
+  localStorage.setItem("bridgit-token", token);
+}
+
+const removeLocalStore = () => {
+  localStorage.removeItem("bridgit-token");
 }
 
 const getLocalStoreFromExtension = () => {
