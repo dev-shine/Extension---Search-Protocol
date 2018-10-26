@@ -227,15 +227,14 @@ fromListening = 1 (Normal flag, when something happen from web login )
 const checkUserBeforeInit = ({fromListening}) => {
   API.checkUser().then(user => {
     init({isLoggedIn:true})
-
-    // POSTMessage should pass in only case when event from extension only
-    if (fromListening === 0) {
-      getLocalStoreFromExtension()
-      .then(token => {
-        setLocalStore(token);
-        window.postMessage({type: "BRIDGIT-EXTENSION", token: token},'*');
-      })
-    }
+    getLocalStoreFromExtension()
+    .then(token => {
+      setLocalStore(token);
+      // POSTMessage should pass in only case when event triggered (login from extension) from extension only
+      if (fromListening === 0) {
+          window.postMessage({type: "BRIDGIT-EXTENSION", token: token},'*');
+      }
+    })
 
   })
   .catch(e => {
