@@ -25,6 +25,7 @@ export const methods = [
   'register',
   'signInWithGoogle',
   'checkUser',
+  'fetchUserInfo',
   'createRelation',
   'loadRelations',
   'listRelationsByIds',
@@ -51,6 +52,7 @@ export const methods = [
   'annotationsAndBridgesByUrls',
   'loadElementsByIds',
   'clearAllData',
+  'getUserInfo',
 
   'loadLinksForCurrentPage',
   'getLocalBridgeStatus',

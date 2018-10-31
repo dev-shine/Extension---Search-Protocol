@@ -154,11 +154,13 @@ export const createButtons = (btns, { groupStyle = {} } = {}) => {
     })
 
     $dom.addEventListener('click', btn.onClick)
+    $dom.addEventListener('mouseover', btn.onMouseOver)
 
     return {
       $dom,
-      destroy: () => {
+      destroy: () => {        
         $dom.removeEventListener('click', btn.onClick)
+        $dom.removeEventListener('mouseover', btn.onMouseOver)
         $dom.remove()
       }
     }
@@ -503,7 +505,10 @@ export const renderContextMenus = (menuOptions, eventData) => {
       $el: $dom,
       onMouseOver: (e) => {
         setStyle($dom, hoverStyle)
-        onMouseOver(e)
+        onMouseOver(e)        
+        if (menu.onMouseOver) {
+          menu.onMouseOver(e)
+        }
       },
       onMouseOut: (e) => {
         setStyle($dom, normalStyle)
@@ -723,7 +728,7 @@ export const createContextMenus = ({
   // document.addEventListener('contextmenu', onContextMenu)
 
   return {
-    destroy: () => {
+    destroy: () => {      
       // document.removeEventListener('contextmenu', onContextMenu)
       document.removeEventListener('mouseover', debouncedOnHoverImage)
       document.removeEventListener('keyup', onPressEscape)
@@ -1368,13 +1373,16 @@ export const commonMenuOptions = {
   }
 }
 
-export const commonMenuItems = () => ({
+export const commonMenuItems = (getCurrentPage) => ({
   annotate: ({ showContentElements }) => ({
     text: i18n.t('annotate'),
     key: 'annotate',
     onClick: (e, { linkData }) => {
       log('annotate menu clicked', linkData)
       annotate({ linkData, onSuccess: showContentElements })
+    },
+    onMouseOver: (e) => {
+        checkForPartialWord({getCurrentPage}, e);
     }
   }),
   followElement: ({ showContentElements, linkData = {} }) => ({
@@ -1390,6 +1398,9 @@ export const commonMenuItems = () => ({
       } else {
         showElementDescription({ linkData, onSuccess: showContentElements })
       }
+    },
+    onMouseOver: (e) => {
+      checkForPartialWord({getCurrentPage}, e);
     }
   }),
   createBridge: () => ({
@@ -1400,6 +1411,9 @@ export const commonMenuItems = () => ({
       .then(() => API.createLocalBridge(linkData))
       .then(showMsgAfterCreateBridge)
       .catch(e => log.error(e.stack))
+    },
+    onMouseOver: (e) => {
+      checkForPartialWord({getCurrentPage}, e);
     }
   }),
   buildBridge: ({ showContentElements }) => ({
@@ -1412,6 +1426,9 @@ export const commonMenuItems = () => ({
         onSuccess:  showContentElements
       }))
       .catch(e => log.error(e.stack))
+    },
+    onMouseOver: (e) => {
+      checkForPartialWord({getCurrentPage}, e);
     }
   }),
   cancel: ({ showContentElements }) => ({
@@ -1519,9 +1536,9 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
         showContentElements,
         getLocalBridge,
         fixedMenus: [
-          commonMenuItems().createBridge(),
-          commonMenuItems().annotate({ showContentElements }),
-          commonMenuItems().followElement({ showContentElements })
+          commonMenuItems(getCurrentPage).createBridge(), 
+          commonMenuItems(getCurrentPage).annotate({ showContentElements }), 
+          commonMenuItems(getCurrentPage).followElement({ showContentElements }) 
         ],
         decorate: (menuItem) => {
           return {
@@ -1558,10 +1575,10 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
         showContentElements,
         getLocalBridge,
         fixedMenus: [
-          commonMenuItems().selectImageArea({ getCurrentPage, showContentElements }),
-          commonMenuItems().createBridge(),
-          commonMenuItems().annotate({ showContentElements }),
-          commonMenuItems().followElement({ showContentElements })
+          commonMenuItems(getCurrentPage).selectImageArea({ getCurrentPage, showContentElements }),
+          commonMenuItems(getCurrentPage).createBridge(),
+          commonMenuItems(getCurrentPage).annotate({ showContentElements }),
+          commonMenuItems(getCurrentPage).followElement({ showContentElements })
         ]
       })
     }
@@ -1659,6 +1676,36 @@ export const bindSocialLoginEvent = (ipc) => {
 }
 
 export const bindSelectionEvent = ({ getCurrentPage }) => {
+  // const nodeCharacterAt = (node, offset) => node.textContent && node.textContent.charAt(offset)
+  // const hasPartialWords = (selection) => {
+  //   const isPartialAtStart = isLatinCharacter(nodeCharacterAt(selection.anchorNode, selection.anchorOffset - 1)) &&
+  //                            isLatinCharacter(nodeCharacterAt(selection.anchorNode, selection.anchorOffset))
+
+  //   const isPartialAtEnd   = isLatinCharacter(nodeCharacterAt(selection.focusNode, selection.focusOffset - 1)) &&
+  //                            isLatinCharacter(nodeCharacterAt(selection.focusNode, selection.focusOffset))
+
+  //   return isPartialAtStart || isPartialAtEnd
+  // }
+
+  bindSelectionEnd((e, selection) => {
+    // if (hasPartialWords(selection)) {
+    //   selection.collapse(null)
+    //   console.log(e.clientX)
+    //   console.log(e.clientY)
+    //   showMessage('Invalid Selection: Selection cannot include a partial word', { yOffset: e.clientY })
+    //   return
+    // }
+
+    const range = selection.getRangeAt(0)
+
+    if (!isSelectionRangeValid(getCurrentPage())(range)) {
+      selection.collapse(null)
+      showMessage(i18n.t('invalidSelectionCross'))
+    }
+  })
+}
+
+export const checkForPartialWord = ({ getCurrentPage }, e) => {
   const nodeCharacterAt = (node, offset) => node.textContent && node.textContent.charAt(offset)
   const hasPartialWords = (selection) => {
     const isPartialAtStart = isLatinCharacter(nodeCharacterAt(selection.anchorNode, selection.anchorOffset - 1)) &&
@@ -1670,22 +1717,31 @@ export const bindSelectionEvent = ({ getCurrentPage }) => {
     return isPartialAtStart || isPartialAtEnd
   }
 
-  bindSelectionEnd((e, selection) => {
-    if (hasPartialWords(selection)) {
-      selection.collapse(null)
-      console.log(e.clientX)
-      console.log(e.clientY)
-      showMessage('Invalid Selection: Selection cannot include a partial word', { yOffset: e.clientY })
-      return
-    }
+  // bindSelectionEnd((e, selection) => {
 
-    const range = selection.getRangeAt(0)
+  const secureTagName = (node) => typeof node.tagName === 'string' ? node.tagName.toUpperCase() : null
+  const isTextAreaOrInput = (node) => ['INPUT', 'TEXTAREA'].indexOf(secureTagName(node)) !== -1
+  const selection = window.getSelection()
 
-    if (!isSelectionRangeValid(getCurrentPage())(range)) {
-      selection.collapse(null)
-      showMessage(i18n.t('invalidSelectionCross'))
-    }
-  })
+  if (selection.isCollapsed)  return
+  if (isTextAreaOrInput(selection.anchorNode) && isTextAreaOrInput(selection.focusNode))  return
+
+  if (hasPartialWords(selection)) {
+    selection.collapse(null)
+    console.log(e.clientX)
+    console.log(e.clientY)
+    showMessage('Invalid Selection: Selection cannot include a partial word', { yOffset: e.clientY })
+    showContextMenus({clear: true})
+    return
+  }
+
+  const range = selection.getRangeAt(0)
+
+  if (!isSelectionRangeValid(getCurrentPage())(range)) {
+    selection.collapse(null)
+    showMessage(i18n.t('invalidSelectionCross'))
+  }
+  // })
 }
 
 const fullfilBridgeAndAnnotation = (data) => {

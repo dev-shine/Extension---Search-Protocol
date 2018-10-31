@@ -196,6 +196,9 @@ const API = {
   getUserSettings: () => {
     return storage.get('user_settings')
   },
+  getUserInfo: () => {
+    return storage.get('userInfo')
+  },
   updateUserSettings: (obj) => {
     return API.getUserSettings()
     .then(settings => {

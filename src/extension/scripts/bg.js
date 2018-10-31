@@ -73,6 +73,18 @@ const bindEvents = () => {
   })
 }
 
+
+// chrome.extension.onRequest.addListener( request => {
+//     if (request && request.loginErrorMsg) {
+//       const options = {
+//         // body: 'Withot login you are unable to create notes, bridges',
+//         // // icon: 'http://icons.iconarchive.com/icons/graphicloads/100-flat/256/home-icon.png',
+//         // image: 'http://icons.iconarchive.com/icons/graphicloads/100-flat/256/home-icon.png',
+//       }
+//       new Notification(request.loginErrorMsg, options)
+//     }
+// });
+
 const onPopupRequest = (cmd, args) => {
 
 }

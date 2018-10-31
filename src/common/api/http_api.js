@@ -71,7 +71,11 @@ const storeUserInfo = (data) => {
   .then(() => data)
 }
 
-const fetchUserInfo = () => {
+export const getUserSettings = () => {
+  return storage.get('user_settings')
+}
+
+export const fetchUserInfo = () => {
   return storage.get('userInfo')
 }
 

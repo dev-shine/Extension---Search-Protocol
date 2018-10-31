@@ -90,7 +90,7 @@ const init = ({ isLoggedIn = false }) => {
   })
 
   bindEvents()
-  isLoggedIn && bindSelectionEvent({ getCurrentPage })
+  isLoggedIn // && bindSelectionEvent({ getCurrentPage })
   API.getUserSettings()
   .then(settings => {
     i18n.changeLanguage(settings.language)
@@ -126,7 +126,7 @@ const onBgRequest = (cmd, args) => {
       return captureClientAPI.scrollPage(args.offset)
     }
 
-    case 'UPDATE_SETTINGS': {
+    case 'UPDATE_SETTINGS': {      
       log('Got UPDATE_SETTINGS', args)
       if (!args.settings.showOnLoad) {
         destroyMenu && typeof destroyMenu === 'function' && destroyMenu()
@@ -292,11 +292,24 @@ const listen_token_message = () => {
 
 }
 
+// const checkUserStatus = () => {
+//   API.fetchUserInfo()
+//   .then(user => {
+//     if (!user) {
+//       API.getUserSettings()
+//       .then(setting => {
+//         chrome.extension.sendRequest({loginErrorMsg: setting.loginErrorMsg});
+//       })
+//     }
+//   })
+// }
+
 // document.body.setAttribute('bridgit-installed', true)
 localStorage.setItem('bridgit-installed', true)
 document.addEventListener('DOMContentLoaded', () => {
   console.log("DOMContentLoaded :: ");
 
+  // checkUserStatus();
   listen_token_message();
   checkUserBeforeInit({fromListening: 1}); // fromListening: 1  is for solving reloading issue in login uniform fnctionality 
 

@@ -34,12 +34,14 @@ export const parseRangeJSON = (rangeJson) => {
 }
 
 export const isPointInRect = (point, rect) => {
-  return (
-    point.x > rect.x &&
-    point.y > rect.y &&
-    point.x < (rect.x + rect.width * 1.25) &&
-    point.y < (rect.y + rect.height)
-  )
+  
+  // return (
+    // point.x > rect.x &&
+    // point.y > rect.y &&
+    // point.x < (rect.x + rect.width * 1.25) &&
+    // point.y < (rect.y + rect.height)
+  // )
+  return true
 }
 
 export const isPointInRange = (point, range) => {

@@ -103,6 +103,7 @@ export default {
     settings: 'Settings',
     language: 'Language',
     enableBridgit: 'Enable Bridgit',
+    loginErrorMsg: 'Login to Continue',
     showTipsAfterCreateBridge: `Show tips after 'create bridge'`,
     showWithinInches: 'Show if cursor is within X inches',
     showActiveItemsForSeconds: 'Display active items for Y seconds'
@@ -162,7 +163,9 @@ export default {
       '12': 'Education',
       '13': 'Science & Technology',
       '14': 'Nonprofits & Activism',
-      '15': 'Art & Performing Arts'
+      '15': 'Art & Performing Arts',
+      '16': 'Religions & Spirituality',
+      '17': 'Conspiracy Theories'
       }
   },
   flagContent:{

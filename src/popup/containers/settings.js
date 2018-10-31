@@ -2,7 +2,7 @@ import React from 'react'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { bindActionCreators }  from 'redux'
-import { Checkbox, Form, InputNumber, Collapse, Select } from 'antd'
+import { Checkbox, Form, InputNumber, Collapse, Select, Button } from 'antd'
 import { translate } from 'react-i18next'
 
 import './settings.scss'
@@ -25,7 +25,15 @@ class Settings extends React.Component {
       setIn(['settings', key], val, this.state)
     )
 
-    API.updateUserSettings({ [key]: val })
+    // API.updateUserSettings({ [key]: val })
+    // .catch(e => {
+    //   log.error(e.stack)
+    // })
+  }
+
+  handleSubmit = (e) => {
+    let settings = this.state.settings;
+    API.updateUserSettings( settings )
     .catch(e => {
       log.error(e.stack)
     })
@@ -46,9 +54,10 @@ class Settings extends React.Component {
         </div>
         <Collapse>
           <Collapse.Panel key="settings" header={t('settings')}>
-            <Form className="settings-form">
+            <Form className="settings-form" onSubmit={this.handleSubmit}>
               <Form.Item>
                 <Checkbox
+                  name="showOnLoad"
                   onChange={(e) => this.onChangeSettings('showOnLoad', e.target.checked)}
                   checked={this.state.settings.showOnLoad}
                 >
@@ -57,6 +66,7 @@ class Settings extends React.Component {
               </Form.Item>
               <Form.Item>
                 <Checkbox
+                  name="hideAfterCreateMsg"
                   onChange={(e) => this.onChangeSettings('hideAfterCreateMsg', !e.target.checked)}
                   checked={!this.state.settings.hideAfterCreateMsg}
                 >
@@ -65,6 +75,7 @@ class Settings extends React.Component {
               </Form.Item>
               <Form.Item label={t('language')}>
                 <Select
+                  name="language"
                   value={this.state.settings.language}
                   onChange={lang => {
                     this.onChangeSettings('language', lang)
@@ -96,6 +107,15 @@ class Settings extends React.Component {
                   max={100}
                 />
               </Form.Item>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                >
+                  Save
+                </Button>
+              </Form.Item>
+
             </Form>
           </Collapse.Panel>
         </Collapse>
