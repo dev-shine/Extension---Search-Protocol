@@ -8,7 +8,7 @@ import { captureClientAPI } from '../../../common/capture_screenshot'
 import { LOCAL_BRIDGE_STATUS } from '../../../common/models/local_model'
 import {
   annotate, buildBridge, selectImageArea, genShowContentElements,
-  initContextMenus, bindSelectionEvent, bindSocialLoginEvent
+  initContextMenus, bindSelectionEvent, bindSocialLoginEvent, showMessage
 } from './common'
 import { showOneLink } from './show_bridges'
 import { until, pick } from '../../../common/utils'
@@ -287,29 +287,40 @@ const listen_token_message = () => {
         }, 2000);
       }
   }
+  else if (data.type && data.type === "LOGIN-MSG") {
+    API.storeLoginMessage(data.login_message)
+  }
     
 });
 
 }
 
-// const checkUserStatus = () => {
-//   API.fetchUserInfo()
-//   .then(user => {
-//     if (!user) {
-//       API.getUserSettings()
-//       .then(setting => {
-//         chrome.extension.sendRequest({loginErrorMsg: setting.loginErrorMsg});
-//       })
-//     }
-//   })
-// }
+const loginMessage = () => {
+  API.fetchUserInfo()
+  .then(user => {
+
+    if (!user) {
+      API.getLoginMessage()
+      .then(msg => {
+
+        const showMsg = (e) => {
+          showMessage(msg, {yOffset: (e.clientY < 100) ? 100 : e.clientY });
+          window.removeEventListener('mousemove', showMsg);
+        }
+        window.addEventListener('mousemove', showMsg);
+
+      })
+    }
+
+  })
+}
 
 // document.body.setAttribute('bridgit-installed', true)
 localStorage.setItem('bridgit-installed', true)
 document.addEventListener('DOMContentLoaded', () => {
   console.log("DOMContentLoaded :: ");
 
-  // checkUserStatus();
+  loginMessage();
   listen_token_message();
   checkUserBeforeInit({fromListening: 1}); // fromListening: 1  is for solving reloading issue in login uniform fnctionality 
 

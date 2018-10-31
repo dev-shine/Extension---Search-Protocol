@@ -17,6 +17,8 @@ export const methods = [
   'addGAMessage',
   'removeAccessToken',
   'removeUserInfo',
+  'getLoginMessage',
+  'storeLoginMessage',
 
   // http API
   'login',

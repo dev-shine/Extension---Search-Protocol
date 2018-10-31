@@ -888,7 +888,7 @@ export const showMessage = (text, options = {}) => {
       /*pointer-events: none;*/
       /*position: fixed;*/
       position: absolute;
-      z-index: 5;
+      z-index: 500;
       top: ${options.yOffset ? options.yOffset + window.scrollY - 50 : 30}px;
       bottom: 0;
       left: 0;

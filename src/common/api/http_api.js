@@ -67,8 +67,18 @@ const storeAccessToken = (res) => {
 }
 
 const storeUserInfo = (data) => {
+  if (data && data.login_message) storeLoginMessage(data.login_message);
   return storage.set('userInfo', data)
   .then(() => data)
+}
+
+export const storeLoginMessage = (msg) => {
+  return storage.set('loginMessage', msg)
+  .then(() => msg)
+}
+
+export const getLoginMessage = () => {
+  return storage.get('loginMessage')
 }
 
 export const getUserSettings = () => {
