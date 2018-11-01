@@ -109,6 +109,11 @@ class App extends Component {
     ipc.ask('ADD_NOTE_TYPE')
   }
 
+  onAddSubCategory = () => {    
+    // ADD_SUB_CATEGORY
+    ipc.ask('ADD_SUB_CATEGORY');
+  }
+
   onUpdateField = (val, key) => {
     this.setState({ [key]: val })
   }
@@ -276,6 +281,14 @@ class App extends Component {
                     ))}
                   </Select>
                 )}
+                  <Button
+                    type="default"
+                    shape="circle"
+                    onClick={this.onAddSubCategory}
+                    style={{ marginLeft: '10px' }}
+                  >
+                    <Icon type="plus" />
+                  </Button>
               </div>
             </Form.Item>
 

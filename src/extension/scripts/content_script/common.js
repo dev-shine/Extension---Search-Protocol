@@ -990,6 +990,36 @@ export const upsertRelation = ({ onSuccess = () => {} }) => {
   })
 }
 
+export const createSubCategory = ({onSuccess = () => {} }) => {
+
+  const iframeAPI = createIframeWithMask({
+    url:    Ext.extension.getURL('sub_category.html'),
+    width:  500,
+    height: 375,
+    onAsk:  (cmd, args) => {
+      switch (cmd) {
+        case 'CLOSE_SUB_CATEGORY':
+          iframeAPI.destroy()
+          return true
+
+        case 'DONE_SUB_CATEGORY': {
+          onSuccess(args)
+          return true
+        }
+      }
+    }  
+  })
+
+  setStyle(iframeAPI.$iframe, {
+    position: 'fixed',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    border: '1px solid #ccc'
+  })
+
+}
+
 export const upsertNoteType = ({ onSuccess = () => {} }) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('upsert_note_type.html'),
@@ -1118,6 +1148,15 @@ export const buildBridge = ({
               }
             })
             return true
+          case 'ADD_SUB_CATEGORY':
+
+            createSubCategory({
+              onSuccess: ({ sub_category }) => {
+                iframeAPI.ask('SELECT_NEW_NOTE_TYPE', { sub_category })
+              }
+            })
+            return true
+
         }
       }
     })
@@ -1340,6 +1379,13 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
           upsertNoteType({
             onSuccess: ({ relation }) => {
               iframeAPI.ask('SELECT_NEW_NOTE_TYPE', { relation })
+            }
+          })
+          return true
+        case 'ADD_SUB_CATEGORY':
+          createSubCategory({
+            onSuccess: ({ sub_category }) => {
+              iframeAPI.ask('SELECT_NEW_NOTE_TYPE', { sub_category })
             }
           })
           return true

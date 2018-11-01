@@ -20,11 +20,13 @@ class CreateLinkComp extends React.Component {
     onUpdateField:  PropTypes.func.isRequired,
     onSubmit:       PropTypes.func.isRequired,
     onCancel:       PropTypes.func.isRequired,
-    onAddRelation:  PropTypes.func
+    onAddRelation:  PropTypes.func,
+    onAddSubCategory: PropTypes.func
   }
 
   state = {
-    exchangePosition: false
+    exchangePosition: false,
+    categories: []
   }
 
   constructor (props) {
@@ -77,6 +79,12 @@ class CreateLinkComp extends React.Component {
         this.props.form.setFieldsValue(values)
       }, 60)
     }
+    API.getCategories()
+    .then(categories => {
+      this.setState({
+        categories
+      })
+    })
   }
 
   componentWillReceiveProps (nextProps) {
@@ -166,11 +174,12 @@ class CreateLinkComp extends React.Component {
   render () {
     if (!this.props.linkPair) return null
 
+    const { categories } = this.state
     const { t } = this.props
     const { getFieldDecorator } = this.props.form
     const pair = this.props.linkPair.data
     if (!pair.links || !pair.links.length)  return null
-
+    
     return (
       <div className="to-create-link">
         <h2>{this.renderTitle()}</h2>
@@ -308,11 +317,20 @@ class CreateLinkComp extends React.Component {
                     onChange={val => this.props.onUpdateField(parseInt(val, 10), 'category')}
                     style={{ width: '150px' }}
                   >
-                    {C.CATEGORY_LIST.map((c) => (
-                    <Select.Option key={c.key} value={'' + c.value}>{t(`contentCategory:category.${c.key}`)}</Select.Option>
+                    {categories.map((category) => (
+                    <Select.Option key={category.id} value={'' + category.id}>{category.name}</Select.Option>
                     ))}
                   </Select>
                 )}
+                  <Button
+                    type="default"
+                    shape="circle"
+                    onClick={this.props.onAddSubCategory}
+                    style={{ marginLeft: '10px' }}
+                    >
+                    <Icon type="plus" />
+                  </Button>
+
               </div>
             </Form.Item>
           </div>

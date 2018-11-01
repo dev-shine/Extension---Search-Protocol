@@ -23,6 +23,7 @@ module.exports = {
     image_area:       './src/image_area/index.js',
     upsert_relation:  './src/upsert_relation/index.js',
     upsert_note_type:  './src/upsert_note_type/index.js',
+    sub_category:  './src/sub_category/index.js',
     after_create_bridge: './src/after_create_bridge/index.js',
     element_description: './src/element_description/index.js',
     flag_content: './src/flag_content/index.js',

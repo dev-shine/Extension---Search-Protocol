@@ -40,6 +40,8 @@
     "upsert_relation.js",
     "upsert_note_type.html",
     "upsert_note_type.js",
+    "sub_category.html",
+    "sub_category.js",
     "element_description.html",
     "element_description.js",
     "flag_content.js",

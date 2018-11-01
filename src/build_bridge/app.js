@@ -28,6 +28,10 @@ class App extends Component {
     ipc.ask('ADD_RELATION')
   }
 
+  onAddSubCategory = () => {
+    ipc.ask('ADD_SUB_CATEGORY')
+  }
+
   onUpdateField = (val, field) => {
     this.setState(
       compose(
@@ -139,6 +143,7 @@ class App extends Component {
         linkPair={this.state.linkPair}
         onUpdateField={this.onUpdateField}
         onAddRelation={this.onAddRelation}
+        onAddSubCategory = {this.onAddSubCategory}
         onSubmit={this.onClickSubmit}
         onCancel={this.onClickCancel}
       />

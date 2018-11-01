@@ -137,6 +137,12 @@ export default {
     nameErrMsg: 'Please input note type',
     namePlaceHolder: 'Enter a note type'
   },
+  subCategory: {
+    addSubCategory: 'Add Sub Category',
+    name: 'Sub Category',
+    nameErrMsg: 'Please input Sub Category',
+    namePlaceHolder: 'Enter a Sub Category Name'
+  },
   privacy: {
     privacyLabel: 'Who should see this?',
     privacyErrMsg: 'Please select privacy',

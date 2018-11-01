@@ -231,8 +231,8 @@ const checkUserBeforeInit = ({fromListening}) => {
     .then(token => {
       setLocalStore("bridgit-token", token);
       // POSTMessage should pass in only case when event triggered (login from extension) from extension only
+      removeLocalStore("bridgit_logout");
       if (fromListening === 0) {
-        removeLocalStore("bridgit_logout");
         window.postMessage({type: "BRIDGIT-EXTENSION", token: token},'*');
       }
     })
@@ -241,8 +241,8 @@ const checkUserBeforeInit = ({fromListening}) => {
   .catch(e => {
     init({isLoggedIn:false})
     removeLocalStore("bridgit-token");
+    setLocalStore("bridgit_logout", "1");
     if (fromListening === 0) {
-      setLocalStore("bridgit_logout", "1");
       window.postMessage({type: "BRIDGIT-EXTENSION", token: ""},'*');
     }
   })
