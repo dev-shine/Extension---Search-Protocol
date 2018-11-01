@@ -67,18 +67,23 @@ const storeAccessToken = (res) => {
 }
 
 const storeUserInfo = (data) => {
-  if (data && data.login_message) storeLoginMessage(data.login_message);
+  // if (data && data.login_message) storeLoginMessage(data.login_message);
   return storage.set('userInfo', data)
   .then(() => data)
 }
 
-export const storeLoginMessage = (msg) => {
-  return storage.set('loginMessage', msg)
-  .then(() => msg)
-}
+// export const storeLoginMessage = (msg) => {
+//   return storage.set('loginMessage', msg)
+//   .then(() => msg)
+// }
 
 export const getLoginMessage = () => {
-  return storage.get('loginMessage')
+  // return storage.get('loginMessage')
+
+  return jwtRequest.get(apiUrl('/login_message'))
+  .then(onApiReturn)
+  .catch(onApiError)
+
 }
 
 export const getUserSettings = () => {

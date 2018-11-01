@@ -229,27 +229,31 @@ const checkUserBeforeInit = ({fromListening}) => {
     init({isLoggedIn:true})
     getLocalStoreFromExtension()
     .then(token => {
-      setLocalStore(token);
+      setLocalStore("bridgit-token", token);
       // POSTMessage should pass in only case when event triggered (login from extension) from extension only
       if (fromListening === 0) {
-          window.postMessage({type: "BRIDGIT-EXTENSION", token: token},'*');
+        removeLocalStore("bridgit_logout");
+        window.postMessage({type: "BRIDGIT-EXTENSION", token: token},'*');
       }
     })
 
   })
   .catch(e => {
     init({isLoggedIn:false})
-    removeLocalStore();
-    if (fromListening === 0) window.postMessage({type: "BRIDGIT-EXTENSION", token: ""},'*');
+    removeLocalStore("bridgit-token");
+    if (fromListening === 0) {
+      setLocalStore("bridgit_logout", "1");
+      window.postMessage({type: "BRIDGIT-EXTENSION", token: ""},'*');
+    }
   })
 }
 
-const setLocalStore = (token) => {
-  localStorage.setItem("bridgit-token", token);
+const setLocalStore = (key, value) => {
+  localStorage.setItem(key, value);
 }
 
-const removeLocalStore = () => {
-  localStorage.removeItem("bridgit-token");
+const removeLocalStore = (key) => {
+  localStorage.removeItem(key);
 }
 
 const getLocalStoreFromExtension = () => {
@@ -287,9 +291,9 @@ const listen_token_message = () => {
         }, 2000);
       }
   }
-  else if (data.type && data.type === "LOGIN-MSG") {
-    API.storeLoginMessage(data.login_message)
-  }
+  // else if (data.type && data.type === "LOGIN-MSG") {
+  //   API.storeLoginMessage(data.login_message)
+  // }
     
 });
 
@@ -298,18 +302,23 @@ const listen_token_message = () => {
 const loginMessage = () => {
   API.fetchUserInfo()
   .then(user => {
-
+    console.log(user);
+    
     if (!user) {
       API.getLoginMessage()
-      .then(msg => {
-
-        const showMsg = (e) => {
-          showMessage(msg, {yOffset: (e.clientY < 100) ? 100 : e.clientY });
-          window.removeEventListener('mousemove', showMsg);
-        }
-        window.addEventListener('mousemove', showMsg);
+        .then(data => {
+          console.log("===================");
+          console.log(data);
+          console.log("===================");
+          
+        // const showMsg = (e) => {
+        //   showMessage(msg, {yOffset: (e.clientY < 100) ? 100 : e.clientY });
+        //   window.removeEventListener('mousemove', showMsg);
+        // }
+        // window.addEventListener('mousemove', showMsg);
 
       })
+      .catch(err => console.log(err))
     }
 
   })
