@@ -17,6 +17,7 @@ class App extends Component {
     mode:       C.UPSERT_MODE.ADD,
     linkData:   null,
     noteCategories: [],
+    categories: [],
     privacy: 0
   }
 
@@ -113,14 +114,15 @@ class App extends Component {
   }
 
   componentDidMount () {
-    ipc.ask('INIT')
-    .then(({ annotationData = {}, linkData, mode, noteCategories }) => {
-      log('init got annotation', linkData, annotationData, mode, noteCategories)
+    ipc.ask('INIT') 
+    .then(({ annotationData = {}, linkData, mode, noteCategories, categories }) => {
+      log('init got annotation', linkData, annotationData, mode, noteCategories, categories)
       this.setState({
         linkData,
         annotationData,
         mode,
-        noteCategories
+        noteCategories,
+        categories
       })
 
       this.props.form.setFieldsValue(this.decodeData({
@@ -154,6 +156,7 @@ class App extends Component {
   render () {
     const { t } = this.props
     const { getFieldDecorator } = this.props.form
+    const { categories } = this.state    
 
     return (
       <div className="annotation-wrapper">
@@ -268,8 +271,8 @@ class App extends Component {
                     }
                     style={{ width: '150px' }}
                   >
-                    {C.CATEGORY_LIST.map((c) => (
-                      <Select.Option key={c.key} value={'' + c.value}>{t(`contentCategory:category.${c.key}`)}</Select.Option>
+                    {categories.map((category) => (
+                      <Select.Option key={category.id} value={'' + category.id}>{category.name}</Select.Option>
                     ))}
                   </Select>
                 )}

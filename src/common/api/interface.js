@@ -26,6 +26,7 @@ export const methods = [
   'register',
   'signInWithGoogle',
   'checkUser',
+  'getCategories',
   'fetchUserInfo',
   'createRelation',
   'loadRelations',

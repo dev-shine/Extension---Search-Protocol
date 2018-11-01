@@ -80,6 +80,14 @@ export const getLoginMessage = () => {
 
 }
 
+export const getCategories = () => {
+
+  return jwtRequest.get(apiUrl('/categories'))
+  .then(onApiReturn)
+  .catch(onApiError)
+
+}
+
 export const getUserSettings = () => {
   return storage.get('user_settings')
 }

@@ -1304,9 +1304,13 @@ export const selectImageArea = ({ $img, linkData, getCurrentPage, showContentEle
 }
 
 export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}, onSuccess } = {}) => {
-  API.loadNoteCategories()
-  .then(noteCategories => {
+  Promise.all( [API.loadNoteCategories(), API.getCategories() ] )
+  // API.loadNoteCategories()
+  .then(values => {
+  let noteCategories = values[0];
+  let categories = values[1];
   noteCategories = noteCategories.filter(nc => nc.is_active)
+  categories = categories.filter(category => category.status == 1)
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('annotate.html'),
     width:  600,
@@ -1320,7 +1324,8 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
             mode,
             annotationData,
             linkData,
-            noteCategories
+            noteCategories,
+            categories
           }
 
         case 'DONE':
@@ -1350,6 +1355,7 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
     border: '1px solid #ccc'
   })
   })
+  .catch(err => console.log(err) )
 }
 
 export const commonMenuOptions = {

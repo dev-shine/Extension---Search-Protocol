@@ -274,7 +274,8 @@ const listen_token_message = () => {
     if (data.type && data.type == "BRIDGIT-WEB" ) {
 
       if (data.token) {
-
+        
+          removeLocalStore("bridgit_logout");
           API.loginWithToken({token: data.token})
           .then(status => {
             checkUserBeforeInit({fromListening: 1});
@@ -284,6 +285,7 @@ const listen_token_message = () => {
           })
       }
       else {
+        setLocalStore("bridgit_logout", "1");
         API.removeAccessToken();
         API.removeUserInfo();
         setTimeout(() => {
