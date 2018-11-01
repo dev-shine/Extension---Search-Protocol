@@ -291,9 +291,6 @@ const listen_token_message = () => {
         }, 2000);
       }
   }
-  // else if (data.type && data.type === "LOGIN-MSG") {
-  //   API.storeLoginMessage(data.login_message)
-  // }
     
 });
 
@@ -302,25 +299,21 @@ const listen_token_message = () => {
 const loginMessage = () => {
   API.fetchUserInfo()
   .then(user => {
-    console.log(user);
-    
     if (!user) {
       API.getLoginMessage()
         .then(data => {
-          console.log("===================");
-          console.log(data);
-          console.log("===================");
           
-        // const showMsg = (e) => {
-        //   showMessage(msg, {yOffset: (e.clientY < 100) ? 100 : e.clientY });
-        //   window.removeEventListener('mousemove', showMsg);
-        // }
-        // window.addEventListener('mousemove', showMsg);
+          if (data && data.message) {
+            const showMsg = (e) => {
+              showMessage(data.message, {yOffset: (e.clientY < 100) ? 100 : e.clientY });
+              window.removeEventListener('mousemove', showMsg);
+            }
+            window.addEventListener('mousemove', showMsg);
+          }
 
       })
       .catch(err => console.log(err))
     }
-
   })
 }
 

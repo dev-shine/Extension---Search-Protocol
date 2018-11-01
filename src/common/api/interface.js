@@ -18,7 +18,6 @@ export const methods = [
   'removeAccessToken',
   'removeUserInfo',
   'getLoginMessage',
-  'storeLoginMessage',
 
   // http API
   'login',

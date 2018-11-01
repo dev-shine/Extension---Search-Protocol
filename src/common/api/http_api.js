@@ -49,7 +49,7 @@ const onApiError = (e) => {
 
 const onApiReturn = (res) => {
   const body = res.body
-  
+    
   if (body.error_code !== 0) {
     throw new Error(body.message)
   }
@@ -67,18 +67,12 @@ const storeAccessToken = (res) => {
 }
 
 const storeUserInfo = (data) => {
-  // if (data && data.login_message) storeLoginMessage(data.login_message);
   return storage.set('userInfo', data)
   .then(() => data)
 }
 
-// export const storeLoginMessage = (msg) => {
-//   return storage.set('loginMessage', msg)
-//   .then(() => msg)
-// }
 
 export const getLoginMessage = () => {
-  // return storage.get('loginMessage')
 
   return jwtRequest.get(apiUrl('/login_message'))
   .then(onApiReturn)
