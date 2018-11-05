@@ -39,7 +39,8 @@ class CreateLinkComp extends React.Component {
     return compose(
       updateIn(['relation'], x => parseInt(x, 10)),
       updateIn(['privacy'], x => parseInt(x, 10)),
-      updateIn(['category'], x => parseInt(x, 10))
+      updateIn(['category'], x => parseInt(x, 10)),
+      updateIn(['sub_category'], x => parseInt(x, 10))
     )(values)
   }
 
@@ -47,7 +48,8 @@ class CreateLinkComp extends React.Component {
     return compose(
       updateIn(['relation'], x => x && ('' + x)),
       updateIn(['privacy'], x => x ? ('' + x) : '0'),
-      updateIn(['category'], x => x && ('' + x))
+      updateIn(['category'], x => x && ('' + x)),
+      updateIn(['sub_category'], x => x && ('' + x))
     )(values)
   }
 
@@ -61,7 +63,7 @@ class CreateLinkComp extends React.Component {
         from: pair.links[this.state.exchangePosition ? 1 : 0],
         to:   pair.links[this.state.exchangePosition ? 0 : 1]
       }
-
+      
       this.props.onSubmit(data)
     })
   }
@@ -74,17 +76,13 @@ class CreateLinkComp extends React.Component {
           tags:       this.props.bridge.tags,
           relation:   this.props.bridge.relation,
           privacy:    this.props.bridge.privacy,
-          category:   this.props.bridge.category
+          category:   this.props.bridge.category,
+          sub_category: this.props.bridge.sub_category
         })
+              
         this.props.form.setFieldsValue(values)
       }, 60)
     }
-    API.getCategories()
-    .then(categories => {
-      this.setState({
-        categories
-      })
-    })
   }
 
   componentWillReceiveProps (nextProps) {
@@ -94,13 +92,16 @@ class CreateLinkComp extends React.Component {
         tags:       nextProps.bridge.tags,
         relation:   nextProps.bridge.relation,
         privacy:    nextProps.bridge.privacy,
-        category:   nextProps.bridge.category
+        category:   nextProps.bridge.category,
+        sub_category: this.props.form.getFieldValue('sub_category') ? nextProps.bridge.sub_category : undefined
       }))
     }
 
     if (nextProps.selectedRelation && nextProps.selectedRelation !== this.props.selectedRelation) {
       this.props.form.setFieldsValue(this.decodeData({
-        relation: nextProps.selectedRelation
+        relation: nextProps.selectedRelation,
+        category:   nextProps.bridge.category,
+        sub_category:   nextProps.bridge.sub_category || undefined 
       }))
     }
   }
@@ -174,12 +175,11 @@ class CreateLinkComp extends React.Component {
   render () {
     if (!this.props.linkPair) return null
 
-    const { categories } = this.state
-    const { t } = this.props
+    const { t, categories, selectedCategory } = this.props
     const { getFieldDecorator } = this.props.form
     const pair = this.props.linkPair.data
     if (!pair.links || !pair.links.length)  return null
-    
+        
     return (
       <div className="to-create-link">
         <h2>{this.renderTitle()}</h2>
@@ -290,7 +290,7 @@ class CreateLinkComp extends React.Component {
                 })(
                   <Select
                     placeholder={t('privacy:privacyPlaceholder')}
-                    defaultValue="0"
+                    // defaultValue="0"
                     onChange={val => this.props.onUpdateField(parseInt(val, 10), 'privacy')}
                     style={{ width: '150px' }}
                   >
@@ -313,13 +313,50 @@ class CreateLinkComp extends React.Component {
                 })(
                   <Select
                     placeholder={t('contentCategory:categoryPlaceholder')}
-                    defaultValue="0"
-                    onChange={val => this.props.onUpdateField(parseInt(val, 10), 'category')}
+                    // defaultValue="0"
+                    onChange={val => {                      
+                      this.props.form.setFieldsValue({
+                        sub_category: ''
+                      })
+                      this.props.onUpdateField(parseInt(val, 10), 'category')
+                    }}
                     style={{ width: '150px' }}
                   >
-                    {categories.map((category) => (
-                    <Select.Option key={category.id} value={'' + category.id}>{category.name}</Select.Option>
-                    ))}
+                    {categories.map((category) => {
+                      
+                      return(
+                        <Select.Option key={category.id} value={'' + category.id}>{category.name}</Select.Option>
+                    )})}
+                  </Select>
+                )}
+
+              </div>
+            </Form.Item>
+
+
+            <Form.Item label={t('subCategory:subCategorylabel')}>
+              <div style={{ display: 'flex' }}>
+                {getFieldDecorator('sub_category', {
+                  validateTrigger: ['onBlur'],
+                  // initialValue: pair.category,
+                  rules: [
+                    { required: true, message: t('subCategory:subCategoryErrMsg') }
+                  ]
+                })(
+                  <Select
+                    placeholder={t('subCategory:subCategoryPlaceholder')}
+                    // defaultValue="0"
+                    onChange={val => this.props.onUpdateField(parseInt(val, 10), 'sub_category') }
+                    style={{ width: '150px' }}
+                  >
+
+                    {selectedCategory != '' &&
+                    categories.filter(category => category.id == selectedCategory)[0].
+                    sub_category.map(SC =>{
+                      
+                      return(
+                        <Select.Option key={SC.id} value={'' + SC.id}>{SC.name}</Select.Option>
+                    )})}
                   </Select>
                 )}
                   <Button

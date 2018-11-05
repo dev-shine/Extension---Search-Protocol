@@ -224,8 +224,10 @@ const onBgRequest = (cmd, args) => {
 fromListening = 0 (Normal flag, when something happen from extension only )
 fromListening = 1 (Normal flag, when something happen from web login )
 */
+let E_MAIL = '';
 const checkUserBeforeInit = ({fromListening}) => {
   API.checkUser().then(user => {
+    E_MAIL = user.email;
     init({isLoggedIn:true})
     getLocalStoreFromExtension()
     .then(token => {
@@ -243,6 +245,7 @@ const checkUserBeforeInit = ({fromListening}) => {
     removeLocalStore("bridgit-token");
     setLocalStore("bridgit_logout", "1");
     if (fromListening === 0) {
+      API.logoutToUpdateFlag(E_MAIL);
       window.postMessage({type: "BRIDGIT-EXTENSION", token: ""},'*');
     }
   })

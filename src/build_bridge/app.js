@@ -17,6 +17,8 @@ class App extends Component {
     linkPair:   null,
     bridgeData: null,
     relations:  [],
+    categories:  [],
+    selectedCategory: '',
     selectedRelation: undefined
   }
 
@@ -36,7 +38,8 @@ class App extends Component {
     this.setState(
       compose(
         setIn(['bridgeData', field], val),
-        field === 'relation' ? setIn(['selectedRelation'], val) : x => x
+        field === 'relation' ? setIn(['selectedRelation'], val) : x => x,
+        field === 'category' ? setIn(['selectedCategory'], val) : x => x
       )(this.state)
     )
 
@@ -97,13 +100,16 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT')
-    .then(({ bridgeData, linkPair, mode, relations }) => {
+    .then(({ bridgeData, linkPair, mode, relations, categories }) => {
+      
       log('buildBridge, INIT GOT', { bridgeData, linkPair, mode })
       this.setState({
         mode,
         bridgeData,
         relations,
+        categories,
         selectedRelation: bridgeData ? bridgeData.relation : undefined,
+        selectedCategory: bridgeData.category || '',
         ...(linkPair ? { linkPair } : {})
       })
 
@@ -126,6 +132,24 @@ class App extends Component {
           })
           return true
         }
+
+        case 'SELECT_NEW_SUB_CATEGORY': {
+          log('SELECT_NEW_SUB_CATEGORY', cmd, args)
+
+          const {sub_category} = args;
+          this.state.categories.map(category => {
+            if (category.id == sub_category.category_id)
+              category.sub_category.push(sub_category);
+          })
+          const bridge_data = {...this.state.bridgeData, category: sub_category.category_id, sub_category: sub_category.id}
+          this.setState({
+            selectedCategory: sub_category.category_id,
+            bridgeData: bridge_data
+          })
+
+          return true
+        } 
+
       }
     })
   }
@@ -139,7 +163,9 @@ class App extends Component {
         mode={this.state.mode}
         bridge={this.state.bridgeData}
         relations={this.state.relations}
+        categories={this.state.categories}
         selectedRelation={this.state.selectedRelation}
+        selectedCategory={this.state.selectedCategory}
         linkPair={this.state.linkPair}
         onUpdateField={this.onUpdateField}
         onAddRelation={this.onAddRelation}

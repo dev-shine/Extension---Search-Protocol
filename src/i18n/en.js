@@ -138,6 +138,9 @@ export default {
     namePlaceHolder: 'Enter a note type'
   },
   subCategory: {
+    subCategorylabel: 'Sub Category',
+    subCategoryErrMsg: 'Please select Sub Category',
+    subCategoryPlaceholder: 'Sub Category',
     addSubCategory: 'Add Sub Category',
     name: 'Sub Category',
     nameErrMsg: 'Please input Sub Category',

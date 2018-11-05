@@ -88,6 +88,16 @@ export const getCategories = () => {
 
 }
 
+export const createSubCategory = (values) => {
+
+  return jwtRequest.post(apiUrl('/sub-category'))
+  .type('form')
+  .send( values )
+  .then(onApiReturn)
+  .catch(onApiError)
+
+}
+
 export const getUserSettings = () => {
   return storage.get('user_settings')
 }
@@ -177,6 +187,14 @@ export const logout = () => {
   jwtRequest.clearToken()
   storeUserInfo(null)
   return Promise.resolve(true)
+}
+
+export const logoutToUpdateFlag = (email) => {
+  return jwtRequest.post(apiUrl('/logout'))
+  .type('form')
+  .send( {email: email} )
+  .then(onApiReturn)
+  .catch(onApiError)
 }
 
 // Elements

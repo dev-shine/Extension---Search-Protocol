@@ -18,13 +18,15 @@ class App extends Component {
     linkData:   null,
     noteCategories: [],
     categories: [],
-    privacy: 0
+    privacy: 0,
+    selectedCategory: ''
   }
 
   encodeData = (values) => {
     return compose(
       updateIn(['relation'], x => parseInt(x, 10)),
       updateIn(['category'], x => parseInt(x, 10)),
+      updateIn(['sub_category'], x => parseInt(x, 10)),
       updateIn(['privacy'], x => parseInt(x, 10))
     )(values)
   }
@@ -33,6 +35,7 @@ class App extends Component {
     return compose(
       updateIn(['relation'], x => x && ('' + x)),
       updateIn(['category'], x => x && ('' + x)),
+      updateIn(['sub_category'], x => x && ('' + x)),
       updateIn(['privacy'], x => x ? ('' + x) : '0')
     )(values)
   }
@@ -87,6 +90,7 @@ class App extends Component {
 
   onClickSubmit = () => {
     this.props.form.validateFields((err, values) => {
+      
       if (err)  return
       values = this.encodeData(values)
 
@@ -115,7 +119,11 @@ class App extends Component {
   }
 
   onUpdateField = (val, key) => {
-    this.setState({ [key]: val })
+ 
+    this.setState({ 
+      [key]: val,
+      selectedCategory: (key === "category" ? val : this.state.selectedCategory)
+     })
   }
 
   componentDidMount () {
@@ -127,7 +135,8 @@ class App extends Component {
         annotationData,
         mode,
         noteCategories,
-        categories
+        categories,
+        selectedCategory: annotationData.category || ''
       })
 
       this.props.form.setFieldsValue(this.decodeData({
@@ -136,7 +145,8 @@ class App extends Component {
         tags:     annotationData.tags || '',
         privacy:  annotationData.privacy || '0',
         relation: annotationData ? annotationData.relation : undefined,
-        category: annotationData.category || undefined
+        category: annotationData.category || undefined,
+        sub_category: annotationData.sub_category || undefined,
       }))
     })
 
@@ -146,7 +156,7 @@ class App extends Component {
           // log('SELECT_NEW_RELATION', cmd, args)
           this.setState({
             noteCategories: [...this.state.noteCategories, args.relation],
-            selectedCategory: args.relation.id
+            selectedCategoryType: args.relation.id
           }, () => {
             this.props.form.setFieldsValue(this.decodeData({
               relation: args.relation.id
@@ -154,6 +164,25 @@ class App extends Component {
           })
           return true
         }
+
+        case 'SELECT_NEW_SUB_CATEGORY': { // SELECT_NEW_NOTE_TYPE
+          // log('SELECT_NEW_RELATION', cmd, args)
+          const {sub_category} = args;
+          this.state.categories.map(category => {
+            if (category.id == sub_category.category_id)
+              category.sub_category.push(sub_category);
+          })
+
+          this.setState({
+            selectedCategory: sub_category.category_id
+          }, () => {            
+            this.props.form.setFieldsValue(this.decodeData({
+              category: sub_category.category_id || undefined,
+              sub_category: sub_category.id
+            }))
+          })
+          return true
+        }        
       }
     })
   }
@@ -161,8 +190,8 @@ class App extends Component {
   render () {
     const { t } = this.props
     const { getFieldDecorator } = this.props.form
-    const { categories } = this.state    
-
+    const { categories, selectedCategory } = this.state
+    
     return (
       <div className="annotation-wrapper">
         <Form>
@@ -260,38 +289,6 @@ class App extends Component {
                 </div>
             </Form.Item>
 
-            <Form.Item label={t('contentCategory:categorylabel')}>
-              <div style={{ display: 'flex' }}>
-                {getFieldDecorator('category', {
-                  validateTrigger: ['onBlur'],
-                  rules: [
-                    { required: true, message: t('contentCategory:categoryErrMsg') }
-                  ]
-                })(
-                  <Select
-                    placeholder={t('contentCategory:categoryPlaceholder')}
-                    onChange={val => {
-                      this.onUpdateField(parseInt(val, 10), 'category')
-                      }
-                    }
-                    style={{ width: '150px' }}
-                  >
-                    {categories.map((category) => (
-                      <Select.Option key={category.id} value={'' + category.id}>{category.name}</Select.Option>
-                    ))}
-                  </Select>
-                )}
-                  <Button
-                    type="default"
-                    shape="circle"
-                    onClick={this.onAddSubCategory}
-                    style={{ marginLeft: '10px' }}
-                  >
-                    <Icon type="plus" />
-                  </Button>
-              </div>
-            </Form.Item>
-
             <Form.Item label={t('createNote:relationLabel')}
             // className="relation-form-item"
             >
@@ -299,7 +296,7 @@ class App extends Component {
                 {/* <div style={{ textAlign: 'center' }}> */}
                   <div style={{ display: 'flex' }}>
                     {getFieldDecorator('relation', {
-                      ...(this.state.selectedCategory ? { initialValue: '' + this.state.selectedCategory } : {}),
+                      ...(this.state.selectedCategoryType ? { initialValue: '' + this.state.selectedCategoryType } : {}),
                       rules: [
                         { required: true, message: t('createNote:relationErrMsg') }
                       ]
@@ -329,6 +326,70 @@ class App extends Component {
               {/* </div> */}
             </Form.Item>
           </div>
+
+          <div style={{display:'flex', justifyContent: 'space-between'}}>
+            <Form.Item label={t('contentCategory:categorylabel')}>
+              <div style={{ display: 'flex' }}>
+                {getFieldDecorator('category', {
+                  validateTrigger: ['onBlur'],
+                  rules: [
+                    { required: true, message: t('contentCategory:categoryErrMsg') }
+                  ]
+                })(
+                  <Select
+                    placeholder={t('contentCategory:categoryPlaceholder')}
+                    onChange={val => {
+                      this.props.form.setFieldsValue({
+                        sub_category: undefined
+                      })
+                      this.onUpdateField(parseInt(val, 10), 'category')
+                      }
+                    }
+                    style={{ width: '150px' }}
+                  >
+                    {categories.map((category) => (
+                      <Select.Option key={category.id} value={'' + category.id}>{category.name}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </div>
+            </Form.Item>
+            
+            <Form.Item label={t('subCategory:subCategorylabel')}>
+              <div style={{ display: 'flex' }}>
+                {getFieldDecorator('sub_category', {
+                  validateTrigger: ['onBlur'],
+                  rules: [
+                    { required: true, message: t('subCategory:subCategoryErrMsg') }
+                  ]
+                })(
+                  <Select
+                    placeholder={t('subCategory:subCategoryPlaceholder')}
+                    onChange={val => {
+                      this.onUpdateField(parseInt(val, 10), 'sub_category')
+                      }
+                    }
+                    style={{ width: '150px' }}
+                  >
+                    {selectedCategory != '' &&
+                    categories.filter(category => category.id == selectedCategory)[0].
+                    sub_category.map(SC => { 
+                      return (
+                        <Select.Option key={SC.id} value={'' + SC.id}>{SC.name}</Select.Option>
+                    )})}
+                  </Select>
+                )}
+                  <Button
+                    type="default"
+                    shape="circle"
+                    onClick={this.onAddSubCategory}
+                    style={{ marginLeft: '10px' }}
+                  >
+                    <Icon type="plus" />
+                  </Button>
+              </div>
+            </Form.Item>
+            </div>
           <div className="actions">
             <Button
               type="primary"

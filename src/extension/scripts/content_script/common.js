@@ -1116,9 +1116,13 @@ export const buildBridge = ({
   onSuccess,
   mode = C.UPSERT_MODE.ADD } = {}
 ) => {
-  API.loadRelations()
-  .then(relations => {
+  Promise.all( [API.loadRelations(), API.getCategories() ] ) // API.loadRelations()
+  .then(values => {
+    
+    let relations = values[0];
+    let categories = values[1];
     relations = relations.filter(r => r.is_active)
+    categories = categories.filter(c => c.status == 1)
     const iframeAPI = createIframeWithMask({
       url:    Ext.extension.getURL('build_bridge.html'),
       width:  630,
@@ -1130,7 +1134,8 @@ export const buildBridge = ({
               mode,
               bridgeData,
               linkPair,
-              relations
+              relations,
+              categories
             }
 
           case 'DONE':
@@ -1152,7 +1157,7 @@ export const buildBridge = ({
 
             createSubCategory({
               onSuccess: ({ sub_category }) => {
-                iframeAPI.ask('SELECT_NEW_NOTE_TYPE', { sub_category })
+                iframeAPI.ask('SELECT_NEW_SUB_CATEGORY', { sub_category })
               }
             })
             return true
@@ -1169,6 +1174,7 @@ export const buildBridge = ({
       border: '1px solid #ccc'
     })
   })
+  .catch(ex => console.log(ex))
 }
 
 export const showHyperLinkBadges = () => {
@@ -1353,7 +1359,7 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('annotate.html'),
     width:  600,
-    height: 480,
+    height: 550,
     onAsk: (cmd, args) => {
       log('annotate onAsk', cmd, args)
 
@@ -1364,7 +1370,7 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
             annotationData,
             linkData,
             noteCategories,
-            categories
+            categories,
           }
 
         case 'DONE':
@@ -1385,7 +1391,7 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
         case 'ADD_SUB_CATEGORY':
           createSubCategory({
             onSuccess: ({ sub_category }) => {
-              iframeAPI.ask('SELECT_NEW_NOTE_TYPE', { sub_category })
+              iframeAPI.ask('SELECT_NEW_SUB_CATEGORY', { sub_category })
             }
           })
           return true

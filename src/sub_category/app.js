@@ -17,8 +17,8 @@ class App extends Component {
     super(props);
     this.state = {
       categories: [],
-      category: '',
-      sub_category: ''
+      category_id: '',
+      name: ''
     }
   }
 
@@ -36,16 +36,14 @@ class App extends Component {
 
     this.props.form.validateFields((err, values) => {
       if (err)  return
-      console.log("========onClickSubmit========");
-      console.log(values);
-      console.log("=============================");
-
+      
       API.createSubCategory(values)
       .then(sub_category => {
         ipc.ask('DONE_SUB_CATEGORY', { sub_category })
         notifySuccess(t('successfullySaved'))
         setTimeout(() => this.onClickCancel(), 1500)
       })
+      .catch(err => notifyError(t(err.toString())))
     })
   }
 
@@ -72,14 +70,14 @@ class App extends Component {
 
             <Form.Item label={t('contentCategory:categorylabel')}>
               <div style={{ display: 'flex' }}>
-                {getFieldDecorator('category', {
+                {getFieldDecorator('category_id', {
                   rules: [
                     { required: true, message: t('contentCategory:categoryErrMsg') }
                   ]
                 })(
                 <Select
                   placeholder={t('contentCategory:categoryPlaceholder')}
-                  onChange={val => this.onUpdateField('category', parseInt(val, 10) )}
+                  onChange={val => this.onUpdateField('category_id', parseInt(val, 10) )}
                 >
                   {categories.map((category) => (
                     <Select.Option key={category.id} value={'' + category.id}>{category.name}</Select.Option>
@@ -92,14 +90,14 @@ class App extends Component {
 
 
           <Form.Item label={t('subCategory:name')}>
-            {getFieldDecorator('sub_category', {
+            {getFieldDecorator('name', {
               validateTrigger: ['onBlur'],
               rules: [
                 { required: true, message: t('subCategory:nameErrMsg') }
               ]
             })(
               <Input
-                onChange={val => this.onUpdateField('sub_category', parseInt(val, 10) )}
+                onChange={val => this.onUpdateField('name', parseInt(val, 10) )}
                 placeholder={t('subCategory:namePlaceHolder')}
               />
             )}
