@@ -310,7 +310,8 @@ const loginMessage = () => {
           
           if (data && data.message) {
             const showMsg = (e) => {
-              showMessage(data.message, {yOffset: (e.clientY < 100) ? 100 : e.clientY });
+              const message = data.message.replace(/<\/?[^>]+(>|$)/g, "");
+              showMessage(message, {yOffset: (e.clientY < 100) ? 100 : e.clientY });
               window.removeEventListener('mousemove', showMsg);
             }
             window.addEventListener('mousemove', showMsg);

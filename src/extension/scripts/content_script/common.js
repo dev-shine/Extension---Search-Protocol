@@ -1484,9 +1484,6 @@ export const commonMenuItems = (getCurrentPage) => ({
         onSuccess:  showContentElements
       }))
       .catch(e => log.error(e.stack))
-    },
-    onMouseOver: (e) => {
-      checkForPartialWord({getCurrentPage}, e);
     }
   }),
   cancel: ({ showContentElements }) => ({
