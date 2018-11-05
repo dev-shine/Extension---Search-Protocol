@@ -119,7 +119,7 @@ class App extends Component {
   }
 
   onUpdateField = (val, key) => {
- 
+    
     this.setState({ 
       [key]: val,
       selectedCategory: (key === "category" ? val : this.state.selectedCategory)
@@ -178,7 +178,8 @@ class App extends Component {
           }, () => {            
             this.props.form.setFieldsValue(this.decodeData({
               category: sub_category.category_id || undefined,
-              sub_category: sub_category.id
+              sub_category: sub_category.id,
+              relation: this.state.relation
             }))
           })
           return true

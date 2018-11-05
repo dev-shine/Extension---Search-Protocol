@@ -85,7 +85,7 @@ class CreateLinkComp extends React.Component {
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps (nextProps) {    
     if (nextProps.bridge && nextProps.bridge !== this.props.bridge) {
       this.props.form.setFieldsValue(this.decodeData({
         desc:       nextProps.bridge.desc,
@@ -101,7 +101,7 @@ class CreateLinkComp extends React.Component {
       this.props.form.setFieldsValue(this.decodeData({
         relation: nextProps.selectedRelation,
         category:   nextProps.bridge.category,
-        sub_category:   nextProps.bridge.sub_category || undefined 
+        sub_category:  this.props.form.getFieldValue('sub_category') ? nextProps.bridge.sub_category : undefined 
       }))
     }
   }
