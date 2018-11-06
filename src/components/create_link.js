@@ -40,7 +40,7 @@ class CreateLinkComp extends React.Component {
       updateIn(['relation'], x => parseInt(x, 10)),
       updateIn(['privacy'], x => parseInt(x, 10)),
       updateIn(['category'], x => parseInt(x, 10)),
-      updateIn(['sub_category'], x => parseInt(x, 10))
+      updateIn(['sub_category'], x => x )
     )(values)
   }
 
@@ -49,12 +49,13 @@ class CreateLinkComp extends React.Component {
       updateIn(['relation'], x => x && ('' + x)),
       updateIn(['privacy'], x => x ? ('' + x) : '0'),
       updateIn(['category'], x => x && ('' + x)),
-      updateIn(['sub_category'], x => x && ('' + x))
+      updateIn(['sub_category'], x => x )
     )(values)
   }
 
   onSubmit = () => {
     this.props.form.validateFields((err, values) => {
+      values.sub_category = values.sub_category.join(",")
       if (err)  return
 
       const pair = this.props.linkPair.data
@@ -77,7 +78,7 @@ class CreateLinkComp extends React.Component {
           relation:   this.props.bridge.relation,
           privacy:    this.props.bridge.privacy,
           category:   this.props.bridge.category,
-          sub_category: this.props.bridge.sub_category
+          sub_category: this.props.bridge.sub_category ? this.props.bridge.sub_category.toString().split(",") : []
         })
               
         this.props.form.setFieldsValue(values)
@@ -85,23 +86,25 @@ class CreateLinkComp extends React.Component {
     }
   }
 
-  componentWillReceiveProps (nextProps) {    
+  componentWillReceiveProps (nextProps) {
     if (nextProps.bridge && nextProps.bridge !== this.props.bridge) {
+      const is_category_changed = (nextProps.bridge.category != this.props.bridge.category) ? true : false
       this.props.form.setFieldsValue(this.decodeData({
         desc:       nextProps.bridge.desc,
         tags:       nextProps.bridge.tags,
         relation:   nextProps.bridge.relation,
         privacy:    nextProps.bridge.privacy,
         category:   nextProps.bridge.category,
-        sub_category: this.props.form.getFieldValue('sub_category') ? nextProps.bridge.sub_category : undefined
+        sub_category: this.props.form.getFieldValue('sub_category') && !is_category_changed ? this.props.form.getFieldValue('sub_category') : []
       }))
     }
 
     if (nextProps.selectedRelation && nextProps.selectedRelation !== this.props.selectedRelation) {
+      const is_category_changed = (nextProps.bridge.category != this.props.bridge.category) ? true : false
       this.props.form.setFieldsValue(this.decodeData({
         relation: nextProps.selectedRelation,
         category:   nextProps.bridge.category,
-        sub_category:  this.props.form.getFieldValue('sub_category') ? nextProps.bridge.sub_category : undefined 
+        sub_category:  this.props.form.getFieldValue('sub_category') && !is_category_changed ? this.props.form.getFieldValue('sub_category') : []
       }))
     }
   }
@@ -344,8 +347,8 @@ class CreateLinkComp extends React.Component {
                   ]
                 })(
                   <Select
+                    mode="multiple"
                     placeholder={t('subCategory:subCategoryPlaceholder')}
-                    // defaultValue="0"
                     onChange={val => this.props.onUpdateField(parseInt(val, 10), 'sub_category') }
                     style={{ width: '150px' }}
                   >

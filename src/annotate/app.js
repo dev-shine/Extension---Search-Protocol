@@ -26,7 +26,7 @@ class App extends Component {
     return compose(
       updateIn(['relation'], x => parseInt(x, 10)),
       updateIn(['category'], x => parseInt(x, 10)),
-      updateIn(['sub_category'], x => parseInt(x, 10)),
+      updateIn(['sub_category'], x => x ),
       updateIn(['privacy'], x => parseInt(x, 10))
     )(values)
   }
@@ -35,7 +35,7 @@ class App extends Component {
     return compose(
       updateIn(['relation'], x => x && ('' + x)),
       updateIn(['category'], x => x && ('' + x)),
-      updateIn(['sub_category'], x => x && ('' + x)),
+      updateIn(['sub_category'], x => x ),
       updateIn(['privacy'], x => x ? ('' + x) : '0')
     )(values)
   }
@@ -90,10 +90,11 @@ class App extends Component {
 
   onClickSubmit = () => {
     this.props.form.validateFields((err, values) => {
+      values.sub_category = values.sub_category.join(",")
       
       if (err)  return
       values = this.encodeData(values)
-
+      
       switch (this.state.mode) {
         case C.UPSERT_MODE.ADD:
           return this.onSubmitAdd(values)
@@ -146,8 +147,8 @@ class App extends Component {
         privacy:  annotationData.privacy || '0',
         relation: annotationData ? annotationData.relation : undefined,
         category: annotationData.category || undefined,
-        sub_category: annotationData.sub_category || undefined,
-      }))
+        sub_category: annotationData.sub_category ? annotationData.sub_category.toString().split(",") : [],
+      })) 
     })
 
     ipc.onAsk((cmd, args) => {
@@ -175,10 +176,10 @@ class App extends Component {
 
           this.setState({
             selectedCategory: sub_category.category_id
-          }, () => {            
+          }, () => {
             this.props.form.setFieldsValue(this.decodeData({
               category: sub_category.category_id || undefined,
-              sub_category: sub_category.id,
+              sub_category: [sub_category.id.toString()],
               relation: this.state.relation
             }))
           })
@@ -192,7 +193,7 @@ class App extends Component {
     const { t } = this.props
     const { getFieldDecorator } = this.props.form
     const { categories, selectedCategory } = this.state
-    
+
     return (
       <div className="annotation-wrapper">
         <Form>
@@ -355,7 +356,7 @@ class App extends Component {
                 )}
               </div>
             </Form.Item>
-            
+
             <Form.Item label={t('subCategory:subCategorylabel')}>
               <div style={{ display: 'flex' }}>
                 {getFieldDecorator('sub_category', {
@@ -365,6 +366,7 @@ class App extends Component {
                   ]
                 })(
                   <Select
+                    mode="multiple"
                     placeholder={t('subCategory:subCategoryPlaceholder')}
                     onChange={val => {
                       this.onUpdateField(parseInt(val, 10), 'sub_category')
@@ -374,7 +376,7 @@ class App extends Component {
                   >
                     {selectedCategory != '' &&
                     categories.filter(category => category.id == selectedCategory)[0].
-                    sub_category.map(SC => { 
+                    sub_category.map(SC => {
                       return (
                         <Select.Option key={SC.id} value={'' + SC.id}>{SC.name}</Select.Option>
                     )})}
