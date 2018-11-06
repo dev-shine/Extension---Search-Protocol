@@ -301,34 +301,12 @@ const listen_token_message = () => {
 
 }
 
-const loginMessage = () => {
-  API.fetchUserInfo()
-  .then(user => {
-    if (!user) {
-      API.getLoginMessage()
-        .then(data => {
-          
-          if (data && data.message) {
-            const showMsg = (e) => {
-              const message = data.message.replace(/<\/?[^>]+(>|$)/g, "");
-              showMessage(message, {yOffset: (e.clientY < 100) ? 100 : e.clientY });
-              window.removeEventListener('mousemove', showMsg);
-            }
-            window.addEventListener('mousemove', showMsg);
-          }
-
-      })
-      .catch(err => console.log(err))
-    }
-  })
-}
 
 // document.body.setAttribute('bridgit-installed', true)
 localStorage.setItem('bridgit-installed', true)
 document.addEventListener('DOMContentLoaded', () => {
   console.log("DOMContentLoaded :: ");
 
-  loginMessage();
   listen_token_message();
   checkUserBeforeInit({fromListening: 1}); // fromListening: 1  is for solving reloading issue in login uniform fnctionality 
 

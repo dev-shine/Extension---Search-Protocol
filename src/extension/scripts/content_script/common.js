@@ -882,13 +882,13 @@ export const insertStyle = (css, id) => {
   return $style
 }
 
-export const showMessage = (text, options = {}) => {
+export const showMessage = (text, options = {}, z_index = 500) => {
   const css = `
     #__message_container__ {
       /*pointer-events: none;*/
       /*position: fixed;*/
       position: absolute;
-      z-index: 500;
+      z-index: ${z_index};
       top: ${options.yOffset ? options.yOffset + window.scrollY - 50 : 30}px;
       bottom: 0;
       left: 0;

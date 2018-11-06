@@ -13,7 +13,8 @@ import {
   commonStyle,
   createEl,
   createIframeWithMask,
-  createOverlayForRects
+  createOverlayForRects,
+  showMessage
 } from './common'
 import { rectsPointPosition } from './position'
 import { setInterval, clearInterval } from 'timers';
@@ -509,6 +510,28 @@ export const showFlagContent = ({ content }) => {
       border: '1px solid #ccc'
     })
 }
+
+const loginMessage = () => {
+
+  API.getLoginMessage()
+    .then(data => {
+      
+      if (data && data.message) {
+        // const showMsg = (e) => {
+
+        const message = data.message.replace(/<\/?[^>]+(>|$)/g, "");
+        setTimeout(() => {
+          showMessage(message, {yOffset: 400 }, 200000);
+        }, 1000);
+          // window.removeEventListener('mousemove', showMsg);
+        // }
+        // window.addEventListener('mousemove', showMsg);
+      }
+
+  })
+  .catch(err => console.log(err))
+}
+
 export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId, element }) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('related_elements.html'),
@@ -541,6 +564,7 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId, el
             API.loadNoteCategories()
           ])
           .then(([relations, userInfo, noteCategories]) => {
+            if (!userInfo) loginMessage();
             // Note: there could be relations used in bridges, but not included in your own relation list
             const extraRelationIds  = getExtraRelationIds(bridges, relations)
             const pExtraRelations   = extraRelationIds.length > 0
