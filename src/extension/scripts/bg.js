@@ -33,7 +33,6 @@ const bindEvents = () => {
   })
   let settings = {}, isLoggedIn = false ;
   storage.addListener(changes => {
-    console.log("Changes :: ", changes);
     
     let triggerEvent = false;
 

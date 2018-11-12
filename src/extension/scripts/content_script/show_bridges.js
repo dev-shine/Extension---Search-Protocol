@@ -298,7 +298,7 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
     bindEvent: (fn) => {
       window.addEventListener('resize', fn)
       window.addEventListener('scroll', fn)
-      timer = setInterval(fn, 2000)
+      timer = setInterval(fn, 20000)
     },
     unbindEvent: (fn) => {
       window.removeEventListener('resize', fn)
@@ -307,9 +307,9 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
     },
     getFuse: () => {
       try {
-        const range   = parseRangeJSON(link)
+        const range = parseRangeJSON(link)
         log('showSelection - getFuse', range, range.getClientRects(), range.getBoundingClientRect())
-        const rects   = range.getClientRects()
+        const rects = range.getClientRects()
         return Array.from(rects)
       } catch (e) {
         return null

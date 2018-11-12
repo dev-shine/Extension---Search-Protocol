@@ -124,7 +124,7 @@ export const csInit = () => {
   // We use it here to detect whether it is loaded by content script or injected
   // Calling runtime.sendMessage in injected js will cause an uncatchable exception
   if (!Ext.extension.getURL) return
-
+  
   // try this process in case we're in none-src frame
   try {
     Ext.runtime.sendMessage({
@@ -140,7 +140,7 @@ export const csInit = () => {
 // it accepts a `fn` function to handle CONNECT message from content scripts
 export const bgInit = (fn) => {
   Ext.runtime.onMessage.addListener((req, sender) => {
-    if (req.type === 'CONNECT' && req.cuid) {
+    if (req.type === 'CONNECT' && req.cuid && sender.tab && sender.tab.id) {
       fn(sender.tab.id, openBgWithCs(req.cuid).ipcBg(sender.tab.id))
     }
     return true
