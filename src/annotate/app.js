@@ -11,7 +11,7 @@ import * as C from '../common/constant'
 import './app.scss'
 
 const ipc = ipcForIframe()
-
+let children = [];
 class App extends Component {
   state = {
     mode:       C.UPSERT_MODE.ADD,
@@ -91,6 +91,7 @@ class App extends Component {
   onClickSubmit = () => {
     this.props.form.validateFields((err, values) => {
       values.sub_category = values.sub_category.join(",")
+      values.tags = values.tags.join(",")
       
       if (err)  return
       values = this.encodeData(values)
@@ -143,7 +144,7 @@ class App extends Component {
       this.props.form.setFieldsValue(this.decodeData({
         title:    annotationData.title || '',
         desc:     annotationData.desc || linkData.text || '',
-        tags:     annotationData.tags || '',
+        tags:     annotationData.tags ? annotationData.tags.split(",") : [],
         privacy:  annotationData.privacy || '0',
         relation: annotationData ? annotationData.relation : undefined,
         category: annotationData.category || undefined,
@@ -245,9 +246,9 @@ class App extends Component {
                 },
                 {
                   validator: (rule, value, callback) => {
-                    const parts = value.split(',')
+                    // const parts = value.split(',')
 
-                    if (parts.length > 5) {
+                    if (value.length > 5) {
                       const msg = t('tagsCountErrMsg')
                       return callback(msg)
                     }
@@ -257,10 +258,19 @@ class App extends Component {
                 }
               ]
             })(
-              <Input
+
+              <Select
+                mode="tags"
+                style={{ width: '100%' }}
                 placeholder={t('tagsPlaceholderAnnotation')}
-                onChange={e => this.onUpdateField(e.target.value, 'tags')}
-              />
+                onChange={val => this.onUpdateField(val, 'tags')}
+              >
+                {children}
+              </Select>,
+              // <Input
+              //   placeholder={t('tagsPlaceholderAnnotation')}
+              //   onChange={e => this.onUpdateField(e.target.value, 'tags')}
+              // />
             )}
           </Form.Item>
           <div style={{display:'flex', justifyContent: 'space-between'}}>
