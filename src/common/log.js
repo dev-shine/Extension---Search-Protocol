@@ -5,7 +5,7 @@ export const logFactory = (enabled) => {
   const obj = ['log', 'info', 'warn', 'error'].reduce((prev, method) => {
     prev[method] = (...args) => {
       if (!isEnabled) return
-      console[method]((new Date()).toISOString(), ' - ', ...args)
+      // console[method]((new Date()).toISOString(), ' - ', ...args)
     }
     return prev
   }, {})

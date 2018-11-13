@@ -20,13 +20,13 @@ class App extends Component {
       category_id: '',
       name: ''
     }
-  }
 
-  componentDidMount() {
-    API.getCategories()
-    .then(categories => {
+    ipc.ask('REQUEST_SELECTED_CATEGORY')
+    .then(result => {
       this.setState({
-        categories
+        categories: result.categories
+      }, () => {
+        this.props.form.setFieldsValue({category_id: result.selected_category.toString() || undefined})
       })
     })
   }

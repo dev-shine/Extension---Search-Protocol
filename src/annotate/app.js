@@ -116,7 +116,7 @@ class App extends Component {
 
   onAddSubCategory = () => {    
     // ADD_SUB_CATEGORY
-    ipc.ask('ADD_SUB_CATEGORY');
+    ipc.ask('ADD_SUB_CATEGORY',{selected_category: this.props.form.getFieldValue('category') || ''});
   }
 
   onUpdateField = (val, key) => {

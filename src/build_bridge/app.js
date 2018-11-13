@@ -31,7 +31,7 @@ class App extends Component {
   }
 
   onAddSubCategory = () => {
-    ipc.ask('ADD_SUB_CATEGORY')
+    ipc.ask('ADD_SUB_CATEGORY', {selected_category: this.state.selectedCategory || ''})
   }
 
   onUpdateField = (val, field) => {

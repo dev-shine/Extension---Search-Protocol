@@ -770,7 +770,7 @@ export const createIframeWithMask = (function () {
         iframeAPI.destroy()
       }
     }
-
+    
     return newAPI
   }
 })()
@@ -990,14 +990,16 @@ export const upsertRelation = ({ onSuccess = () => {} }) => {
   })
 }
 
-export const createSubCategory = ({onSuccess = () => {} }) => {
-
+export const createSubCategory = ({onSuccess = () => {}, selected_category, categories }) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('sub_category.html'),
     width:  500,
     height: 375,
     onAsk:  (cmd, args) => {
       switch (cmd) {
+        case 'REQUEST_SELECTED_CATEGORY':
+          return {selected_category, categories}
+
         case 'CLOSE_SUB_CATEGORY':
           iframeAPI.destroy()
           return true
@@ -1154,11 +1156,13 @@ export const buildBridge = ({
             })
             return true
           case 'ADD_SUB_CATEGORY':
-
+            
             createSubCategory({
               onSuccess: ({ sub_category }) => {
                 iframeAPI.ask('SELECT_NEW_SUB_CATEGORY', { sub_category })
-              }
+              },
+              categories: categories,
+              selected_category: args.selected_category
             })
             return true
 
@@ -1392,7 +1396,9 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
           createSubCategory({
             onSuccess: ({ sub_category }) => {
               iframeAPI.ask('SELECT_NEW_SUB_CATEGORY', { sub_category })
-            }
+            },
+            categories: categories,
+            selected_category: args.selected_category
           })
           return true
       }
