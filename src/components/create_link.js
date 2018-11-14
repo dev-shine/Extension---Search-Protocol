@@ -256,45 +256,6 @@ class CreateLinkComp extends React.Component {
               />
             )}
           </Form.Item>
-          <Form.Item label={t('tags')}>
-            {getFieldDecorator('tags', {
-              initialValue: pair.tags,
-              validateTrigger: ['onBlur'],
-              rules: [
-                {
-                  required: true,
-                  message: t('tagsRequiredErrMsg')
-                },
-                {
-                  validator: (rule, value, callback) => {
-                    // const parts = (value || '').split(',')
-
-                    if (value.length > 5) {
-                      const msg = t('tagsCountErrMsg')
-                      return callback(msg)
-                    }
-
-                    callback()
-                  }
-                }
-              ]
-            })(
-
-              <Select
-              mode="tags"
-              style={{ width: '100%' }}
-              placeholder={t('tagsPlaceholderBridge')}
-              onChange={val => this.props.onUpdateField(val, 'tags')}
-              >
-              {children}
-            </Select>,
-
-              // <Input
-              //   placeholder={t('tagsPlaceholderBridge')}
-              //   onChange={e => this.props.onUpdateField(e.target.value, 'tags')}
-              // />
-            )}
-          </Form.Item>
           <div style={{display:'flex', justifyContent: 'space-between'}}>
             <Form.Item label={t('privacy:privacyLabel')}>
               <div style={{ display: 'flex' }}>
@@ -387,6 +348,48 @@ class CreateLinkComp extends React.Component {
               </div>
             </Form.Item>
           </div>
+
+          <Form.Item label={t('tags')}>
+            {getFieldDecorator('tags', {
+              initialValue: pair.tags,
+              validateTrigger: ['onBlur'],
+              rules: [
+                {
+                  required: true,
+                  message: t('tagsRequiredErrMsg')
+                },
+                {
+                  validator: (rule, value, callback) => {
+                    // const parts = (value || '').split(',')
+
+                    if (value.length > 5) {
+                      const msg = t('tagsCountErrMsg')
+                      return callback(msg)
+                    }
+
+                    callback()
+                  }
+                }
+              ]
+            })(
+
+              <Select
+              mode="tags"
+              style={{ width: '100%' }}
+              placeholder={t('tagsPlaceholderBridge')}
+              onChange={val => this.props.onUpdateField(val, 'tags')}
+              >
+              {children}
+            </Select>,
+
+              // <Input
+              //   placeholder={t('tagsPlaceholderBridge')}
+              //   onChange={e => this.props.onUpdateField(e.target.value, 'tags')}
+              // />
+            )}
+          </Form.Item>
+
+
         </Form>
 
         <div className="actions">

@@ -236,43 +236,6 @@ class App extends Component {
               />
             )}
           </Form.Item>
-          <Form.Item label={t('tags')}>
-            {getFieldDecorator('tags', {
-              validateTrigger: ['onBlur'],
-              rules: [
-                {
-                  required: true,
-                  message: t('tagsRequiredErrMsg')
-                },
-                {
-                  validator: (rule, value, callback) => {
-                    // const parts = value.split(',')
-
-                    if (value.length > 5) {
-                      const msg = t('tagsCountErrMsg')
-                      return callback(msg)
-                    }
-
-                    callback()
-                  }
-                }
-              ]
-            })(
-
-              <Select
-                mode="tags"
-                style={{ width: '100%' }}
-                placeholder={t('tagsPlaceholderAnnotation')}
-                onChange={val => this.onUpdateField(val, 'tags')}
-              >
-                {children}
-              </Select>,
-              // <Input
-              //   placeholder={t('tagsPlaceholderAnnotation')}
-              //   onChange={e => this.onUpdateField(e.target.value, 'tags')}
-              // />
-            )}
-          </Form.Item>
           <div style={{display:'flex', justifyContent: 'space-between'}}>
             <Form.Item label={t('privacy:privacyLabel')}>
               <div style={{ display: 'flex' }}>
@@ -403,6 +366,46 @@ class App extends Component {
               </div>
             </Form.Item>
             </div>
+
+          <Form.Item label={t('tags')}>
+            {getFieldDecorator('tags', {
+              validateTrigger: ['onBlur'],
+              rules: [
+                {
+                  required: true,
+                  message: t('tagsRequiredErrMsg')
+                },
+                {
+                  validator: (rule, value, callback) => {
+                    // const parts = value.split(',')
+
+                    if (value.length > 5) {
+                      const msg = t('tagsCountErrMsg')
+                      return callback(msg)
+                    }
+
+                    callback()
+                  }
+                }
+              ]
+            })(
+
+              <Select
+                mode="tags"
+                style={{ width: '100%' }}
+                placeholder={t('tagsPlaceholderAnnotation')}
+                onChange={val => this.onUpdateField(val, 'tags')}
+              >
+                {children}
+              </Select>,
+              // <Input
+              //   placeholder={t('tagsPlaceholderAnnotation')}
+              //   onChange={e => this.onUpdateField(e.target.value, 'tags')}
+              // />
+            )}
+          </Form.Item>
+
+
           <div className="actions">
             <Button
               type="primary"
