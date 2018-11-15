@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { Form, Input, Button } from 'antd'
+import { Form, Input, Button, Select, Icon } from 'antd'
 import { translate } from 'react-i18next'
 import { notifyError, notifySuccess } from '../components/notification'
 import { compose } from '../common/utils'
@@ -10,10 +10,13 @@ import log from '../common/log'
 import { ELEMENT_TYPE } from '../common/models/element_model'
 import './app.scss'
 
+let children = [];
 const ipc = ipcForIframe()
 class App extends Component {
   state = {
     elementData: {},
+    categories: [],
+    selectedCategory: '',
     disableInputs: true
   }
 
@@ -33,9 +36,11 @@ class App extends Component {
   }
  componentDidMount () {
   ipc.ask('INIT')
-  .then(({linkData}) => {
+  .then(({linkData, categories}) => {
+    
     this.setState({
-      elementData: linkData
+      elementData: linkData,
+      categories: categories
     })
     if (linkData.name) {
       this.followUnFollowElement(linkData)
@@ -49,6 +54,30 @@ class App extends Component {
       })
     }
   })
+
+  ipc.onAsk((cmd, args) => {
+    switch (cmd) {
+
+      case 'SELECT_NEW_SUB_CATEGORY': { 
+        const {sub_category} = args;
+        this.state.categories.map(category => {
+          if (category.id == sub_category.category_id)
+            category.sub_category.push(sub_category);
+        })
+
+        this.setState({
+          selectedCategory: sub_category.category_id
+        }, () => {
+          this.props.form.setFieldsValue({
+            category: sub_category.category_id || undefined,
+            sub_category: [sub_category.id.toString()]
+          })
+        })
+        return true
+      }
+    }
+  })
+
  }
  onClickCancel = () => {
   ipc.ask('CLOSE')
@@ -74,6 +103,8 @@ class App extends Component {
     let dataValues = {...values}
     dataValues.name = values.title
     dataValues.element_id = linkData.id
+    dataValues.sub_category = dataValues.sub_category.join(",");
+    dataValues.tags = dataValues.tags.join(",");
     if (!linkData.id) {
       API.createElement(encodeElement(linkData))
       .then((newElementData) => {
@@ -89,13 +120,21 @@ class App extends Component {
     }
   });
 }
+
+onAddSubCategory = () => {
+  ipc.ask('ADD_SUB_CATEGORY',{selected_category: this.props.form.getFieldValue('category') || ''});
+}
+
 onUpdateField = (val, key) => {
-  this.setState({ [key]: val })
+  this.setState({
+     [key]: val,
+     selectedCategory: (key === "category" ? val : this.state.selectedCategory)
+    })
 }
 renderForm = () => {
   const { t } = this.props
   const { getFieldDecorator } = this.props.form
-  const { disableInputs } = this.state
+  const { disableInputs, categories, selectedCategory } = this.state
   return (
     <Fragment>
       <h3>
@@ -142,6 +181,106 @@ renderForm = () => {
             />
           )}
         </Form.Item>
+
+        <div style={{display:'flex', justifyContent: 'space-between'}}>
+          <Form.Item label={t('contentCategory:categorylabel')}>
+            <div style={{ display: 'flex' }}>
+              {getFieldDecorator('category', {
+                validateTrigger: ['onBlur'],
+                rules: [
+                  { required: true, message: t('contentCategory:categoryErrMsg') }
+                ]
+              })(
+                <Select
+                  placeholder={t('contentCategory:categoryPlaceholder')}
+                  onChange={val => {
+                    this.props.form.setFieldsValue({
+                      sub_category: undefined
+                    })
+                    this.onUpdateField(parseInt(val, 10), 'category')
+                    }
+                  }
+                  style={{ width: '150px' }}
+                >
+                  {categories.map((category) => (
+                    <Select.Option key={category.id} value={'' + category.id}>{category.name}</Select.Option>
+                  ))}
+                </Select>
+              )}
+            </div>
+          </Form.Item>
+
+          <Form.Item label={t('subCategory:subCategorylabel')}>
+            <div style={{ display: 'flex' }}>
+              {getFieldDecorator('sub_category', {
+                validateTrigger: ['onBlur'],
+                rules: [
+                  { required: true, message: t('subCategory:subCategoryErrMsg') }
+                ]
+              })(
+                <Select
+                  mode="multiple"
+                  placeholder={t('subCategory:subCategoryPlaceholder')}
+                  onChange={val => {
+                    this.onUpdateField(parseInt(val, 10), 'sub_category')
+                    }
+                  }
+                  style={{ width: '150px' }}
+                >
+                  {selectedCategory != '' &&
+                  categories.filter(category => category.id == selectedCategory)[0].
+                  sub_category.map(SC => {
+                    return (
+                      <Select.Option key={SC.id} value={'' + SC.id}>{SC.name}</Select.Option>
+                  )})}
+                </Select>
+              )}
+                <Button
+                  type="default"
+                  shape="circle"
+                  onClick={this.onAddSubCategory}
+                  style={{ marginLeft: '10px' }}
+                >
+                  <Icon type="plus" />
+                </Button>
+            </div>
+          </Form.Item>
+          </div>
+
+          <Form.Item label={t('tags')}>
+            {getFieldDecorator('tags', {
+              validateTrigger: ['onBlur'],
+              rules: [
+                {
+                  required: true,
+                  message: t('tagsRequiredErrMsg')
+                },
+                {
+                  validator: (rule, value, callback) => {
+                    // const parts = value.split(',')
+
+                    if (value.length > 5) {
+                      const msg = t('tagsCountErrMsg')
+                      return callback(msg)
+                    }
+
+                    callback()
+                  }
+                }
+              ]
+            })(
+
+              <Select
+                mode="tags"
+                style={{ width: '100%' }}
+                placeholder={t('tagsPlaceholderAnnotation')}
+                onChange={val => this.onUpdateField(val, 'tags')}
+              >
+                {children}
+              </Select>,
+            )}
+          </Form.Item>
+
         <div className="actions">
           <Button
             type="primary"

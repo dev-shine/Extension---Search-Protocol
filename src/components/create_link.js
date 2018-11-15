@@ -10,6 +10,8 @@ import log from '../common/log';
 import * as C from '../common/constant'
 import { compose, updateIn } from '../common/utils';
 import { EDIT_BRIDGE_TARGET } from '../common/models/local_model';
+
+let children = []
 class CreateLinkComp extends React.Component {
   static propTypes = {
     mode:           PropTypes.string.isRequired,
@@ -56,6 +58,7 @@ class CreateLinkComp extends React.Component {
   onSubmit = () => {
     this.props.form.validateFields((err, values) => {
       values.sub_category = values.sub_category.join(",")
+      values.tags = values.tags.join(",")
       if (err)  return
 
       const pair = this.props.linkPair.data
@@ -74,7 +77,7 @@ class CreateLinkComp extends React.Component {
       setTimeout(() => {
         const values = this.decodeData({
           desc:       this.props.bridge.desc,
-          tags:       this.props.bridge.tags,
+          tags:       this.props.bridge.tags ? this.props.bridge.tags.split(",") : [],
           relation:   this.props.bridge.relation,
           privacy:    this.props.bridge.privacy,
           category:   this.props.bridge.category,
@@ -253,35 +256,6 @@ class CreateLinkComp extends React.Component {
               />
             )}
           </Form.Item>
-          <Form.Item label={t('tags')}>
-            {getFieldDecorator('tags', {
-              initialValue: pair.tags,
-              validateTrigger: ['onBlur'],
-              rules: [
-                {
-                  required: true,
-                  message: t('tagsRequiredErrMsg')
-                },
-                {
-                  validator: (rule, value, callback) => {
-                    const parts = (value || '').split(',')
-
-                    if (parts.length > 5) {
-                      const msg = t('tagsCountErrMsg')
-                      return callback(msg)
-                    }
-
-                    callback()
-                  }
-                }
-              ]
-            })(
-              <Input
-                placeholder={t('tagsPlaceholderBridge')}
-                onChange={e => this.props.onUpdateField(e.target.value, 'tags')}
-              />
-            )}
-          </Form.Item>
           <div style={{display:'flex', justifyContent: 'space-between'}}>
             <Form.Item label={t('privacy:privacyLabel')}>
               <div style={{ display: 'flex' }}>
@@ -374,6 +348,48 @@ class CreateLinkComp extends React.Component {
               </div>
             </Form.Item>
           </div>
+
+          <Form.Item label={t('tags')}>
+            {getFieldDecorator('tags', {
+              initialValue: pair.tags,
+              validateTrigger: ['onBlur'],
+              rules: [
+                {
+                  required: true,
+                  message: t('tagsRequiredErrMsg')
+                },
+                {
+                  validator: (rule, value, callback) => {
+                    // const parts = (value || '').split(',')
+
+                    if (value.length > 5) {
+                      const msg = t('tagsCountErrMsg')
+                      return callback(msg)
+                    }
+
+                    callback()
+                  }
+                }
+              ]
+            })(
+
+              <Select
+              mode="tags"
+              style={{ width: '100%' }}
+              placeholder={t('tagsPlaceholderBridge')}
+              onChange={val => this.props.onUpdateField(val, 'tags')}
+              >
+              {children}
+            </Select>,
+
+              // <Input
+              //   placeholder={t('tagsPlaceholderBridge')}
+              //   onChange={e => this.props.onUpdateField(e.target.value, 'tags')}
+              // />
+            )}
+          </Form.Item>
+
+
         </Form>
 
         <div className="actions">

@@ -1079,19 +1079,32 @@ export const showMsgAfterCreateBridge = () => {
 }
 
 export const showElementDescription = ({ linkData, onSuccess }) => {
-  // return API.getUserSettings()
-  // .then(settings => {
-  //   if (settings.hideAfterCreateMsg)  return true
+  const obj = !linkData.name ? {width: 600, height: 650} : {width: 500, height: 450}
+
+  API.getCategories()
+  .then(categories => {
     const iframeAPI = createIframeWithMask({
       url:    Ext.extension.getURL('element_description.html'),
-      width:  500,
-      height: 450,
+      width:  obj.width,
+      height: obj.height,
       onAsk:  (cmd, args) => {
         switch (cmd) {
           case 'INIT':
             return {
-              linkData
+              linkData,
+              categories
             }
+
+          case 'ADD_SUB_CATEGORY':
+            createSubCategory({
+              onSuccess: ({ sub_category }) => {
+                iframeAPI.ask('SELECT_NEW_SUB_CATEGORY', { sub_category })
+              },
+              categories: categories,
+              selected_category: args.selected_category
+            })
+            return true
+
           case 'CLOSE':
             iframeAPI.destroy()
             return true
@@ -1109,7 +1122,7 @@ export const showElementDescription = ({ linkData, onSuccess }) => {
       transform: 'translate(-50%, -50%)',
       border: '1px solid #ccc'
     })
-  // })
+  })
 }
 
 export const buildBridge = ({
