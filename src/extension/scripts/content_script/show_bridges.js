@@ -115,8 +115,8 @@ export const showHyperLinkBadge = ({ totalCount, url, $el }) => {
 
   const liveBuildAPI = liveBuild({
     bindEvent: (fn) => {
-      window.addEventListener('resize', fn)
       if ( isShowHyperLinkBadgeCalled() ) {
+        window.addEventListener('resize', fn)
         window.addEventListener('scroll', fn)
         timer = setInterval(fn, 2000)
       }
