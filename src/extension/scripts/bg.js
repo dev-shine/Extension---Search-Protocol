@@ -85,6 +85,22 @@ const bindEvents = () => {
 //     }
 // });
 
+
+chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
+  
+  if(details.frameId === 0) {
+    chrome.tabs.get(details.tabId, function(tab) {
+      if(details.url.indexOf("youtube.com") > -1 && tab.url === details.url) {
+
+        chrome.tabs.getSelected(null, tab => {
+          chrome.tabs.sendRequest(tab.id, {method: 'youtube_video'});
+        });
+
+      }
+    });
+  }
+});
+
 const onPopupRequest = (cmd, args) => {
 
 }

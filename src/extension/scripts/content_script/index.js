@@ -69,6 +69,11 @@ const bindEvents = () => {
   ipc.onAsk(onBgRequest)
 }
 
+let CLEAR_ELEMENT = {};
+const bindReloadEvent = (getCsAPI) => {
+  CLEAR_ELEMENT["getCsAPI"] = getCsAPI
+}
+
 let linksAPI
 let destroyMenu
 let showContentElements
@@ -90,6 +95,7 @@ const init = ({ isLoggedIn = false }) => {
   })
 
   bindEvents()
+  bindReloadEvent(getCsAPI);
   isLoggedIn // && bindSelectionEvent({ getCurrentPage })
   API.getUserSettings()
   .then(settings => {
@@ -301,12 +307,23 @@ const listen_token_message = () => {
 
 }
 
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+  if (request.method == 'youtube_video') {
+    var elements = document.getElementsByClassName("bridge_count");
+    while (elements[0]) {
+        elements[0].parentNode.removeChild(elements[0]);
+    }
+
+    CLEAR_ELEMENT["getCsAPI"]().showContentElements();
+    
+  }  
+});
 
 // document.body.setAttribute('bridgit-installed', true)
 localStorage.setItem('bridgit-installed', true)
 document.addEventListener('DOMContentLoaded', () => {
   console.log("DOMContentLoaded :: ");
-
+  
   listen_token_message();
   checkUserBeforeInit({fromListening: 1}); // fromListening: 1  is for solving reloading issue in login uniform fnctionality 
 

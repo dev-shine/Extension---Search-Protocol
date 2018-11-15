@@ -370,7 +370,7 @@ class App extends Component {
               this.likeContent({type_id:annotation.id, type: 1, is_like: annotation.is_like})
             }}
           >
-            <img src={annotation.is_like ? './img/liked.png' : './img/like.png'} style={{ height: '14px' }} />
+            <img src={annotation.is_like ? './img/liked_heart.png' : './img/like_heart.png'} style={{ height: '14px' }} />
             <div style={{ fontSize: '10px' }}> {annotation.like_count} </div>
           </Button>
           ) : null
@@ -625,7 +625,7 @@ class App extends Component {
               this.likeContent({type_id:bridge.id, type: 0, is_like: bridge.is_like})
             }}
           >
-            <img src={bridge.is_like ? './img/liked.png' : './img/like.png'} style={{ height: '14px' }} />
+            <img src={bridge.is_like ? './img/liked_heart.png' : './img/like_heart.png'} style={{ height: '14px' }} />
             <div style={{ fontSize: '10px' }}> {bridge.like_count} </div>
           </Button>
           ) : null}

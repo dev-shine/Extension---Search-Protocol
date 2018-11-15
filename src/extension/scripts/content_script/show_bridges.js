@@ -58,7 +58,7 @@ export const showLinks = ({ elements, bridges, annotations, url, onCreate, getCs
 
 export const showOneLink = ({ link, getLinksAPI, getCsAPI, color, opacity, needBadge = true, onCreate = () => {} }) => {
   log('showOneLink', link.type, link)
-
+  
   switch (link.type) {
     case ELEMENT_TYPE.IMAGE:
       return showImage({ link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate })
@@ -104,14 +104,22 @@ const commonShowAPI = ({ rects }) => {
   }
 }
 
+const isShowHyperLinkBadgeCalled = () => {
+  return(
+    window.location.host !== "www.youtube.com" && window.location.host !== "www.quora.com"
+  )
+}
+
 export const showHyperLinkBadge = ({ totalCount, url, $el }) => {
   let timer
 
   const liveBuildAPI = liveBuild({
     bindEvent: (fn) => {
       window.addEventListener('resize', fn)
-      window.addEventListener('scroll', fn)
-      timer = setInterval(fn, 2000)
+      if ( isShowHyperLinkBadgeCalled() ) {
+        window.addEventListener('scroll', fn)
+        timer = setInterval(fn, 2000)
+      }
     },
     unbindEvent: (fn) => {
       window.removeEventListener('resize', fn)
@@ -416,6 +424,9 @@ export const showBridgeCount = ({ position, text, onClick, style = {} }) => {
       'text-align':  'center',
       'box-shadow':  'rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px',
       ...style
+    },
+    attrs: {
+      class: 'bridge_count'
     }
   })
 

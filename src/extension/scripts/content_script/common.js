@@ -673,7 +673,7 @@ export const createContextMenus = ({
             $img: e.target,
             linkData: processLinkData({
               type:     ELEMENT_TYPE.IMAGE,
-              url:      window.location.href,
+              url:      window.location.hash ? window.location.origin + "" + window.location.pathname : window.location.href,
               locator:  xpath(e.target),
               rect: {
                 x: 0,
@@ -696,7 +696,7 @@ export const createContextMenus = ({
         eventData: {
           linkData: processLinkData({
             type: ELEMENT_TYPE.SELECTION,
-            url:  window.location.href,
+            url: window.location.hash ? window.location.origin + "" + window.location.pathname : window.location.href,
             ...selectionToJSON(window.getSelection())
           })
         }
@@ -1192,7 +1192,7 @@ export const showHyperLinkBadges = () => {
     prev[url].push($el)
     return prev
   }, {})
-  const urls    = Object.keys(urlsObj)
+  const urls = Object.keys(urlsObj)  
   if (pageUrl.indexOf('bridgit.io') > -1) {
     return
   }
@@ -1805,7 +1805,7 @@ export const checkForPartialWord = ({ getCurrentPage }, e) => {
   // })
 }
 
-const fullfilBridgeAndAnnotation = (data) => {
+const fullfilBridgeAndAnnotation = (data) => {  
   const findElement = (id) => data.elements.find(item => item.id === id)
 
   return {
@@ -1829,11 +1829,15 @@ export const genShowContentElements = ({
   onUpdateCurrentPage = () => {},
   onUpdateAPI = () => {},
   showSubMenu = true
-} = {}) => (() => {
+} = {}) => (() => {  
   let linksAPI
 
   const fn = ({ hide = false, isLoggedIn = true } = {}) => {
-    const url = window.location.href
+    // const url = window.location.href
+    let url = '';
+    if (window.location.hash) url = window.location.origin + "" + window.location.pathname
+    else url = window.location.href
+
     const showElementsOnMouseReveal = (data, url) => {
       if (linksAPI) linksAPI.destroy()
       onUpdateCurrentPage(data)
@@ -1872,8 +1876,10 @@ export const genShowContentElements = ({
       showElementsOnMouseReveal(data, url)
     })
     .catch(e => log.error(e.stack))
-
-    showHyperLinkBadges()
+      
+    setTimeout(() => {
+      showHyperLinkBadges()
+    }, 1500);
   }
 
   return fn
