@@ -366,6 +366,7 @@ class App extends Component {
           </Button> */}
           {isLoggedIn ? (<Button
             type="default"
+            size="large"
             onClick={() => {
               this.likeContent({type_id:annotation.id, type: 1, is_like: annotation.is_like})
             }}
@@ -620,6 +621,7 @@ class App extends Component {
             </Popconfirm>
           ) : null */}
           {isLoggedIn ? (<Button
+            size="large"
             type="default"
             onClick={() => {
               this.likeContent({type_id:bridge.id, type: 0, is_like: bridge.is_like})

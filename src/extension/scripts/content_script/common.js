@@ -1079,7 +1079,7 @@ export const showMsgAfterCreateBridge = () => {
 }
 
 export const showElementDescription = ({ linkData, onSuccess }) => {
-  const obj = !linkData.name ? {width: 600, height: 650} : {width: 500, height: 450}
+  const obj = !linkData.name ? {width: 600, height: 675} : {width: 500, height: 450}
 
   API.getCategories()
   .then(categories => {
@@ -1141,7 +1141,7 @@ export const buildBridge = ({
     const iframeAPI = createIframeWithMask({
       url:    Ext.extension.getURL('build_bridge.html'),
       width:  630,
-      height: 600,
+      height: 630,
       onAsk: (cmd, args) => {
         switch (cmd) {
           case 'INIT':
@@ -1384,8 +1384,8 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
   categories = categories.filter(category => category.status == 1)
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('annotate.html'),
-    width:  600,
-    height: 550,
+    width:  630,
+    height: 650,
     onAsk: (cmd, args) => {
       log('annotate onAsk', cmd, args)
 

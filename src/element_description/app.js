@@ -200,7 +200,7 @@ renderForm = () => {
                     this.onUpdateField(parseInt(val, 10), 'category')
                     }
                   }
-                  style={{ width: '150px' }}
+                  style={{ width: '200px' }}
                 >
                   {categories.map((category) => (
                     <Select.Option key={category.id} value={'' + category.id}>{category.name}</Select.Option>
@@ -225,7 +225,7 @@ renderForm = () => {
                     this.onUpdateField(parseInt(val, 10), 'sub_category')
                     }
                   }
-                  style={{ width: '150px' }}
+                  style={{ width: '200px' }}
                 >
                   {selectedCategory != '' &&
                   categories.filter(category => category.id == selectedCategory)[0].

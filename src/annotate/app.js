@@ -254,7 +254,7 @@ class App extends Component {
                       this.onUpdateField(parseInt(val, 10), 'privacy')
                       }
                     }
-                    style={{ width: '150px' }}
+                    style={{ width: '200px' }}
                   >
                     {C.PRIVACY_LIST.map(p => (
                       <Select.Option key={p.value} value={'' + p.value}>{t(`privacy:${p.key}`)}</Select.Option>
@@ -279,7 +279,7 @@ class App extends Component {
                       <Select
                         placeholder={t('createNote:relationPlaceholder')}
                         onChange={val => this.onUpdateField(parseInt(val, 10), 'relation')}
-                        style={{ width: '150px' }}
+                        style={{ width: '200px' }}
                       >
                         {this.state.noteCategories
                         .filter(n => (this.state.privacy === 0 && n.privacy !== 1) || this.state.privacy === 1)
@@ -320,7 +320,7 @@ class App extends Component {
                       this.onUpdateField(parseInt(val, 10), 'category')
                       }
                     }
-                    style={{ width: '150px' }}
+                    style={{ width: '200px' }}
                   >
                     {categories.map((category) => (
                       <Select.Option key={category.id} value={'' + category.id}>{category.name}</Select.Option>
@@ -345,7 +345,7 @@ class App extends Component {
                       this.onUpdateField(parseInt(val, 10), 'sub_category')
                       }
                     }
-                    style={{ width: '150px' }}
+                    style={{ width: '200px' }}
                   >
                     {selectedCategory != '' &&
                     categories.filter(category => category.id == selectedCategory)[0].
