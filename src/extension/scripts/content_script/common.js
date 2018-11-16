@@ -1058,7 +1058,7 @@ export const showMsgAfterCreateBridge = () => {
     const iframeAPI = createIframeWithMask({
       url:    Ext.extension.getURL('after_create_bridge.html'),
       width:  520,
-      height: 380,
+      height: 400,
       onAsk:  (cmd, args) => {
         switch (cmd) {
           case 'CLOSE':
@@ -1368,7 +1368,7 @@ export const selectImageArea = ({ $img, linkData, getCurrentPage, showContentEle
 function copyTextToClipboard(text, e) {
 
   chrome.runtime.sendMessage({type: 'copy',text: text}, response => {
-    const z_index = 500, msgTimeout = 400;
+    const z_index = 500000, msgTimeout = 400;
     showMessage('Copied', { yOffset: e.clientY }, z_index, msgTimeout)
   })
      
