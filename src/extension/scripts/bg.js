@@ -85,6 +85,20 @@ const bindEvents = () => {
 // });
 
 
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request && request.type == 'copy') {
+
+    var input = document.createElement('textarea');
+    document.body.appendChild(input);
+    input.value = request.text;
+    input.select();
+    document.execCommand('Copy');
+    input.remove();
+    sendResponse({status: true});
+  }
+
+});
+
 chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
   
   if(details.frameId === 0) {

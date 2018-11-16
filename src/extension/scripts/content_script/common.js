@@ -882,7 +882,7 @@ export const insertStyle = (css, id) => {
   return $style
 }
 
-export const showMessage = (text, options = {}, z_index = 500) => {
+export const showMessage = (text, options = {}, z_index = 500, msgTimeout = 2000) => {
   const css = `
     #__message_container__ {
       /*pointer-events: none;*/
@@ -959,7 +959,7 @@ export const showMessage = (text, options = {}, z_index = 500) => {
   const styleNode = document.getElementById(cssStyleId)
   if (styleNode) styleNode.remove()
   insertStyle(css, cssStyleId)
-  createMessage(text, 2000 * 2)
+  createMessage(text, msgTimeout * 2)
 }
 
 export const upsertRelation = ({ onSuccess = () => {} }) => {
@@ -1365,6 +1365,15 @@ export const selectImageArea = ({ $img, linkData, getCurrentPage, showContentEle
   })
 }
 
+function copyTextToClipboard(text, e) {
+
+  chrome.runtime.sendMessage({type: 'copy',text: text}, response => {
+    const z_index = 500, msgTimeout = 400;
+    showMessage('Copied', { yOffset: e.clientY }, z_index, msgTimeout)
+  })
+     
+}
+
 export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}, onSuccess } = {}) => {
   Promise.all( [API.loadNoteCategories(), API.getCategories() ] )
   // API.loadNoteCategories()
@@ -1480,10 +1489,11 @@ export const commonMenuItems = (getCurrentPage) => ({
       checkForPartialWord({getCurrentPage}, e);
     }
   }),
-  createBridge: () => ({
+  createBridge: () => ({    
     text: i18n.t('createBridge'),
     key: 'createBridge',
     onClick: (e, { linkData }) => {
+      copyTextToClipboard(linkData.text, e);
       API.resetLocalBridge()
       .then(() => API.createLocalBridge(linkData))
       .then(showMsgAfterCreateBridge)
