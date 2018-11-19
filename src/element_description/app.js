@@ -125,6 +125,18 @@ onAddSubCategory = () => {
   ipc.ask('ADD_SUB_CATEGORY',{selected_category: this.props.form.getFieldValue('category') || ''});
 }
 
+bindTags = (category_id) => {
+  children = []
+  this.state.categories.map(category => {
+    if (category.id == category_id && category.tags && category.tags.length > 0) {
+      let tags = category.tags;
+      let category_tag_length = tags.length;
+      for (let i = 0; i < category_tag_length; i++) tags[i] ? children.push(<Select.Option key={tags[i]}>{tags[i]}</Select.Option>) : '';
+    }
+  })
+
+}
+
 onUpdateField = (val, key) => {
   this.setState({
      [key]: val,
@@ -194,6 +206,7 @@ renderForm = () => {
                 <Select
                   placeholder={t('contentCategory:categoryPlaceholder')}
                   onChange={val => {
+                    this.bindTags(val);
                     this.props.form.setFieldsValue({
                       sub_category: undefined
                     })

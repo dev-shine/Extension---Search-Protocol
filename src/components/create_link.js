@@ -75,6 +75,7 @@ class CreateLinkComp extends React.Component {
   componentDidMount () {
     if (this.props.bridge) {
       setTimeout(() => {
+        if (this.props.bridge.category) this.tagsApply(this.props.bridge.category);
         const values = this.decodeData({
           desc:       this.props.bridge.desc,
           tags:       this.props.bridge.tags ? this.props.bridge.tags.split(",") : [],
@@ -83,7 +84,7 @@ class CreateLinkComp extends React.Component {
           category:   this.props.bridge.category,
           sub_category: this.props.bridge.sub_category ? this.props.bridge.sub_category.toString().split(",") : []
         })
-              
+
         this.props.form.setFieldsValue(values)
       }, 60)
     }
@@ -91,10 +92,10 @@ class CreateLinkComp extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.bridge && nextProps.bridge !== this.props.bridge) {
-      const is_category_changed = (nextProps.bridge.category != this.props.bridge.category) ? true : false
+      const is_category_changed = (nextProps.bridge.category != this.props.bridge.category) ? this.tagsApply(nextProps.bridge.category) : false
       this.props.form.setFieldsValue(this.decodeData({
         desc:       nextProps.bridge.desc,
-        tags:       nextProps.bridge.tags,
+        tags:       typeof nextProps.bridge.tags === "string" ? nextProps.bridge.tags.split(",") : nextProps.bridge.tags,
         relation:   nextProps.bridge.relation,
         privacy:    nextProps.bridge.privacy,
         category:   nextProps.bridge.category,
@@ -103,7 +104,7 @@ class CreateLinkComp extends React.Component {
     }
 
     if (nextProps.selectedRelation && nextProps.selectedRelation !== this.props.selectedRelation) {
-      const is_category_changed = (nextProps.bridge.category != this.props.bridge.category) ? true : false
+      const is_category_changed = (nextProps.bridge.category != this.props.bridge.category) ? this.tagsApply(nextProps.bridge.category) : false
       this.props.form.setFieldsValue(this.decodeData({
         relation: nextProps.selectedRelation,
         category:   nextProps.bridge.category,
@@ -176,6 +177,20 @@ class CreateLinkComp extends React.Component {
       case C.UPSERT_MODE.EDIT:
         return t('buildBridge:editBridge')
     }
+  }
+
+  tagsApply = (category_id) => {
+    
+    children = []
+    this.props.categories.map(category => {
+      if (category.id == category_id && category.tags && category.tags.length > 0) {
+        let tags = category.tags;
+        let category_tag_length = tags.length;        
+        for (let i = 0; i < category_tag_length; i++) tags[i]  ? children.push(<Select.Option key={tags[i]}>{tags[i]}</Select.Option>) : '';
+      }
+    })
+    return true
+
   }
 
   render () {
@@ -291,7 +306,7 @@ class CreateLinkComp extends React.Component {
                   <Select
                     placeholder={t('contentCategory:categoryPlaceholder')}
                     // defaultValue="0"
-                    onChange={val => {                      
+                    onChange={val => {
                       this.props.form.setFieldsValue({
                         sub_category: ''
                       })

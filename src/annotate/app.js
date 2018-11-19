@@ -90,8 +90,8 @@ class App extends Component {
 
   onClickSubmit = () => {
     this.props.form.validateFields((err, values) => {
-      values.sub_category = values.sub_category.join(",")
-      values.tags = values.tags.join(",")
+      values.sub_category = values.sub_category ? values.sub_category.join(",") : "";
+      values.tags = values.tags ? values.tags.join(",") : "";
       
       if (err)  return
       values = this.encodeData(values)
@@ -120,6 +120,28 @@ class App extends Component {
     ipc.ask('ADD_SUB_CATEGORY',{selected_category: this.props.form.getFieldValue('category') || ''});
   }
 
+  bindTags = (category_id) => {
+    children = []
+    this.state.categories.map(category => {
+      if (category.id == category_id && category.tags && category.tags.length > 0) {
+        let tags = category.tags;
+        let category_tag_length = tags.length;
+        for (let i = 0; i < category_tag_length; i++) tags[i] ? children.push(<Select.Option key={tags[i]}>{tags[i]}</Select.Option>) : '';
+      }
+    })
+
+  }
+
+  tagsApply = (category_id) => {
+    this.bindTags(category_id);
+
+    this.props.form.setFieldsValue({
+      sub_category: undefined
+    })
+    this.onUpdateField(parseInt(category_id, 10), 'category')
+
+  }
+
   onUpdateField = (val, key) => {
     
     this.setState({ 
@@ -141,6 +163,7 @@ class App extends Component {
         selectedCategory: annotationData.category || ''
       })
 
+      if (annotationData.category) this.bindTags(annotationData.category);
       this.props.form.setFieldsValue(this.decodeData({
         title:    annotationData.title || '',
         desc:     annotationData.desc || linkData.text || '',
@@ -313,12 +336,13 @@ class App extends Component {
                 })(
                   <Select
                     placeholder={t('contentCategory:categoryPlaceholder')}
-                    onChange={val => {
-                      this.props.form.setFieldsValue({
-                        sub_category: undefined
-                      })
-                      this.onUpdateField(parseInt(val, 10), 'category')
-                      }
+                    onChange={val =>
+                      this.tagsApply(val)
+                      // this.props.form.setFieldsValue({
+                      //   sub_category: undefined
+                      // })
+                      // this.onUpdateField(parseInt(val, 10), 'category')
+                      // }
                     }
                     style={{ width: '150px' }}
                   >
@@ -389,7 +413,7 @@ class App extends Component {
                 }
               ]
             })(
-
+              
               <Select
                 mode="tags"
                 style={{ width: '100%' }}
