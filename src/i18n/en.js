@@ -25,7 +25,7 @@ export default {
     updateElementForBridge: 'Update Content Element for Bridge',
     moveContentElements: 'Move Content Element',
     movedContentElements: 'Move Here',
-
+    saveToBoard: "Save To Board",
     successfullyPosted: 'Successfully posted',
     successfullySaved: 'Successfully saved',
     successfullyLoggedIn: 'successfully logged in',

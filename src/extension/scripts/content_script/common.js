@@ -1471,6 +1471,35 @@ export const commonMenuItems = (getCurrentPage) => ({
         checkForPartialWord({getCurrentPage}, e);
     }
   }),
+  saveToBoard: ({ showContentElements }) => ({
+    text: i18n.t('saveToBoard'),
+    key: 'saveToBoard',
+    onClick: (e, { linkData }) => {
+      const data = {
+        image: linkData.image,
+        url: linkData.url,
+        text: linkData.text,
+        start_locator: linkData.start.locator,
+        start_offset: linkData.start.offset,
+        end_locator: linkData.end.locator,
+        end_offset: linkData.end.offset,
+        type: 2
+      }
+
+      API.createElement(data)
+      .then(res => {
+        console.log(res);
+        showContentElements();
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    },
+    onMouseOver: (e) => {
+        checkForPartialWord({getCurrentPage}, e);
+    }
+  }),
+
   followElement: ({ showContentElements, linkData = {} }) => ({
     text: linkData.is_follow ? i18n.t('Unfollow') : i18n.t('Follow'),
     key: 'follow',
@@ -1556,7 +1585,7 @@ export const commonMenuItems = (getCurrentPage) => ({
   movedContentElements: ({showContentElements, element_id}) => ({
     text: i18n.t('movedContentElements'),
     key: 'movedContentElements',
-    onClick: (e, { linkData }) => {
+    onClick: (e, { linkData }) => {       
       API.updateElement(element_id, linkData)
       .then(res => {
         showContentElements();
@@ -1653,7 +1682,8 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
         getLocalBridge,
         fixedMenus: [
           commonMenuItems(getCurrentPage).createBridge(), 
-          commonMenuItems(getCurrentPage).annotate({ showContentElements }), 
+          commonMenuItems(getCurrentPage).annotate({ showContentElements }),
+          commonMenuItems(getCurrentPage).saveToBoard({ showContentElements }),
           commonMenuItems(getCurrentPage).followElement({ showContentElements })
         ],
         decorate: (menuItem) => {
