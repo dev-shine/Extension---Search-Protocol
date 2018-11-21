@@ -44,6 +44,7 @@ export const methods = [
   'createElementDescription',
   'elementFollow',
   'createElement',
+  'updateElement',
   'loadNoteCategories',
   'createNoteCategory',
   'likeAction',
@@ -63,6 +64,9 @@ export const methods = [
   'setLocalBridge',
   'addElementToLocalBridge',
   'updateElementInLocalBridge',
+  'storeElementIdInLocalBridge',
+  'getElementIdStatus',
+
   'updateLocalBridge',
   'createLocalBridge',
   'buildLocalBridge',

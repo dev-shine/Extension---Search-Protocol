@@ -26,6 +26,7 @@ export class LocalModel {
     editBridge: {
       target: EDIT_BRIDGE_TARGET.FROM
     },
+    element_id: null,
     lastAnnotation: null
   }
 
@@ -57,6 +58,12 @@ export class LocalModel {
     }
   }
 
+  getElementId () {
+    return {
+      element_id: this.state.element_id
+    }
+  }
+
   resetLocalBridge () {
     this.__setState({
       bridge: {
@@ -64,6 +71,7 @@ export class LocalModel {
         to: null,
         id: null
       },
+      element_id: null,
       lastAnnotation: null,
       editBridge: {
         target: EDIT_BRIDGE_TARGET.FROM
@@ -117,6 +125,16 @@ export class LocalModel {
       default:
         throw new Error(`Invalid target status to addElementToLocalBridge`, target)
     }
+  }
+
+  setContentElementToLocalBridge (element, noMove) {
+
+    return this.__setState(
+      compose(
+        setIn(['element_id'], element.id)
+      )(this.state)
+    )
+    
   }
 
   setLastAnnotation (annotation) {

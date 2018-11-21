@@ -23,6 +23,9 @@ export default {
     unfollow: 'Unfollow',
     selectImageArea: 'Select Area',
     updateElementForBridge: 'Update Content Element for Bridge',
+    moveContentElements: 'Move Content Element',
+    movedContentElements: 'Move Here',
+
     successfullyPosted: 'Successfully posted',
     successfullySaved: 'Successfully saved',
     successfullyLoggedIn: 'successfully logged in',

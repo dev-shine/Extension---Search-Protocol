@@ -125,6 +125,14 @@ const API = {
       data:   lp.getLocalBridge()
     })
   },
+
+  getElementIdStatus: () => {
+    const lp = getLinkPair()
+    return Promise.resolve({
+      data:   lp.getElementId()
+    })
+  },
+
   setLocalBridge: (data) => {
     getLinkPair().setLocalBridge(data)
     return Promise.resolve(true)
@@ -137,8 +145,12 @@ const API = {
     getLinkPair().addElementToLocalBridge(element)
     return Promise.resolve(true)
   },
-  updateElementInLocalBridge: (element) => {
+  updateElementInLocalBridge: (element) => {    
     getLinkPair().setElementToLocalBridge(element, true)
+    return Promise.resolve(true)
+  },
+  storeElementIdInLocalBridge: (element) => {
+    getLinkPair().setContentElementToLocalBridge(element, true)
     return Promise.resolve(true)
   },
   createLocalBridge: (element) => {

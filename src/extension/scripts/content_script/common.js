@@ -700,7 +700,7 @@ export const createContextMenus = ({
             ...selectionToJSON(window.getSelection())
           })
         }
-      })
+      })      
     }
   }
   // Adding code
@@ -1489,7 +1489,7 @@ export const commonMenuItems = (getCurrentPage) => ({
       checkForPartialWord({getCurrentPage}, e);
     }
   }),
-  createBridge: () => ({    
+  createBridge: () => ({
     text: i18n.t('createBridge'),
     key: 'createBridge',
     onClick: (e, { linkData }) => {
@@ -1526,7 +1526,7 @@ export const commonMenuItems = (getCurrentPage) => ({
   updateElementInBridge: ({ showContentElements }) => ({
     text: i18n.t('updateElementForBridge'),
     key: 'updateElementForBridge',
-    onClick: (e, { linkData }) => {
+    onClick: (e, { linkData }) => {      
       API.updateElementInLocalBridge(linkData)
       .then(() => API.getLocalBridgeStatus())
       .then(res => {
@@ -1545,6 +1545,33 @@ export const commonMenuItems = (getCurrentPage) => ({
       .catch(e => log.error(e.stack))
     }
   }),
+  moveContentElements: ({showContentElements}) => ({
+    text: i18n.t('moveContentElements'),
+    key: 'moveContentElements',
+    onClick: (e, { linkData }) => {
+      API.storeElementIdInLocalBridge(linkData)
+    }
+  }),
+
+  movedContentElements: ({showContentElements, element_id}) => ({
+    text: i18n.t('movedContentElements'),
+    key: 'movedContentElements',
+    onClick: (e, { linkData }) => {
+      API.updateElement(element_id, linkData)
+      .then(res => {
+        showContentElements();
+        API.resetLocalBridge();
+      })
+      .catch(err => {
+        console.log(err);
+        API.resetLocalBridge();
+      })
+    },
+    onMouseOver: (e) => {
+      checkForPartialWord({getCurrentPage}, e);
+    }
+  }),
+
   selectImageArea: ({ getCurrentPage, showContentElements }) => ({
     text: i18n.t('selectImageArea'),
     key: 'selectImageArea',
@@ -1554,12 +1581,13 @@ export const commonMenuItems = (getCurrentPage) => ({
   })
 })
 
-export const createGetMenus = ({ showContentElements, getLocalBridge, fixedMenus, decorate = x => x }) => {
+export const createGetMenus = ({ showContentElements,getCurrentPage, isBadge = false, getLocalBridge, fixedMenus, decorate = x => x }) => {
   return (menuExtra) => {
     const menus = [...fixedMenus]
-    const local = getLocalBridge()
+    const local = getLocalBridge()    
     const localBridgeStatus = local.status
     const localBridgeData   = local.data
+    const {element_id}   = local.element
 
     // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
     if (localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE || (localBridgeData && localBridgeData.lastAnnotation)) {
@@ -1581,6 +1609,9 @@ export const createGetMenus = ({ showContentElements, getLocalBridge, fixedMenus
         menus.push(commonMenuItems().updateElementInBridge({ showContentElements }))
       }
     }
+
+    if (element_id && !isBadge)
+      menus.push(commonMenuItems(getCurrentPage).movedContentElements({ showContentElements,  element_id: element_id}))
 
     return menus.map(decorate)
   }
@@ -1618,11 +1649,12 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
       id: '__on_selection__',
       menus: createGetMenus({
         showContentElements,
+        getCurrentPage,
         getLocalBridge,
         fixedMenus: [
           commonMenuItems(getCurrentPage).createBridge(), 
           commonMenuItems(getCurrentPage).annotate({ showContentElements }), 
-          commonMenuItems(getCurrentPage).followElement({ showContentElements }) 
+          commonMenuItems(getCurrentPage).followElement({ showContentElements })
         ],
         decorate: (menuItem) => {
           return {
@@ -1657,6 +1689,7 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
       id: '__on_image__',
       menus: createGetMenus({
         showContentElements,
+        getCurrentPage,
         getLocalBridge,
         fixedMenus: [
           commonMenuItems(getCurrentPage).selectImageArea({ getCurrentPage, showContentElements }),
@@ -1711,10 +1744,12 @@ export const addSubmenuForBadge = ({ link, getLocalBridge, showContentElements }
             menus: createGetMenus({
               showContentElements,
               getLocalBridge,
+              isBadge: true,
               fixedMenus: [
                 commonMenuItems().createBridge(),
                 commonMenuItems().annotate({ showContentElements }),
-                commonMenuItems().followElement({ showContentElements, linkData: link.getElement() })
+                commonMenuItems().followElement({ showContentElements, linkData: link.getElement() }),
+                commonMenuItems().moveContentElements({showContentElements})
               ]
             })
           },

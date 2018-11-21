@@ -35,6 +35,7 @@ const setState = (obj) => {
 const getLocalBridge = (() => {
   let localBridgeStatus = LOCAL_BRIDGE_STATUS.EMPTY
   let localBridgeData   = null
+  let element = null;
 
   const pullStatus = () => {
     API.getLocalBridgeStatus()
@@ -42,13 +43,19 @@ const getLocalBridge = (() => {
       localBridgeStatus = status
       localBridgeData   = data
     })
+
+    API.getElementIdStatus()
+    .then(({ data }) => {
+      element = data
+    })
   }
 
   setInterval(pullStatus, 2000)
 
   return () => ({
     data:   localBridgeData,
-    status: localBridgeStatus
+    status: localBridgeStatus,
+    element: element
   })
 })()
 

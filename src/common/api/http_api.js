@@ -225,7 +225,18 @@ export const elementFollow = wrap((data) => {
 })
 
 export const updateElement = (id, data) => {
-  throw new Error('todo')
+  let request_obj = {
+    'text':data.text,
+    'url': data.url,
+    'start_locator': data.start.locator,
+    'start_offset': data.start.offset,
+    'end_locator': data.end.locator,
+    'end_offset': data.end.offset,
+  }
+  
+  return jwtRequest.put(apiUrl(`/elements/${id}`))
+  .send(request_obj)
+
 }
 
 export const listElements = wrap((where = {}) => {
