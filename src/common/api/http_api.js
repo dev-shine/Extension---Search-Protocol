@@ -91,10 +91,7 @@ export const getCategories = () => {
 export const bridgeCross = (values) => {
 
   return jwtRequest.post(apiUrl('/bridgeCross'))
-  .type('form')
-  .send( values )
-  .then(onApiReturn)
-  .catch(onApiError)
+  .send(values)
 
 }
 

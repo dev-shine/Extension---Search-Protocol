@@ -1483,7 +1483,8 @@ export const commonMenuItems = (getCurrentPage) => ({
         start_offset: linkData.start.offset,
         end_locator: linkData.end.locator,
         end_offset: linkData.end.offset,
-        type: 2
+        type: 2,
+        saveBoard: 1
       }
 
       API.createElement(data)

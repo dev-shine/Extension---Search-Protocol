@@ -300,15 +300,14 @@ const bridgeCross = (bridges, link) => {
   API.fetchUserInfo().then(user => {
 
     if (bridges.length > 0) {
-
-      let bridges_obj = [];
+      let bridges_obj = {data: []};
       bridges.forEach(bridge => {
         if (!user || bridge.created_by != user.id) {
-          let bridge_cross = {'bridge_id': bridge.id,'user_id': user ? user.id : 0, 'endling_content_element': link.id == bridge.from ? bridge.to : bridge.from}
-          bridges_obj.push(bridge_cross)
+          let bridge_cross = {'bridge_id': bridge.id,'user_id': user ? user.id : 0, 'ending_content_element': link.id == bridge.from ? bridge.to : bridge.from}
+          bridges_obj.data.push(bridge_cross)
         }
-      })
-      if (bridges_obj.length > 0) API.bridgeCross(bridges_obj)
+      })      
+      if (bridges_obj.data.length > 0) API.bridgeCross(bridges_obj)
 
     }
 
@@ -356,14 +355,14 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
         top:  pixel(pageY(rects[0].top)),
         left: pixel(pageX(rects[0].left + rects[0].width))
       }
-      const overlayAPI  = createOverlayForRects({ color, opacity, rects })
+      const overlayAPI = createOverlayForRects({ color, opacity, rects })
       const badgeAPI    = needBadge ? showBridgeCount({
         text:     '' + totalCount,
         position: topRight,
         onClick:  () => {
           // if (totalCount > 0) {
             showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id, element: link })
-            // bridgeCross(bridges, link, currentUser)
+            bridgeCross(bridges, link)
           // }
         }
       }) : {

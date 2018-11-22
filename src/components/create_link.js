@@ -146,7 +146,7 @@ class CreateLinkComp extends React.Component {
     return (
       <div className="element-box">
         {renderDetail()}
-        {mode === C.UPSERT_MODE.EDIT ? (
+        {/* {mode === C.UPSERT_MODE.EDIT ? (
           <div className="element-actions">
             <Button
               type="default"
@@ -162,7 +162,7 @@ class CreateLinkComp extends React.Component {
               <img src="./img/edit.png" style={{ height: '14px' }} />
             </Button>
           </div>
-        ) : null}
+        ) : null} */}
       </div>
     )
   }
