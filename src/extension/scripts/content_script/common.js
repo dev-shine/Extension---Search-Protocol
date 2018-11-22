@@ -1542,6 +1542,9 @@ export const commonMenuItems = (getCurrentPage) => ({
         onSuccess:  showContentElements
       }))
       .catch(e => log.error(e.stack))
+    },
+    onMouseOver: (e) => {
+      checkForPartialWord({getCurrentPage}, e);
     }
   }),
   cancel: ({ showContentElements }) => ({
@@ -1624,7 +1627,7 @@ export const createGetMenus = ({ showContentElements,getCurrentPage, currentUser
 
       if (!isElementEqual(savedItem, menuExtra.linkData)) {
         menus[0].key === 'selectImageArea' ? menus.splice(1, menus.length) : menus.splice(0, menus.length)
-        menus.push(commonMenuItems().buildBridge({ showContentElements }))
+        menus.push(commonMenuItems(getCurrentPage).buildBridge({ showContentElements }))
         menus.push(commonMenuItems().cancel({ showContentElements }))
       }
     }

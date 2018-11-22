@@ -29,6 +29,7 @@ export const methods = [
   'checkUser',
   'getCategories',
   'createSubCategory',
+  'bridgeCross',
   'fetchUserInfo',
   'createRelation',
   'loadRelations',

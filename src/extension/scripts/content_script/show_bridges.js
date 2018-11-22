@@ -296,6 +296,26 @@ export const showImage = ({ link, getLinksAPI, getCsAPI, color, opacity, needBad
   return api
 }
 
+const bridgeCross = (bridges, link) => {
+  API.fetchUserInfo().then(user => {
+
+    if (bridges.length > 0) {
+
+      let bridges_obj = [];
+      bridges.forEach(bridge => {
+        if (!user || bridge.created_by != user.id) {
+          let bridge_cross = {'bridge_id': bridge.id,'user_id': user ? user.id : 0, 'endling_content_element': link.id == bridge.from ? bridge.to : bridge.from}
+          bridges_obj.push(bridge_cross)
+        }
+      })
+      if (bridges_obj.length > 0) API.bridgeCross(bridges_obj)
+
+    }
+
+  });
+    
+}
+
 export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate }) => {
   const { bridges = [], annotations = [] } = link
   const totalCount  = bridges.length + annotations.length
@@ -343,6 +363,7 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
         onClick:  () => {
           // if (totalCount > 0) {
             showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id, element: link })
+            // bridgeCross(bridges, link, currentUser)
           // }
         }
       }) : {

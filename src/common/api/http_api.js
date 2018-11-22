@@ -88,6 +88,16 @@ export const getCategories = () => {
 
 }
 
+export const bridgeCross = (values) => {
+
+  return jwtRequest.post(apiUrl('/bridgeCross'))
+  .type('form')
+  .send( values )
+  .then(onApiReturn)
+  .catch(onApiError)
+
+}
+
 export const createSubCategory = (values) => {
 
   return jwtRequest.post(apiUrl('/sub-category'))
