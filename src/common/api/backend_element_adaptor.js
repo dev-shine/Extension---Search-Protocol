@@ -92,7 +92,7 @@ export const decodeElement = (element) => {
 
       case ELEMENT_TYPE.SELECTION: {
         return {
-          ...pick(['url', 'image', 'text', 'is_follow', 'name', 'desc'], element),
+          ...pick(['url', 'image', 'text', 'is_follow', 'name', 'desc','created_by'], element),
           start: {
             locator: element.start_locator,
             offset:  element.start_offset

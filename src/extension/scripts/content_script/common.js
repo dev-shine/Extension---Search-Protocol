@@ -1610,7 +1610,7 @@ export const commonMenuItems = (getCurrentPage) => ({
   })
 })
 
-export const createGetMenus = ({ showContentElements,getCurrentPage, isBadge = false, getLocalBridge, fixedMenus, decorate = x => x }) => {
+export const createGetMenus = ({ showContentElements,getCurrentPage, currentUser = null, element = null, isBadge = false, getLocalBridge, fixedMenus, decorate = x => x }) => {
   return (menuExtra) => {
     const menus = [...fixedMenus]
     const local = getLocalBridge()    
@@ -1638,6 +1638,9 @@ export const createGetMenus = ({ showContentElements,getCurrentPage, isBadge = f
         menus.push(commonMenuItems().updateElementInBridge({ showContentElements }))
       }
     }
+
+    if (isBadge && ((currentUser && currentUser.admin == 1) || (element && element.created_by == currentUser.id )) )
+      menus.push(commonMenuItems(getCurrentPage).moveContentElements({ showContentElements,  element_id: element_id}))
 
     if (element_id && !isBadge)
       menus.push(commonMenuItems(getCurrentPage).movedContentElements({ showContentElements,  element_id: element_id}))
@@ -1738,7 +1741,8 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
   }
 }
 
-export const addSubmenuForBadge = ({ link, getLocalBridge, showContentElements }) => {
+export const addSubmenuForBadge = ({ link, getLocalBridge, showContentElements, currentUser }) => {
+  const element = link.getElement();  
   const $badge = link.getBadgeContainer()
   const main   = {
     getContainer: () => $badge,
@@ -1761,7 +1765,7 @@ export const addSubmenuForBadge = ({ link, getLocalBridge, showContentElements }
   }
   const createSub = () => {
     let instance
-
+    
     return {
       showAround: ({ rect }) => {
         if (instance) return
@@ -1774,12 +1778,14 @@ export const addSubmenuForBadge = ({ link, getLocalBridge, showContentElements }
             menus: createGetMenus({
               showContentElements,
               getLocalBridge,
+              element,
               isBadge: true,
+              currentUser,
               fixedMenus: [
                 commonMenuItems().createBridge(),
                 commonMenuItems().annotate({ showContentElements }),
                 commonMenuItems().followElement({ showContentElements, linkData: link.getElement() }),
-                commonMenuItems().moveContentElements({showContentElements})
+                // commonMenuItems().moveContentElements({showContentElements})
               ]
             })
           },
@@ -1911,6 +1917,7 @@ const fullfilBridgeAndAnnotation = (data) => {
 }
 
 export const genShowContentElements = ({
+  currentUser,
   getCsAPI,
   getLocalBridge,
   getMouseRevealConfig,
@@ -1935,6 +1942,7 @@ export const genShowContentElements = ({
         getCsAPI,
         onCreate: showSubMenu && isLoggedIn
                     ? (api) => addSubmenuForBadge({
+                      currentUser,
                       getLocalBridge,
                       link: api,
                       showContentElements: fn
@@ -1959,7 +1967,7 @@ export const genShowContentElements = ({
     }
     API.annotationsAndBridgesByUrl(url)
     .then(fullfilBridgeAndAnnotation)
-    .then(data => {
+    .then(data => {      
       log('showContentElements got links', data)
       showElementsOnMouseReveal(data, url)
     })
