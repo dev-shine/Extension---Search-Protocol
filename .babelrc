@@ -1,6 +1,7 @@
 {
   "presets": [["env", {"modules": false}], "stage-0", "react"],
   "plugins": [
+    "transform-regenerator",
     "transform-object-assign",
     ["import", { "libraryName": "antd", "style": false }]
   ]

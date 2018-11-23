@@ -18,12 +18,16 @@ import { ELEMENT_TYPE, isElementEqual } from '../../../common/models/element_mod
 import { LOCAL_BRIDGE_STATUS, EDIT_BRIDGE_TARGET } from '../../../common/models/local_model'
 import API from 'cs_api'
 import log from '../../../common/log'
-import { showHyperLinkBadge, showLinks } from './show_bridges'
+import { showHyperLinkBadge, showLinks, apiCallBridgesNotes } from './show_bridges'
 import i18n from '../../../i18n'
 import config from '../../../config'
 import { MouseReveal } from './mouse_reveal'
 import throttle from 'lodash.throttle'
 import debounce from 'lodash.debounce'
+
+let api_noteCategories = [];
+let api_categories = [];
+let api_relations = [];
 
 export const commonStyle = {
   'box-sizing':  'border-box',
@@ -651,7 +655,7 @@ export const createContextMenus = ({
   const isBadgeMenuShowing = () => {
     return Array.from(document.getElementsByClassName('menu-on-badge')).length > 0
   }
-  const onContextMenu = (e) => {
+  const onContextMenu = async(e) => {
     showContextMenus({ clear: true })
     if (!isLoggedIn) return
     const pos = {
@@ -690,6 +694,12 @@ export const createContextMenus = ({
 
     if (isOnSelection(e)) {
       e.preventDefault()
+      setTimeout(async() => {
+        let notes = await apiCallBridgesNotes(2); // Notes API CALL (Advanced to minimize response time of Notes Iframe )
+        api_noteCategories = notes[0]
+        api_categories = notes[1]
+      }, 1);
+      
       return showContextMenus({
         pos,
         menuOptions: menusOnSelection,
@@ -1081,8 +1091,8 @@ export const showMsgAfterCreateBridge = () => {
 export const showElementDescription = ({ linkData, onSuccess }) => {
   const obj = !linkData.name ? {width: 600, height: 675} : {width: 500, height: 450}
 
-  API.getCategories()
-  .then(categories => {
+  // API.getCategories()
+  // .then(categories => {
     const iframeAPI = createIframeWithMask({
       url:    Ext.extension.getURL('element_description.html'),
       width:  obj.width,
@@ -1092,7 +1102,7 @@ export const showElementDescription = ({ linkData, onSuccess }) => {
           case 'INIT':
             return {
               linkData,
-              categories
+              categories: api_categories
             }
 
           case 'ADD_SUB_CATEGORY':
@@ -1100,7 +1110,7 @@ export const showElementDescription = ({ linkData, onSuccess }) => {
               onSuccess: ({ sub_category }) => {
                 iframeAPI.ask('SELECT_NEW_SUB_CATEGORY', { sub_category })
               },
-              categories: categories,
+              categories: api_categories,
               selected_category: args.selected_category
             })
             return true
@@ -1109,6 +1119,7 @@ export const showElementDescription = ({ linkData, onSuccess }) => {
             iframeAPI.destroy()
             return true
           case 'DONE':
+            clearAPIData();
             onSuccess()
             return true
         }
@@ -1122,20 +1133,26 @@ export const showElementDescription = ({ linkData, onSuccess }) => {
       transform: 'translate(-50%, -50%)',
       border: '1px solid #ccc'
     })
-  })
+  // })
 }
 
-export const buildBridge = ({
+export const buildBridge = async ({
   bridgeData = {},
   linkPair,
   onSuccess,
   mode = C.UPSERT_MODE.ADD } = {}
 ) => {
-  Promise.all( [API.loadRelations(), API.getCategories() ] ) // API.loadRelations()
-  .then(values => {
+  // Promise.all( [API.loadRelations(), API.getCategories() ] ) // API.loadRelations()
+  // .then(async values => {
+    if (api_relations.length === 0) {
+      api_relations = (await apiCallBridgesNotes(1))[0];
+    }
     
-    let relations = values[0];
-    let categories = values[1];
+    // let relations = values[0];
+    // let categories = values[1];
+    
+    let relations = api_relations;
+    let categories = api_categories;
     relations = relations.filter(r => r.is_active)
     categories = categories.filter(c => c.status == 1)
     const iframeAPI = createIframeWithMask({
@@ -1154,6 +1171,7 @@ export const buildBridge = ({
             }
 
           case 'DONE':
+            clearAPIData();
             onSuccess(args)
             return true
 
@@ -1190,8 +1208,8 @@ export const buildBridge = ({
       transform: 'translate(-50%, -50%)',
       border: '1px solid #ccc'
     })
-  })
-  .catch(ex => console.log(ex))
+  // })
+  // .catch(ex => console.log(ex))
 }
 
 export const showHyperLinkBadges = () => {
@@ -1374,12 +1392,28 @@ function copyTextToClipboard(text, e) {
      
 }
 
-export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}, onSuccess } = {}) => {
-  Promise.all( [API.loadNoteCategories(), API.getCategories() ] )
-  // API.loadNoteCategories()
-  .then(values => {
-  let noteCategories = values[0];
-  let categories = values[1];
+export function clearAPIData() {
+  api_categories = [];
+  api_noteCategories = [];
+  api_relations = [];
+}
+
+export const annotate = async({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}, onSuccess } = {}) => {
+  // Promise.all( [API.loadNoteCategories(), API.getCategories() ] )
+  // .then(values => {
+  
+  // let noteCategories = values[0];
+  // let categories = values[1];
+
+  if (api_noteCategories.length === 0 || api_categories.length === 0)  {
+    let notes = await apiCallBridgesNotes(2); // Notes API CALL (Advanced to minimize response time of Notes Iframe )
+    api_noteCategories = notes[0]
+    api_categories = notes[1]
+  }
+
+  let noteCategories = api_noteCategories;
+  let categories = api_categories;
+
   noteCategories = noteCategories.filter(nc => nc.is_active)
   categories = categories.filter(category => category.status == 1)
   const iframeAPI = createIframeWithMask({
@@ -1400,6 +1434,7 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
           }
 
         case 'DONE':
+          clearAPIData();
           onSuccess(args)
           return true
 
@@ -1434,8 +1469,8 @@ export const annotate = ({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationDa
     transform: 'translate(-50%, -50%)',
     border: '1px solid #ccc'
   })
-  })
-  .catch(err => console.log(err) )
+  // })
+  // .catch(err => console.log(err) )
 }
 
 export const commonMenuOptions = {
@@ -1522,12 +1557,13 @@ export const commonMenuItems = (getCurrentPage) => ({
   createBridge: () => ({
     text: i18n.t('createBridge'),
     key: 'createBridge',
-    onClick: (e, { linkData }) => {
+    onClick: async (e, { linkData }) => {
       copyTextToClipboard(linkData.text, e);
       API.resetLocalBridge()
       .then(() => API.createLocalBridge(linkData))
       .then(showMsgAfterCreateBridge)
       .catch(e => log.error(e.stack))
+      api_relations = (await apiCallBridgesNotes(1))[0];
     },
     onMouseOver: (e) => {
       checkForPartialWord({getCurrentPage}, e);

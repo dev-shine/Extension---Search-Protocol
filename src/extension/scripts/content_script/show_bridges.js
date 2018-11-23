@@ -19,6 +19,22 @@ import {
 import { rectsPointPosition } from './position'
 import { setInterval, clearInterval } from 'timers';
 
+// 1 for bridge, 2 for notes
+export const apiCallBridgesNotes = (call_for) => {
+  
+  return new Promise((resolve, reject) => {
+
+    Promise.all( (call_for == 1) ? [API.loadRelations() ] : [API.loadNoteCategories(), API.getCategories() ]  )
+    .then(values => {
+      resolve(values);
+    })
+    .catch(err => {
+      reject(err);
+    })
+  })
+
+}
+
 export const showLinks = ({ elements, bridges, annotations, url, onCreate, getCsAPI }) => {
   const links = elements.map(item => {
     return {

@@ -129,6 +129,7 @@ export const createIframe = ({ url, width, height, onLoad, onAsk, onMsg, ipcTime
     if (height) $iframe.height  = height
 
     $iframe.addEventListener('load', () => {
+      $iframe.style.visibility = 'visible';
       if (typeof onLoad === 'function') {
         try { onLoad() } catch (e) {}
       }
@@ -137,6 +138,7 @@ export const createIframe = ({ url, width, height, onLoad, onAsk, onMsg, ipcTime
     $iframe.src = url
     $iframe.style.width   = width + 'px'
     $iframe.style.height  = height + 'px'
+    $iframe.style.visibility  = 'hidden';
     document.body.appendChild($iframe)
   })
   const removeOnMsg = onMessage(window, ({ cmd, args }) => {

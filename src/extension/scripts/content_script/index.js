@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import ipc from '../../../common/ipc/ipc_cs'
 import log from '../../../common/log'
 import API from 'cs_api'
