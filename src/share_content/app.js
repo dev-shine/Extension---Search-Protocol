@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { Form, Input, Button, Select } from 'antd'
+import { Form, Input, Button, Select, Icon, Row, Col } from 'antd'
 import { translate } from 'react-i18next'
 import { notifyError, notifySuccess } from '../components/notification'
 import { compose } from '../common/utils'
@@ -9,24 +9,15 @@ import {
   GooglePlusShareButton,
   LinkedinShareButton,
   TwitterShareButton,
-  TelegramShareButton,
-  WhatsappShareButton,
-  // icons
+  EmailShareButton,
   FacebookIcon,
   TwitterIcon,
   LinkedinIcon,
+  EmailIcon,
   // share count
   FacebookShareCount,
   GooglePlusShareCount,
-  LinkedinShareCount,
-  // PinterestShareButton,
-  // RedditShareButton,
-  // TumblrShareButton,
-  // LivejournalShareButton,
-  // MailruShareButton,
-  // ViberShareButton,
-  // WorkplaceShareButton,
-  EmailShareButton
+  LinkedinShareCount
 } from 'react-share';
 import API from '../common/api/cs_iframe_api'
 // import { encodeElement } from '../common/api/backend_element_adaptor'
@@ -35,11 +26,6 @@ import log from '../common/log'
 import './app.scss'
 
 const ipc = ipcForIframe()
-const SHARE_TYPE = {
-  BRIDGE: 0,
-  NOTE: 1,
-  ELEMENT: 2
-}
 const BASE_URL = 'https://demo.bridgit.io/'
 const URL_PATTERN = {
   BRIDGE: BASE_URL + 'bridges/',
@@ -47,16 +33,40 @@ const URL_PATTERN = {
   ELEMENT: BASE_URL + 'elements/'
 }
 
+const sharePlatorm = {
+  FACEBOK: '1',
+  LINKEDIN: '2',
+  TWITTER: '3'
+}
+
+const mailThrough = {
+  EMAIL: 1,
+  USER_NAME: 2
+}
+
 class App extends Component {
   state = {
-    shareContent: {}
+    shareContent: {},
+    email: null,
+    user_ids: [],
+    notes: null,
+    type: '',
+    isEmailSectionEnable: false,
+    isBridgitSectionEnable: true,
+    isSendEmailDisabled: true,
+    isSendBridgitDisabled: true,
+    followers: []
   }
+
+  //type : 0= bridges, 1 = notes, 2 = content elements
  componentDidMount () {
   ipc.ask('INIT')
-  .then(({shareContent}) => {
-    debugger;
+  .then(({shareContent, type, followers}) => {
+    
     this.setState({
-      shareContent
+      shareContent,
+      type,
+      followers
     })
   })
  }
@@ -128,19 +138,86 @@ onUpdateField = (val, key) => {
 //     </Fragment>
 //   )
 // }
+
+formShow = (via) => {
+  this.setState({
+    isEmailSectionEnable: (via === "email") ? true : false,
+    isBridgitSectionEnable: (via === "bridgit") ? true : false
+  })
+}
+
+valueChange = (e) => {
+  let buttonVisible = this.state.isSendEmailDisabled;
+  if (e.target.name === "email") {
+    let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    buttonVisible = !(re.test(String(e.target.value).toLowerCase()));
+  }
+  
+  this.setState({
+    [e.target.name]: e.target.value,
+    isSendEmailDisabled: buttonVisible
+  })
+}
+
+bridgitValueChange = (e) => {
+
+  this.setState({
+    [e.target.name]: e.target.value,
+  })
+
+}
+
+
+sendMail = (method) => {
+  const {email, notes, shareContent, type, user_ids} = this.state;
+  let request_obj = {email, type, notes, id: shareContent.id};
+  request_obj = mailThrough.EMAIL == method ? {...request_obj, email} : {...request_obj, user_ids: user_ids.join(",")};
+  
+  API.sendMail(request_obj)
+  .then(data => {
+    console.log(data);
+    this.onClickCancel();
+  })
+  .catch(err => {
+    console.log(err);
+    this.onClickCancel();
+  })
+}
+
+trackSocialShare = (social_type) => {
+  let obj = {social_type, type: this.state.type, type_id: this.state.shareContent.id };
+  API.trackSocialSiteCross(obj)
+  .then(res => {
+    this.onClickCancel();
+  })
+  .catch(err => {
+    this.onClickCancel();
+  })
+}
+
 renderShareContent = () => {
   const { t } = this.props
-  const { shareContent } = this.state
-  const title = 'Something to share'
-  const shareUrl = URL_PATTERN.BRIDGE + shareContent.id
+  const { shareContent, isEmailSectionEnable, isBridgitSectionEnable, isSendEmailDisabled, isSendBridgitDisabled, type, followers } = this.state
+  
+  const shareUrl = (type == '0') ? URL_PATTERN.BRIDGE + shareContent.id : URL_PATTERN.NOTE + shareContent.id;  
+
   return (
     <Fragment>
       <h3>Share With Your Friends on</h3>
       <div>
+
+      <div className="social-share">
+          <img src="./img/old_icon.png" height="32" width="32" onClick={() => this.formShow("bridgit")}/>
+      </div>
+
       <div className="social-share">
           <FacebookShareButton
             url={shareUrl}
-            quote={title}
+            quote={shareContent.desc}
+            hashtag="#bridgit"
+            windowHeight= {600}
+            windowWidth= {600}
+            onShareWindowClose = { () => this.trackSocialShare(sharePlatorm.FACEBOK) }
             className="social-share-button">
             <FacebookIcon
               size={32}
@@ -148,16 +225,51 @@ renderShareContent = () => {
           </FacebookShareButton>
 
           <FacebookShareCount
-            url={shareUrl}
+            url={shareUrl}  
             className="social-share-count">
-            {count => count}
+            {count => count }
           </FacebookShareCount>
-        </div>
+      </div>
+
+      <div className="social-share">
+        <LinkedinShareButton
+          url={shareUrl}
+          title={"TITLE"}
+          windowHeight= {600}
+          windowWidth= {600}
+          description={shareContent.desc}
+          onShareWindowClose = { () => this.trackSocialShare(sharePlatorm.LINKEDIN) }
+          className="social-share-button">
+          <LinkedinIcon
+            size={32}
+            round />
+        </LinkedinShareButton>
+
+        {/* <LinkedinShareCount
+          url={shareUrl}
+          className="social-share-count">
+          {count => count}
+        </LinkedinShareCount> */}
+      </div>
+
+
+
+      <div className="social-share">
+          <Icon type="mail" onClick={() => this.formShow("email")} style={{fontSize: 32}} />
+        {/* <LinkedinShareCount
+          url={shareUrl}
+          className="social-share-count">
+          {count => count}
+        </LinkedinShareCount> */}
+      </div>
 
         <div className="social-share">
           <TwitterShareButton
             url={shareUrl}
-            title={title}
+            windowHeight= {600}
+            windowWidth= {600}
+            hashtags={["Bridgit"]}
+            onShareWindowClose = { () => this.trackSocialShare(sharePlatorm.TWITTER) }
             className="social-share-button">
             <TwitterIcon
               size={32}
@@ -169,6 +281,59 @@ renderShareContent = () => {
           </div>
         </div>
       </div>
+
+      { isEmailSectionEnable &&
+        <div>
+          <Row>
+            <Col span="20"><Input placeholder="Email" name="email" onChange={val => this.valueChange(val) }/></Col>
+            <Col span="4"><Button type="primary" placeholder="Email" onClick={() => this.sendMail(mailThrough.EMAIL) } disabled={isSendEmailDisabled}>Send</Button></Col>
+          </Row><br/>
+          <Row>
+            <Input.TextArea placeholder="Add Notes" name="notes" onChange={val => this.valueChange(val) }/><br/>
+          </Row>
+          <br/>
+        </div>
+        }
+
+
+     { isBridgitSectionEnable &&
+        <div>
+          <Row>
+            <Col span="20">
+              {/* <Input placeholder="To: Name" name="user_name" onChange={val => this.bridgitValueChange(val) }/> */}
+
+                  <Select
+                    mode="multiple"
+                    placeholder={"To: Name"} // need to be dynamic
+                    onChange={val => {
+
+                      const isButtonDisabled = (val.length === 0) ? true : false;
+
+                      this.setState({
+                        isSendBridgitDisabled : isButtonDisabled,
+                        user_ids: val
+                      })
+                      this.state.user_ids
+                    }}
+                    style={{ width: '375px' }}
+                  >
+                    {
+                    followers.map(follower => {
+                      return (
+                        <Select.Option key={follower.name} value={'' + follower.id}>{follower.name}</Select.Option>
+                    )})}
+                  </Select>
+
+            </Col>
+            <Col span="4"><Button type="primary" placeholder="Email" onClick={() => this.sendMail(mailThrough.USER_NAME) } disabled={isSendBridgitDisabled}>Send</Button></Col>
+          </Row><br/>
+          <Row>
+            <Input.TextArea placeholder="Add a Note ..." name="notes" onChange={val => this.bridgitValueChange(val) }/><br/>
+          </Row>
+          <br/>
+        </div>
+        }
+
       <div className="actions">
           <Button
             type="danger"

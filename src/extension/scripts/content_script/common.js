@@ -410,7 +410,7 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4 
         opacity,
         'background-color':  color,
         position:         'absolute',
-        'z-index':           1,
+        'z-index':           100000, //1
         top:              pixel(rect.top + sy),
         left:             pixel(rect.left + sx),
         width:            pixel(Math.abs(rect.width)),
@@ -1232,7 +1232,7 @@ export const selectImageArea = ({ $img, linkData, getCurrentPage, showContentEle
   const extraWidth  = 40
   const extraHeight = 130
   const minWidth    = 500
-  const showIframe  = ({ width, height, dataUrl }) => {
+  const showIframe  = ({ width, height, dataUrl }) => {    
     const onAsk = (cmd, args) => {
       switch (cmd) {
         case 'INIT': {
@@ -1589,7 +1589,7 @@ export const commonMenuItems = (getCurrentPage) => ({
   movedContentElements: ({showContentElements, element_id}) => ({
     text: i18n.t('movedContentElements'),
     key: 'movedContentElements',
-    onClick: (e, { linkData }) => {       
+    onClick: (e, { linkData }) => {
       API.updateElement(element_id, linkData)
       .then(res => {
         showContentElements();

@@ -95,6 +95,20 @@ export const bridgeCross = (values) => {
 
 }
 
+export const trackSocialSiteCross = (values) => {
+
+  return jwtRequest.post(apiUrl('/trackSocialSiteCross'))
+  .send(values)
+
+}
+
+export const sendMail = (values) => {
+
+  return jwtRequest.post(apiUrl('/sendMail'))
+  .send(values)
+
+}
+
 export const createSubCategory = (values) => {
 
   return jwtRequest.post(apiUrl('/sub-category'))
@@ -239,6 +253,7 @@ export const updateElement = (id, data) => {
     'start_offset': data.start.offset,
     'end_locator': data.end.locator,
     'end_offset': data.end.offset,
+    'type': 2
   }
   
   return jwtRequest.put(apiUrl(`/elements/${id}`))
@@ -326,6 +341,10 @@ export const createRelation = wrap((data) => {
 export const createNoteCategory = wrap((data) => {
   return jwtRequest.post(apiUrl('/noteCategory'))
   .send(data)
+})
+
+export const getUserFollowers = wrap(() => {
+  return jwtRequest.get(apiUrl('/userFollow'))
 })
 
 export const listRelations = wrap(() => {

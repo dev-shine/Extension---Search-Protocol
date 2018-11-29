@@ -30,7 +30,8 @@ const MenuItem = Menu.Item
 class App extends Component {
   state = {
     ready: false,
-    searchText: ''
+    searchText: '',
+    followers: []
   }
 
   constructor (props) {
@@ -125,6 +126,22 @@ class App extends Component {
   componentDidMount () {
     this.init()
     this.bindIpcEvent()
+
+    API.getUserFollowers()
+    .then(followers => {
+      this.setState({
+        followers
+      })
+    })
+    .catch(err => {
+      console.log(err);
+      
+      this.setState({
+        followers: []
+      })
+
+      })
+
   }
 
   updateFollowUnFollowStatus = (createdBy) => {
@@ -154,8 +171,10 @@ class App extends Component {
   openFlagContent = content => {
     ipc.ask('FLAG_CONTENT', { content })
   }
-  openShareContent = shareContent => {
-    ipc.ask('SHARE_CONTENT', { shareContent })
+
+  // type =>  0= Bridge; 1= notes; 2 = content elements 
+  openShareContent = (shareContent, type, followers) => {
+    ipc.ask('SHARE_CONTENT', { shareContent, type, followers })
   }
   likeContent (obj) {
     const { type, type_id:id, is_like: isLike } = obj
@@ -202,7 +221,7 @@ class App extends Component {
   }
   renderAnnotation (annotation, key, isEditable) {
     const { t } = this.props
-    const { userInfo } = this.state
+    const { userInfo, followers } = this.state
     const isLoggedIn = !(userInfo === null)
     const tags  = annotation.tags.split(',').map(s => s.trim())
     const relation  = this.state.noteCategories.find(r => '' + r.id === '' + annotation.relation)
@@ -358,12 +377,13 @@ class App extends Component {
               </Button>
             </Popconfirm>
           ) : null */}
-          {/* <Button
+          {isLoggedIn &&
+          <Button
             type="default"
-            onClick={() => { this.openShareContent({...annotation, type: 1}) }}
+            onClick={() => { this.openShareContent({...annotation}, 1, followers) }}
           >
             <img src="./img/share.png" style={{ height: '14px' }} />
-          </Button> */}
+          </Button>}
           {isLoggedIn ? (<Button
             type="default"
             size="large"
@@ -397,7 +417,7 @@ class App extends Component {
 
   renderBridge (bridge, currentElementId, key, isEditable) {
     const { t }     = this.props
-    const { userInfo } = this.state
+    const { userInfo, followers } = this.state
     const isLoggedIn = !(userInfo === null)
     const relation  = this.state.relations.find(r => '' + r.id === '' + bridge.relation)
     const relField  = bridge.from !== currentElementId ? 'active_name' : 'passive_name'
@@ -620,6 +640,14 @@ class App extends Component {
               </Button>
             </Popconfirm>
           ) : null */}
+          {isLoggedIn &&
+          <Button
+            type="default"
+            onClick={() => { this.openShareContent({...bridge}, 0, followers) }}
+          >
+            <img src="./img/share.png" style={{ height: '14px' }} />
+          </Button>}
+
           {isLoggedIn ? (<Button
             size="large"
             type="default"
