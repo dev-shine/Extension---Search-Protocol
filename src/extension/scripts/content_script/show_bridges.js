@@ -14,7 +14,8 @@ import {
   createEl,
   createIframeWithMask,
   createOverlayForRects,
-  showMessage
+  showMessage,
+  copyTextToClipboard
 } from './common'
 import { rectsPointPosition } from './position'
 import { setInterval, clearInterval } from 'timers';
@@ -496,6 +497,9 @@ export const showShareContent = ({ shareContent, type, followers }) => {
             type,
             followers
           }
+        case 'COPIED_URL':
+          copyTextToClipboard(args.share_url, {clientY: 400}, 500000, 400);
+          return true;
         case 'CLOSE':
           iframeAPI.destroy()
           return true

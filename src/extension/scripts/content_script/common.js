@@ -12,7 +12,7 @@ import {
   pageX, pageY, bindSelectionEnd
 } from '../../../common/dom_utils'
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../../../common/shapes/box'
-import { isPointInRange, selectionToJSON, parseRangeJSON } from '../../../common/selection'
+import { isPointInRange, selectionToJSON, storeImageOrContent,  parseRangeJSON } from '../../../common/selection'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
 import { ELEMENT_TYPE, isElementEqual } from '../../../common/models/element_model'
 import { LOCAL_BRIDGE_STATUS, EDIT_BRIDGE_TARGET } from '../../../common/models/local_model'
@@ -697,7 +697,8 @@ export const createContextMenus = ({
           linkData: processLinkData({
             type: ELEMENT_TYPE.SELECTION,
             url: window.location.hash ? window.location.origin + "" + window.location.pathname : window.location.href,
-            ...selectionToJSON(window.getSelection())
+            ...selectionToJSON(window.getSelection()),
+            ...storeImageOrContent(window.getSelection())
           })
         }
       })      
@@ -1365,7 +1366,7 @@ export const selectImageArea = ({ $img, linkData, getCurrentPage, showContentEle
   })
 }
 
-function copyTextToClipboard(text, e) {
+export const copyTextToClipboard = (text, e) => {
 
   chrome.runtime.sendMessage({type: 'copy',text: text}, response => {
     const z_index = 500000, msgTimeout = 400;

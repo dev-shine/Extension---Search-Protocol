@@ -53,6 +53,7 @@ class App extends Component {
     type: '',
     isEmailSectionEnable: false,
     isBridgitSectionEnable: true,
+    isLinkSectionEnabled: false,
     isSendEmailDisabled: true,
     isSendBridgitDisabled: true,
     followers: []
@@ -142,7 +143,8 @@ onUpdateField = (val, key) => {
 formShow = (via) => {
   this.setState({
     isEmailSectionEnable: (via === "email") ? true : false,
-    isBridgitSectionEnable: (via === "bridgit") ? true : false
+    isBridgitSectionEnable: (via === "bridgit") ? true : false,
+    isLinkSectionEnabled: (via === "link") ? true : false
   })
 }
 
@@ -184,20 +186,27 @@ sendMail = (method) => {
   })
 }
 
+
+closeShareWindow = () => {
+  setTimeout(() => {
+    this.onClickCancel();
+  }, 1000);
+}
+
 trackSocialShare = (social_type) => {
   let obj = {social_type, type: this.state.type, type_id: this.state.shareContent.id };
   API.trackSocialSiteCross(obj)
   .then(res => {
-    this.onClickCancel();
+      // this.closeShareWindow();
   })
   .catch(err => {
-    this.onClickCancel();
+    // this.closeShareWindow();
   })
 }
 
 renderShareContent = () => {
   const { t } = this.props
-  const { shareContent, isEmailSectionEnable, isBridgitSectionEnable, isSendEmailDisabled, isSendBridgitDisabled, type, followers } = this.state
+  const { shareContent, isEmailSectionEnable, isBridgitSectionEnable, isLinkSectionEnabled, isSendEmailDisabled, isSendBridgitDisabled, type, followers } = this.state
   
   const shareUrl = (type == '0') ? URL_PATTERN.BRIDGE + shareContent.id : URL_PATTERN.NOTE + shareContent.id;  
 
@@ -263,6 +272,10 @@ renderShareContent = () => {
         </LinkedinShareCount> */}
       </div>
 
+      <div className="social-share">
+          <Icon type="link" onClick={() => this.formShow("link")} style={{fontSize: 32}} />
+      </div>
+
         <div className="social-share">
           <TwitterShareButton
             url={shareUrl}
@@ -282,6 +295,16 @@ renderShareContent = () => {
         </div>
       </div>
 
+      { isLinkSectionEnabled &&
+        <div>
+          <Row>
+            <Col span="23"><Input name="web_url" id="web_url" value={shareUrl} /></Col>
+            <Col span="1"><img src="./img/copy_icon.png" height="32" width="32" onClick={() => ipc.ask("COPIED_URL",{share_url: shareUrl}) }  /></Col>
+          </Row>
+          <br/>
+        </div>
+    }
+
       { isEmailSectionEnable &&
         <div>
           <Row>
@@ -293,7 +316,7 @@ renderShareContent = () => {
           </Row>
           <br/>
         </div>
-        }
+      }
 
 
      { isBridgitSectionEnable &&

@@ -57,7 +57,7 @@ export const encodeElement = (element) => {
 
       case ELEMENT_TYPE.SELECTION: {
         return {
-          ...pick(['url', 'image', 'text'], element),
+          ...pick(['url', 'image', 'text', 'image_path'], element),
           start_locator:  element.start.locator,
           start_offset:   element.start.offset,
           end_locator:    element.end.locator,
