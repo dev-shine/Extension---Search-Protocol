@@ -212,88 +212,100 @@ renderShareContent = () => {
 
   return (
     <Fragment>
-      <h3>Share With Your Friends on</h3>
-      <div>
+      <h3>Share With Your Friends on</h3><br/>
 
-      <div className="social-share">
-          <img src="./img/old_icon.png" height="32" width="32" onClick={() => this.formShow("bridgit")}/>
-      </div>
-
-      <div className="social-share">
-          <FacebookShareButton
-            url={shareUrl}
-            quote={shareContent.desc}
-            hashtag="#bridgit"
-            windowHeight= {600}
-            windowWidth= {600}
-            onShareWindowClose = { () => this.trackSocialShare(sharePlatorm.FACEBOK) }
-            className="social-share-button">
-            <FacebookIcon
-              size={32}
-              round />
-          </FacebookShareButton>
-
-          <FacebookShareCount
-            url={shareUrl}  
-            className="social-share-count">
-            {count => count }
-          </FacebookShareCount>
-      </div>
-
-      <div className="social-share">
-        <LinkedinShareButton
-          url={shareUrl}
-          title={"TITLE"}
-          windowHeight= {600}
-          windowWidth= {600}
-          description={shareContent.desc}
-          onShareWindowClose = { () => this.trackSocialShare(sharePlatorm.LINKEDIN) }
-          className="social-share-button">
-          <LinkedinIcon
-            size={32}
-            round />
-        </LinkedinShareButton>
-
-        {/* <LinkedinShareCount
-          url={shareUrl}
-          className="social-share-count">
-          {count => count}
-        </LinkedinShareCount> */}
-      </div>
-
-
-
-      <div className="social-share">
-          <Icon type="mail" onClick={() => this.formShow("email")} style={{fontSize: 32}} />
-        {/* <LinkedinShareCount
-          url={shareUrl}
-          className="social-share-count">
-          {count => count}
-        </LinkedinShareCount> */}
-      </div>
-
-      <div className="social-share">
-          <Icon type="link" onClick={() => this.formShow("link")} style={{fontSize: 32}} />
-      </div>
-
-        <div className="social-share">
-          <TwitterShareButton
-            url={shareUrl}
-            windowHeight= {600}
-            windowWidth= {600}
-            hashtags={["Bridgit"]}
-            onShareWindowClose = { () => this.trackSocialShare(sharePlatorm.TWITTER) }
-            className="social-share-button">
-            <TwitterIcon
-              size={32}
-              round />
-          </TwitterShareButton>
-
-          <div className="social-share-count">
-            &nbsp;
+      <Row>
+        <Col span="4">
+          <div className="social-share">
+              <img src="./img/old_icon.png" height="32" width="32" onClick={() => this.formShow("bridgit")}/>
           </div>
-        </div>
-      </div>
+        </Col>
+
+        <Col span="4">
+          <div className="social-share">
+              <FacebookShareButton
+                url={shareUrl}
+                quote={shareContent.desc}
+                hashtag="#bridgit"
+                windowHeight= {600}
+                windowWidth= {600}
+                onShareWindowClose = { () => this.trackSocialShare(sharePlatorm.FACEBOK) }
+                className="social-share-button">
+                <FacebookIcon
+                  size={32}
+                  round />
+              </FacebookShareButton>
+
+              <FacebookShareCount
+                url={shareUrl}  
+                className="social-share-count">
+                {count => count }
+              </FacebookShareCount>
+          </div>
+        </Col>
+
+        <Col span="4">
+          <div className="social-share">
+            <LinkedinShareButton
+              url={shareUrl}
+              title={"TITLE"}
+              windowHeight= {600}
+              windowWidth= {600}
+              description={shareContent.desc}
+              onShareWindowClose = { () => this.trackSocialShare(sharePlatorm.LINKEDIN) }
+              className="social-share-button">
+              <LinkedinIcon
+                size={32}
+                round />
+            </LinkedinShareButton>
+
+            {/* <LinkedinShareCount
+              url={shareUrl}
+              className="social-share-count">
+              {count => count}
+            </LinkedinShareCount> */}
+          </div>
+        </Col>
+
+
+        <Col span="4">
+          <div className="social-share">
+              <Icon type="mail" onClick={() => this.formShow("email")} style={{fontSize: 32}} />
+            {/* <LinkedinShareCount
+              url={shareUrl}
+              className="social-share-count">
+              {count => count}
+            </LinkedinShareCount> */}
+          </div>
+        </Col>
+
+        <Col span="4">
+          <div className="social-share">
+              <Icon type="link" onClick={() => this.formShow("link")} style={{fontSize: 32}} />
+          </div>
+        </Col>
+
+        <Col span="4">
+            <div className="social-share">
+              <TwitterShareButton
+                url={shareUrl}
+                windowHeight= {600}
+                windowWidth= {600}
+                hashtags={["Bridgit"]}
+                onShareWindowClose = { () => this.trackSocialShare(sharePlatorm.TWITTER) }
+                className="social-share-button">
+                <TwitterIcon
+                  size={32}
+                  round />
+              </TwitterShareButton>
+
+              <div className="social-share-count">
+                &nbsp;
+              </div>
+            </div>
+        </Col>
+
+        </Row><br/>
 
       { isLinkSectionEnabled &&
         <div>
