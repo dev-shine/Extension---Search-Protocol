@@ -12,7 +12,7 @@ import {
   pageX, pageY, bindSelectionEnd
 } from '../../../common/dom_utils'
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../../../common/shapes/box'
-import { isPointInRange, selectionToJSON, parseRangeJSON } from '../../../common/selection'
+import { isPointInRange, selectionToJSON, storeImageOrContent,  parseRangeJSON } from '../../../common/selection'
 import { createIframe } from '../../../common/ipc/cs_postmessage'
 import { ELEMENT_TYPE, isElementEqual } from '../../../common/models/element_model'
 import { LOCAL_BRIDGE_STATUS, EDIT_BRIDGE_TARGET } from '../../../common/models/local_model'
@@ -414,7 +414,7 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4 
         opacity,
         'background-color':  color,
         position:         'absolute',
-        'z-index':           1,
+        'z-index':           100000, //1
         top:              pixel(rect.top + sy),
         left:             pixel(rect.left + sx),
         width:            pixel(Math.abs(rect.width)),
@@ -707,7 +707,8 @@ export const createContextMenus = ({
           linkData: processLinkData({
             type: ELEMENT_TYPE.SELECTION,
             url: window.location.hash ? window.location.origin + "" + window.location.pathname : window.location.href,
-            ...selectionToJSON(window.getSelection())
+            ...selectionToJSON(window.getSelection()),
+            ...storeImageOrContent(window.getSelection())
           })
         }
       })      
@@ -1250,7 +1251,7 @@ export const selectImageArea = ({ $img, linkData, getCurrentPage, showContentEle
   const extraWidth  = 40
   const extraHeight = 130
   const minWidth    = 500
-  const showIframe  = ({ width, height, dataUrl }) => {
+  const showIframe  = ({ width, height, dataUrl }) => {    
     const onAsk = (cmd, args) => {
       switch (cmd) {
         case 'INIT': {
@@ -1383,7 +1384,7 @@ export const selectImageArea = ({ $img, linkData, getCurrentPage, showContentEle
   })
 }
 
-function copyTextToClipboard(text, e) {
+export const copyTextToClipboard = (text, e) => {
 
   chrome.runtime.sendMessage({type: 'copy',text: text}, response => {
     const z_index = 500000, msgTimeout = 400;
@@ -1625,7 +1626,7 @@ export const commonMenuItems = (getCurrentPage) => ({
   movedContentElements: ({showContentElements, element_id}) => ({
     text: i18n.t('movedContentElements'),
     key: 'movedContentElements',
-    onClick: (e, { linkData }) => {       
+    onClick: (e, { linkData }) => {
       API.updateElement(element_id, linkData)
       .then(res => {
         showContentElements();

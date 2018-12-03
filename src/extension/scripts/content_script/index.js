@@ -44,10 +44,16 @@ const getLocalBridge = (() => {
       localBridgeStatus = status
       localBridgeData   = data
     })
+    .catch(err => {
+      // console.log("getLocalBridgeStatus :: ", err);
+    })
 
     API.getElementIdStatus()
     .then(({ data }) => {
       element = data
+    })
+    .catch(err => {
+      // console.log("getElementIdStatus :: ", err);
     })
   }
 
@@ -334,7 +340,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 localStorage.setItem('bridgit-installed', true)
 document.addEventListener('DOMContentLoaded', () => {
   console.log("DOMContentLoaded :: ");
-  
+
   listen_token_message();
   checkUserBeforeInit({fromListening: 1}); // fromListening: 1  is for solving reloading issue in login uniform fnctionality 
 

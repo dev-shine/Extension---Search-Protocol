@@ -14,7 +14,8 @@ import {
   createEl,
   createIframeWithMask,
   createOverlayForRects,
-  showMessage
+  showMessage,
+  copyTextToClipboard
 } from './common'
 import { rectsPointPosition } from './position'
 import { setInterval, clearInterval } from 'timers';
@@ -322,7 +323,7 @@ const bridgeCross = (bridges, link) => {
           let bridge_cross = {'bridge_id': bridge.id,'user_id': user ? user.id : 0, 'ending_content_element': link.id == bridge.from ? bridge.to : bridge.from}
           bridges_obj.data.push(bridge_cross)
         }
-      })      
+      })
       if (bridges_obj.data.length > 0) API.bridgeCross(bridges_obj)
 
     }
@@ -446,7 +447,7 @@ export const showBridgeCount = ({ position, text, onClick, style = {} }) => {
       'user-select': 'none',
       transform:  'translate(-80%, -80%)',
       position:   'absolute',
-      'z-index':     11,
+      'z-index':     100001, //11
       width:      `${size}px`,
       height:     `${size}px`,
       'line-height': `${size}px`,
@@ -499,7 +500,7 @@ export const showBridgeCount = ({ position, text, onClick, style = {} }) => {
     }
   }
 }
-export const showShareContent = ({ shareContent }) => {
+export const showShareContent = ({ shareContent, type, followers }) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('share_content.html'),
     width:  500,
@@ -508,8 +509,13 @@ export const showShareContent = ({ shareContent }) => {
       switch (cmd) {
         case 'INIT':
           return {
-            shareContent
+            shareContent,
+            type,
+            followers
           }
+        case 'COPIED_URL':
+          copyTextToClipboard(args.share_url, {clientY: 400}, 500000, 400);
+          return true;
         case 'CLOSE':
           iframeAPI.destroy()
           return true
@@ -647,7 +653,8 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId, el
           return true
         }
         case 'SHARE_CONTENT': {
-          showShareContent({shareContent: args.shareContent})
+          //0 : bridge, 1: notes, 3= content elements
+          showShareContent({shareContent: args.shareContent, type: args.type, followers: args.followers})
           return true
         }
         case 'EDIT_ANNOTATION': {
