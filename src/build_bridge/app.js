@@ -19,7 +19,8 @@ class App extends Component {
     relations:  [],
     categories:  [],
     selectedCategory: '',
-    selectedRelation: undefined
+    selectedRelation: undefined,
+    isButtonDisabled: false
   }
 
   onClose = () => {
@@ -57,10 +58,12 @@ class App extends Component {
       notifySuccess(t('successfullyPosted'))
       setTimeout(() => {
         this.onClickCancel()
+        this.setState({isButtonDisabled: false})
       }, 1500)
     })
     .catch(e => {
       notifyError(e.message)
+      this.setState({isButtonDisabled: false})
     })
   }
 
@@ -76,14 +79,18 @@ class App extends Component {
       notifySuccess(t('successfullyPosted'))
       setTimeout(() => {
         this.onClickCancel()
+        this.setState({isButtonDisabled: false})
       }, 1500)
     })
     .catch(e => {
       notifyError(e.message)
+      this.setState({isButtonDisabled: false})
     })
   }
 
   onClickSubmit = (data) => {
+
+    this.setState({isButtonDisabled: true})
     switch (this.state.mode) {
       case C.UPSERT_MODE.ADD:
         return this.onSubmitAdd(data)
@@ -170,6 +177,7 @@ class App extends Component {
         onUpdateField={this.onUpdateField}
         onAddRelation={this.onAddRelation}
         onAddSubCategory = {this.onAddSubCategory}
+        isButtonDisabled = {this.state.isButtonDisabled}
         onSubmit={this.onClickSubmit}
         onCancel={this.onClickCancel}
       />

@@ -60,7 +60,7 @@ class CreateLinkComp extends React.Component {
       values.sub_category = values.sub_category.join(",")
       values.tags = values.tags.join(",")
       if (err)  return
-
+      
       const pair = this.props.linkPair.data
       const data = {
         ...this.encodeData(values),
@@ -412,6 +412,7 @@ class CreateLinkComp extends React.Component {
             type="primary"
             size="large"
             className="post-button"
+            disabled={this.props.isButtonDisabled}
             onClick={this.onSubmit}
           >
             {t('buildBridge:postIt')}

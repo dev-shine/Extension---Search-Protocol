@@ -214,12 +214,12 @@ export const showImage = ({ link, getLinksAPI, getCsAPI, color, opacity, needBad
     bindEvent: (fn) => {
       window.addEventListener('resize', fn)
       window.addEventListener('scroll', fn)
-      timer = setInterval(fn, 2000)
+      // timer = setInterval(fn, 2000)
     },
     unbindEvent: (fn) => {
       window.removeEventListener('resize', fn)
       window.removeEventListener('scroll', fn)
-      clearInterval(timer)
+      // clearInterval(timer)
     },
     getFuse: () => {
       try {
@@ -342,12 +342,12 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
     bindEvent: (fn) => {
       window.addEventListener('resize', fn)
       window.addEventListener('scroll', fn)
-      timer = setInterval(fn, 20000)
+      // timer = setInterval(fn, 20000)
     },
     unbindEvent: (fn) => {
       window.removeEventListener('resize', fn)
       window.removeEventListener('scroll', fn)
-      clearInterval(timer)
+      // clearInterval(timer)
     },
     getFuse: () => {
       try {

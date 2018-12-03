@@ -28,6 +28,9 @@ import debounce from 'lodash.debounce'
 let api_noteCategories = [];
 let api_categories = [];
 let api_relations = [];
+let localBridgeStatus = LOCAL_BRIDGE_STATUS.EMPTY;
+let localBridgeData = null;
+let contentElement = {element_id: null};
 
 export const commonStyle = {
   'box-sizing':  'border-box',
@@ -668,6 +671,7 @@ export const createContextMenus = ({
 
       return dataUrlOfImage(e.target)
       .then(({ dataUrl }) => {
+        fetchLocalData();
         const size = imageSize(e.target)
 
         return showContextMenus({
@@ -685,8 +689,9 @@ export const createContextMenus = ({
                 ...size
               },
               imageSize: size,
-              image: dataUrl
-            })
+              image: dataUrl,
+              ...storeImageOrContent(window.getSelection())
+            }),
           }
         })
       })
@@ -698,6 +703,7 @@ export const createContextMenus = ({
         let notes = await apiCallBridgesNotes(2); // Notes API CALL (Advanced to minimize response time of Notes Iframe )
         api_noteCategories = notes[0]
         api_categories = notes[1]
+        fetchLocalData();
       }, 1);
       
       return showContextMenus({
@@ -1564,6 +1570,7 @@ export const commonMenuItems = (getCurrentPage) => ({
       .then(() => API.createLocalBridge(linkData))
       .then(showMsgAfterCreateBridge)
       .catch(e => log.error(e.stack))
+      resetLocalContentData();
       api_relations = (await apiCallBridgesNotes(1))[0];
     },
     onMouseOver: (e) => {
@@ -1591,6 +1598,7 @@ export const commonMenuItems = (getCurrentPage) => ({
     onClick: (e) => {
       showContentElements()
       API.resetLocalBridge()
+      resetLocalContentData();
     }
   }),
   updateElementInBridge: ({ showContentElements }) => ({
@@ -1620,6 +1628,7 @@ export const commonMenuItems = (getCurrentPage) => ({
     key: 'moveContentElements',
     onClick: (e, { linkData }) => {
       API.storeElementIdInLocalBridge(linkData)
+      fetchLocalData();
     }
   }),
 
@@ -1631,10 +1640,12 @@ export const commonMenuItems = (getCurrentPage) => ({
       .then(res => {
         showContentElements();
         API.resetLocalBridge();
+        resetLocalContentData();
       })
       .catch(err => {
         console.log(err);
         API.resetLocalBridge();
+        resetLocalContentData();
       })
     },
     onMouseOver: (e) => {
@@ -1651,17 +1662,39 @@ export const commonMenuItems = (getCurrentPage) => ({
   })
 })
 
+export const fetchLocalData = async () => {
+
+  API.getLocalBridgeStatus()
+    .then(({ status, data }) => {
+      localBridgeStatus = status
+      localBridgeData = data
+  })
+
+  API.getElementIdStatus()
+    .then(({ data }) => {
+      contentElement = data;
+  })
+
+}
+
+export const resetLocalContentData = () => {
+  localBridgeStatus = LOCAL_BRIDGE_STATUS.EMPTY;
+  localBridgeData = null;
+  contentElement = {element_id: null};
+}
+
 export const createGetMenus = ({ showContentElements,getCurrentPage, currentUser = null, element = null, isBadge = false, getLocalBridge, fixedMenus, decorate = x => x }) => {
   return (menuExtra) => {
     const menus = [...fixedMenus]
-    const local = getLocalBridge()    
-    const localBridgeStatus = local.status
-    const localBridgeData   = local.data
-    const {element_id}   = local.element
+    // const local = getLocalBridge()
+    // const localBridgeStatus = local.status
+    // const localBridgeData   = local.data
+    // const {element_id} = element
+    const {element_id} = contentElement
 
     // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
     if (localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE || (localBridgeData && localBridgeData.lastAnnotation)) {
-      const savedItem     = localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE ? localBridgeData.links[0] : localBridgeData.lastAnnotation.target
+      const savedItem = localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE ? localBridgeData.links[0] : localBridgeData.lastAnnotation.target
 
       if (!isElementEqual(savedItem, menuExtra.linkData)) {
         menus[0].key === 'selectImageArea' ? menus.splice(1, menus.length) : menus.splice(0, menus.length)

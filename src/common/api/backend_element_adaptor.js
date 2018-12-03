@@ -49,7 +49,7 @@ export const encodeElement = (element) => {
     switch (element.type) {
       case ELEMENT_TYPE.IMAGE: {
         return {
-          ...pick(['url', 'image'], element),
+          ...pick(['url', 'image', 'image_path'], element),
           start_locator:  element.locator,
           rect:           encodeRect(element.rect, element.imageSize)
         }

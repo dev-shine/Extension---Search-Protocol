@@ -34,36 +34,32 @@ const setState = (obj) => {
 }
 
 const getLocalBridge = (() => {
-  let localBridgeStatus = LOCAL_BRIDGE_STATUS.EMPTY
-  let localBridgeData   = null
-  let element = null;
+  // let localBridgeStatus = LOCAL_BRIDGE_STATUS.EMPTY
+  // let localBridgeData   = null
+  // let element = null;
 
-  const pullStatus = () => {
-    API.getLocalBridgeStatus()
-    .then(({ status, data }) => {
-      localBridgeStatus = status
-      localBridgeData   = data
-    })
-    .catch(err => {
-      // console.log("getLocalBridgeStatus :: ", err);
-    })
+  // const pullStatus = () => {
+  //   API.getLocalBridgeStatus()
+  //   .then(({ status, data }) => {
+  //     // console.log("getLocalBridgeStatus STATUS :: ", status);
+  //     // console.log("getLocalBridgeStatus DATA :: ", data);
+  //     localBridgeStatus = status
+  //     localBridgeData   = data
+  //   })
 
-    API.getElementIdStatus()
-    .then(({ data }) => {
-      element = data
-    })
-    .catch(err => {
-      // console.log("getElementIdStatus :: ", err);
-    })
-  }
+  //   API.getElementIdStatus()
+  //   .then(({ data }) => {
+  //     element = data
+  //   })
+  // }
 
-  setInterval(pullStatus, 2000)
+  // setInterval(pullStatus, 2000)
 
-  return () => ({
-    data:   localBridgeData,
-    status: localBridgeStatus,
-    element: element
-  })
+  // return () => ({
+  //   data:   localBridgeData,
+  //   status: localBridgeStatus,
+  //   element: element
+  // })
 })()
 
 const setStateWithSettings = (settings) => {

@@ -19,7 +19,8 @@ class App extends Component {
     noteCategories: [],
     categories: [],
     privacy: 0,
-    selectedCategory: ''
+    selectedCategory: '',
+    isButtonDisabled: false
   }
 
   encodeData = (values) => {
@@ -59,10 +60,14 @@ class App extends Component {
       //   }
       // })
       notifySuccess(t('successfullySaved'))
-      setTimeout(() => this.onClickCancel(), 1500)
+      setTimeout(() => {
+        this.onClickCancel();
+        this.setState({isButtonDisabled: false});
+      }, 1500)
     })
     .catch(e => {
       notifyError(e.message)
+      this.setState({isButtonDisabled: false})
     })
   }
 
@@ -81,10 +86,14 @@ class App extends Component {
     .then(annotation => {
       ipc.ask('DONE', { annotation })
       notifySuccess(t('successfullySaved'))
-      setTimeout(() => this.onClickCancel(), 1500)
+      setTimeout(() => { 
+        this.onClickCancel()
+        this.setState({isButtonDisabled: false})
+        }, 1500)
     })
     .catch(e => {
       notifyError(e.message)
+      this.setState({isButtonDisabled: false})
     })
   }
 
@@ -94,6 +103,7 @@ class App extends Component {
       values.tags = values.tags ? values.tags.join(",") : "";
       
       if (err)  return
+      this.setState({isButtonDisabled: true})
       values = this.encodeData(values)
       
       switch (this.state.mode) {
@@ -216,7 +226,7 @@ class App extends Component {
   render () {
     const { t } = this.props
     const { getFieldDecorator } = this.props.form
-    const { categories, selectedCategory } = this.state
+    const { categories, selectedCategory, isButtonDisabled } = this.state
 
     return (
       <div className="annotation-wrapper">
@@ -435,6 +445,7 @@ class App extends Component {
               type="primary"
               size="large"
               className="save-button"
+              disabled={isButtonDisabled}
               onClick={this.onClickSubmit}
             >
               {t('save')}

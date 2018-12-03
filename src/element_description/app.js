@@ -271,8 +271,8 @@ renderForm = () => {
                 {
                   validator: (rule, value, callback) => {
                     // const parts = value.split(',')
-
-                    if (value.length > 5) {
+                    
+                    if (value && value.length > 5) {
                       const msg = t('tagsCountErrMsg')
                       return callback(msg)
                     }
