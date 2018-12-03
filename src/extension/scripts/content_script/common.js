@@ -1189,6 +1189,7 @@ export const buildBridge = async ({
             return true
 
           case 'CLOSE':
+            resetLocalContentData();
             iframeAPI.destroy()
             return true
 
@@ -1701,7 +1702,7 @@ export const createGetMenus = ({ showContentElements,getCurrentPage, currentUser
     // Note: only show 'Build bridge' if there is already one bridge item, or there is an annotation
     if (localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE || (localBridgeData && localBridgeData.lastAnnotation)) {
       const savedItem = localBridgeStatus === LOCAL_BRIDGE_STATUS.ONE ? localBridgeData.links[0] : localBridgeData.lastAnnotation.target
-
+      
       if (!isElementEqual(savedItem, menuExtra.linkData)) {
         menus[0].key === 'selectImageArea' ? menus.splice(1, menus.length) : menus.splice(0, menus.length)
         menus.push(commonMenuItems(getCurrentPage).buildBridge({ showContentElements }))
