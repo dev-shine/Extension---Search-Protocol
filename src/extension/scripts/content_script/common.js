@@ -1154,6 +1154,12 @@ export const buildBridge = async ({
     if (api_relations.length === 0) {
       api_relations = (await apiCallBridgesNotes(1))[0];
     }
+
+    if (api_categories.length === 0 || api_noteCategories.length === 0) {
+      let data = await apiCallBridgesNotes(2);
+      api_noteCategories = data[0];
+      api_categories = data[1];
+    }
     
     // let relations = values[0];
     // let categories = values[1];
