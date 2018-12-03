@@ -377,13 +377,13 @@ class App extends Component {
               </Button>
             </Popconfirm>
           ) : null */}
-          {isLoggedIn &&
+          {/* {isLoggedIn &&
           <Button
             type="default"
             onClick={() => { this.openShareContent({...annotation}, 1, followers) }}
           >
             <img src="./img/share.png" style={{ height: '14px' }} />
-          </Button>}
+          </Button>} */}
           {isLoggedIn ? (<Button
             type="default"
             size="large"
@@ -640,13 +640,13 @@ class App extends Component {
               </Button>
             </Popconfirm>
           ) : null */}
-          {isLoggedIn &&
+          {/* {isLoggedIn &&
           <Button
             type="default"
             onClick={() => { this.openShareContent({...bridge}, 0, followers) }}
           >
             <img src="./img/share.png" style={{ height: '14px' }} />
-          </Button>}
+          </Button>} */}
 
           {isLoggedIn ? (<Button
             size="large"
