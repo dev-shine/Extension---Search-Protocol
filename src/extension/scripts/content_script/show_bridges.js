@@ -507,7 +507,7 @@ export const showShareContent = ({ shareContent, type, followers }) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('share_content.html'),
     width:  500,
-    height: 450,
+    height: 320,
     onAsk:  (cmd, args) => {
       switch (cmd) {
         case 'INIT':

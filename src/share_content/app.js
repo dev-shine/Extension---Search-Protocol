@@ -208,10 +208,18 @@ renderShareContent = () => {
   const { t } = this.props
   const { shareContent, isEmailSectionEnable, isBridgitSectionEnable, isLinkSectionEnabled, isSendEmailDisabled, isSendBridgitDisabled, type, followers } = this.state
   
-  const shareUrl = (type == '0') ? URL_PATTERN.BRIDGE + shareContent.id : URL_PATTERN.NOTE + shareContent.id;  
+  const shareUrl = (type == '0') ? URL_PATTERN.BRIDGE + shareContent.id : URL_PATTERN.NOTE + shareContent.id;
 
   return (
     <Fragment>
+
+      <Row>
+        <Col span="23"/>
+        <Col>
+          <Icon type="close-circle" onClick={this.onClickCancel} />
+        </Col>
+      </Row>
+
       <h3>Share With Your Friends on</h3><br/>
 
       <Row>
@@ -369,16 +377,17 @@ renderShareContent = () => {
         </div>
         }
 
-      <div className="actions">
+      {/* <div className="actions">
           <Button
+            style={{marginTop: margins.marginTop, marginLeft: margins.marginLeft}}
             type="danger"
-            size="large"
+            size="default"
             className="cancel-button"
             onClick={this.onClickCancel}
           >
             {t('cancel')}
           </Button>
-        </div>
+        </div> */}
     </Fragment>
   )
 }

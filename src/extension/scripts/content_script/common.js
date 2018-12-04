@@ -1400,7 +1400,7 @@ export const selectImageArea = ({ $img, linkData, getCurrentPage, showContentEle
 export const copyTextToClipboard = (text, e) => {
 
   chrome.runtime.sendMessage({type: 'copy',text: text}, response => {
-    const z_index = 1100002, msgTimeout = 400;
+    const z_index = 1200002, msgTimeout = 400;
     showMessage('Copied', { yOffset: e.clientY }, z_index, msgTimeout)
   })
      
