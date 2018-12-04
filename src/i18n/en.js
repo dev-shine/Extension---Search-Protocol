@@ -24,6 +24,7 @@ export default {
     selectImageArea: 'Select Area',
     updateElementForBridge: 'Update Content Element for Bridge',
     moveContentElements: 'Move Content Element',
+    shareContentElements: 'Share Content Element',
     movedContentElements: 'Move Here',
     saveToBoard: "Save To Board",
     successfullyPosted: 'Successfully posted',

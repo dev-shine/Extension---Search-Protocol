@@ -656,7 +656,7 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId, el
           return true
         }
         case 'SHARE_CONTENT': {
-          //0 : bridge, 1: notes, 3= content elements
+          //0 : bridge, 1: notes, 2= content elements
           showShareContent({shareContent: args.shareContent, type: args.type, followers: args.followers})
           return true
         }

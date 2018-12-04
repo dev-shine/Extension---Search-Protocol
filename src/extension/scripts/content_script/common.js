@@ -18,7 +18,7 @@ import { ELEMENT_TYPE, isElementEqual } from '../../../common/models/element_mod
 import { LOCAL_BRIDGE_STATUS, EDIT_BRIDGE_TARGET } from '../../../common/models/local_model'
 import API from 'cs_api'
 import log from '../../../common/log'
-import { showHyperLinkBadge, showLinks, apiCallBridgesNotes } from './show_bridges'
+import { showHyperLinkBadge, showLinks, apiCallBridgesNotes, showShareContent } from './show_bridges'
 import i18n from '../../../i18n'
 import config from '../../../config'
 import { MouseReveal } from './mouse_reveal'
@@ -1638,6 +1638,18 @@ export const commonMenuItems = (getCurrentPage) => ({
       fetchLocalData();
     }
   }),
+  shareContentElement: ({showContentElements}) => ({
+    
+    text: i18n.t('shareContentElements'),
+    key: 'shareContentElements',
+    onClick: (e, { linkData }) => {
+      API.getUserFollowers()
+      .then(followers => {
+        showShareContent({shareContent: linkData, type: 2, followers});
+      })
+    }
+
+  }),
 
   movedContentElements: ({showContentElements, element_id}) => ({
     text: i18n.t('movedContentElements'),
@@ -1720,8 +1732,12 @@ export const createGetMenus = ({ showContentElements,getCurrentPage, currentUser
       }
     }
 
-    if (isBadge && ((currentUser && currentUser.admin == 1) || (element && element.created_by == currentUser.id )) )
-      menus.push(commonMenuItems(getCurrentPage).moveContentElements({ showContentElements,  element_id: element_id}))
+
+    if (isBadge) {
+      menus.push(commonMenuItems(getCurrentPage).shareContentElement({ showContentElements}))
+      if ((currentUser && currentUser.admin == 1) || (element && element.created_by == currentUser.id ))
+        menus.push(commonMenuItems(getCurrentPage).moveContentElements({ showContentElements,  element_id: element_id}))
+    }
 
     if (element_id && !isBadge)
       menus.push(commonMenuItems(getCurrentPage).movedContentElements({ showContentElements,  element_id: element_id}))

@@ -207,8 +207,11 @@ trackSocialShare = (social_type) => {
 renderShareContent = () => {
   const { t } = this.props
   const { shareContent, isEmailSectionEnable, isBridgitSectionEnable, isLinkSectionEnabled, isSendEmailDisabled, isSendBridgitDisabled, type, followers } = this.state
-  
-  const shareUrl = (type == '0') ? URL_PATTERN.BRIDGE + shareContent.id : URL_PATTERN.NOTE + shareContent.id;
+  let shareUrl = "";
+  if (type == "0") shareUrl = URL_PATTERN.BRIDGE + shareContent.id;
+  else if (type == "1") shareUrl = URL_PATTERN.NOTE + shareContent.id;
+  else shareUrl = URL_PATTERN.ELEMENT + shareContent.id;
+
 
   return (
     <Fragment>
@@ -233,7 +236,7 @@ renderShareContent = () => {
           <div className="social-share">
               <FacebookShareButton
                 url={shareUrl}
-                quote={shareContent.desc}
+                quote={shareContent.desc || (shareContent.text) ? shareContent.text : ""}
                 hashtag="#bridgit"
                 windowHeight= {600}
                 windowWidth= {600}
@@ -256,10 +259,10 @@ renderShareContent = () => {
           <div className="social-share">
             <LinkedinShareButton
               url={shareUrl}
-              title={"TITLE"}
+              // title={"TITLE"}
               windowHeight= {600}
               windowWidth= {600}
-              description={shareContent.desc}
+              // description={shareContent.desc}
               onShareWindowClose = { () => this.trackSocialShare(sharePlatorm.LINKEDIN) }
               className="social-share-button">
               <LinkedinIcon
