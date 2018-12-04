@@ -16,6 +16,7 @@ import { until, pick } from '../../../common/utils'
 import i18n from '../../../i18n'
 
 let state = {
+  zIndex: 5,
   nearDistanceInInch:   1,
   nearVisibleDuration:  2,
   pixelsPerInch: 40,
@@ -97,6 +98,7 @@ const init = ({ isLoggedIn = false }) => {
     showContentElements
   })
   showContentElements = genShowContentElements({
+    zIndex: state.zIndex,
     currentUser,
     getCsAPI,
     getLocalBridge,
@@ -332,13 +334,31 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   }  
 });
 
+
+function getPageZindex() {
+  var elems = document.getElementsByTagName("*");
+  var highest = 5;
+  for (var i = 0; i < elems.length; i++) {
+    var position =document.defaultView.getComputedStyle(elems[i],null).getPropertyValue("position");
+    var zindex=document.defaultView.getComputedStyle(elems[i],null).getPropertyValue("z-index");
+    if ( (position == "fixed" || position == "sticky") && zindex != 'auto' && zindex > highest ) {
+      highest = zindex;
+      break;
+    }
+  }
+  setState({zIndex: (highest === 5) ? 500 : (highest - 1) })
+}
+
 // document.body.setAttribute('bridgit-installed', true)
 localStorage.setItem('bridgit-installed', true)
 document.addEventListener('DOMContentLoaded', () => {
   console.log("DOMContentLoaded :: ");
 
-  listen_token_message();
-  checkUserBeforeInit({fromListening: 1}); // fromListening: 1  is for solving reloading issue in login uniform fnctionality 
+  setTimeout(() => {
+    getPageZindex();
+    listen_token_message();
+    checkUserBeforeInit({fromListening: 1}); // fromListening: 1  is for solving reloading issue in login uniform fnctionality 
+  }, 1000);
 
   // Run your code here...
 });

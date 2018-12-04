@@ -56,7 +56,7 @@ export const createRect = (opts) => {
   const containerStyle = {
     ...commonStyle,
     position: 'absolute',
-    'z-index':   100000,
+    'z-index':   1000009,
     top:      pixel(opts.top),
     left:     pixel(opts.left),
     width:    pixel(opts.width),
@@ -403,7 +403,7 @@ export const createOverlayForRange = ({ range, ...rest }) => {
   return createOverlayForRects({ rects, ...rest })
 }
 
-export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4 }) => {
+export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4, zIndex }) => {
   const $root = createEl({})
   const sx    = scrollLeft(document)
   const sy    = scrollTop(document)
@@ -417,7 +417,7 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4 
         opacity,
         'background-color':  color,
         position:         'absolute',
-        'z-index':           100000, //1
+        'z-index':           zIndex, //1, 100000
         top:              pixel(rect.top + sy),
         left:             pixel(rect.left + sx),
         width:            pixel(Math.abs(rect.width)),
@@ -494,7 +494,7 @@ export const renderContextMenus = (menuOptions, eventData) => {
     ...commonStyle,
     ...containerStyle,
     position: 'absolute',
-    'z-index': 100000,
+    'z-index': 1100000, //100000
     x: 0,
     y: 0
   }
@@ -756,7 +756,7 @@ export const createContextMenus = ({
 }
 
 export const createIframeWithMask = (function () {  
-  let curZIndex = 110000
+  let curZIndex = 1100001 // 110000
 
   return (...args) => {
     const iframeAPI = createIframe(...args)
@@ -899,7 +899,7 @@ export const insertStyle = (css, id) => {
   return $style
 }
 
-export const showMessage = (text, options = {}, z_index = 500, msgTimeout = 2000) => {
+export const showMessage = (text, options = {}, z_index = 1100002, msgTimeout = 2000) => {
   const css = `
     #__message_container__ {
       /*pointer-events: none;*/
@@ -1400,7 +1400,7 @@ export const selectImageArea = ({ $img, linkData, getCurrentPage, showContentEle
 export const copyTextToClipboard = (text, e) => {
 
   chrome.runtime.sendMessage({type: 'copy',text: text}, response => {
-    const z_index = 500000, msgTimeout = 400;
+    const z_index = 1100002, msgTimeout = 400;
     showMessage('Copied', { yOffset: e.clientY }, z_index, msgTimeout)
   })
      
@@ -1998,6 +1998,7 @@ const fullfilBridgeAndAnnotation = (data) => {
 }
 
 export const genShowContentElements = ({
+  zIndex,
   currentUser,
   getCsAPI,
   getLocalBridge,
@@ -2019,6 +2020,7 @@ export const genShowContentElements = ({
       onUpdateCurrentPage(data)
       const oldAPI = showLinks({
         ...data,
+        zIndex,
         url,
         getCsAPI,
         onCreate: showSubMenu && isLoggedIn

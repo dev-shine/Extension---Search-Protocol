@@ -36,7 +36,7 @@ export const apiCallBridgesNotes = (call_for) => {
 
 }
 
-export const showLinks = ({ elements, bridges, annotations, url, onCreate, getCsAPI }) => {
+export const showLinks = ({ zIndex, elements, bridges, annotations, url, onCreate, getCsAPI }) => {
   const links = elements.map(item => {
     return {
       ...item,
@@ -47,6 +47,7 @@ export const showLinks = ({ elements, bridges, annotations, url, onCreate, getCs
   .filter(item => item.bridges.length + item.annotations.length >= 0)
 
   const allLinks  = links.map(link => showOneLink({
+    zIndex,
     link,
     onCreate,
     getCsAPI,
@@ -73,15 +74,15 @@ export const showLinks = ({ elements, bridges, annotations, url, onCreate, getCs
   return linksAPI
 }
 
-export const showOneLink = ({ link, getLinksAPI, getCsAPI, color, opacity, needBadge = true, onCreate = () => {} }) => {
+export const showOneLink = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge = true, onCreate = () => {} }) => {
   log('showOneLink', link.type, link)
   
   switch (link.type) {
     case ELEMENT_TYPE.IMAGE:
-      return showImage({ link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate })
+      return showImage({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate })
 
     case ELEMENT_TYPE.SELECTION:
-      return showSelection({ link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate })
+      return showSelection({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate })
 
     default:
       throw new Error(`Unsupported type '${link.type}'`)
@@ -204,7 +205,7 @@ export const showHyperLinkBadge = ({ totalCount, url, $el }) => {
   return api
 }
 
-export const showImage = ({ link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate }) => {
+export const showImage = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate }) => {
   const { bridges = [], annotations = [] } = link
   const totalCount  = bridges.length + annotations.length
   let timer
@@ -249,8 +250,9 @@ export const showImage = ({ link, getLinksAPI, getCsAPI, color, opacity, needBad
         top:  pixel(pageY(rect.top)),
         left: pixel(pageX(rect.left + rect.width))
       }
-      const overlayAPI  = createOverlayForRects({ color, opacity, rects: [rect] })
+      const overlayAPI  = createOverlayForRects({ zIndex, color, opacity, rects: [rect] })
       const badgeAPI    = needBadge ? showBridgeCount({
+        zIndex,
         text:     '' + totalCount,
         position: topRight,
         onClick:  () => {
@@ -332,7 +334,7 @@ const bridgeCross = (bridges, link) => {
     
 }
 
-export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate }) => {
+export const showSelection = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate }) => {
   const { bridges = [], annotations = [] } = link
   const totalCount  = bridges.length + annotations.length
   let timer
@@ -372,8 +374,9 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
         top:  pixel(pageY(rects[0].top)),
         left: pixel(pageX(rects[0].left + rects[0].width))
       }
-      const overlayAPI = createOverlayForRects({ color, opacity, rects })
+      const overlayAPI = createOverlayForRects({ color, opacity, rects, zIndex })
       const badgeAPI    = needBadge ? showBridgeCount({
+        zIndex,
         text:     '' + totalCount,
         position: topRight,
         onClick:  () => {
@@ -437,7 +440,7 @@ export const showSelection = ({ link, getLinksAPI, getCsAPI, color, opacity, nee
   return api
 }
 
-export const showBridgeCount = ({ position, text, onClick, style = {} }) => {
+export const showBridgeCount = ({ zIndex, position, text, onClick, style = {} }) => {
   const size  = 40
   const $el   = createEl({
     text,
@@ -447,7 +450,7 @@ export const showBridgeCount = ({ position, text, onClick, style = {} }) => {
       'user-select': 'none',
       transform:  'translate(-80%, -80%)',
       position:   'absolute',
-      'z-index':     100001, //11
+      'z-index':    zIndex , //11, 100001
       width:      `${size}px`,
       height:     `${size}px`,
       'line-height': `${size}px`,
@@ -574,7 +577,7 @@ const loginMessage = () => {
 
         const message = data.message.replace(/<\/?[^>]+(>|$)/g, "");
         setTimeout(() => {
-          showMessage(message, {yOffset: 400 }, 200000);
+          showMessage(message, {yOffset: 400 }, 1100002);
         }, 1000);
           // window.removeEventListener('mousemove', showMsg);
         // }
