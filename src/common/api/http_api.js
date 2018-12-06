@@ -245,19 +245,33 @@ export const elementFollow = wrap((data) => {
   .send(data)
 })
 
+
+const encodeRect = (rect, imageSize) => {
+  const list = [rect.x, rect.y, rect.width, rect.height, imageSize.width, imageSize.height]
+  return list.join(',')
+}
+
 export const updateElement = (id, data) => {
-  let request_obj = {
-    'text':data.text,
-    'url': data.url,
-    'start_locator': data.start.locator,
-    'start_offset': data.start.offset,
-    'end_locator': data.end.locator,
-    'end_offset': data.end.offset,
-    'type': 2
+  const blob = dataURItoBlob(data.image)
+  let request_obj = { element_id: id, image_path: data.image_path, start_locator: data.start_locator, type: data.type, url: data.url };
+
+  if (data.type === "IMAGE") {
+    request_obj["start_locator"] = data.locator;
+    request_obj["rect"] = encodeRect(data.rect, data.imageSize);
+    request_obj["type"] = 1;
+
+  } else if (data.type === "SELECTION") {
+    request_obj["text"] = data.text;
+    request_obj["start_locator"] = data.start.locator;
+    request_obj["start_offset"] = data.start.offset;
+    request_obj["end_locator"] = data.end.locator;
+    request_obj["end_offset"] = data.end.offset;
+    request_obj["type"] = 2;
   }
-  
-  return jwtRequest.put(apiUrl(`/elements/${id}`))
-  .send(request_obj)
+
+  return jwtRequest.post(apiUrl('/elements'))
+  .attach('image', blob)
+  .field(unpick(['id'], request_obj))
 
 }
 

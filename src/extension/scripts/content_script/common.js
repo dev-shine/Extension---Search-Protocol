@@ -1705,7 +1705,10 @@ export const commonMenuItems = (getCurrentPage) => ({
     onClick: async (e, { linkData }) => {
       copyTextToClipboard(linkData.text, e);
       API.resetLocalBridge()
-      .then(() => API.createLocalBridge(linkData))
+      .then(() => {
+        API.createLocalBridge(linkData)
+        fetchLocalData()
+      })
       .then(showMsgAfterCreateBridge)
       .catch(e => log.error(e.stack))
       resetLocalContentData();
@@ -1769,19 +1772,6 @@ export const commonMenuItems = (getCurrentPage) => ({
       fetchLocalData();
     }
   }),
-  shareContentElement: ({showContentElements}) => ({
-    
-    text: i18n.t('shareContentElements'),
-    key: 'shareContentElements',
-    onClick: (e, { linkData }) => {
-      API.getUserFollowers()
-      .then(followers => {
-        showShareContent({shareContent: linkData, type: 2, followers});
-      })
-    }
-
-  }),
-
   movedContentElements: ({showContentElements, element_id}) => ({
     text: i18n.t('movedContentElements'),
     key: 'movedContentElements',
@@ -1801,6 +1791,18 @@ export const commonMenuItems = (getCurrentPage) => ({
     onMouseOver: (e) => {
       checkForPartialWord({getCurrentPage}, e);
     }
+  }),
+  shareContentElement: ({showContentElements}) => ({
+    
+    text: i18n.t('shareContentElements'),
+    key: 'shareContentElements',
+    onClick: (e, { linkData }) => {
+      API.getUserFollowers()
+      .then(followers => {
+        showShareContent({shareContent: linkData, type: 2, followers});
+      })
+    }
+
   }),
 
   selectImageArea: ({ getCurrentPage, showContentElements }) => ({
@@ -2127,7 +2129,7 @@ export const checkForPartialWord = ({ getCurrentPage }, e) => {
   // })
 }
 
-const fullfilBridgeAndAnnotation = (data) => {  
+const fullfilBridgeAndAnnotation = (data) => {
   const findElement = (id) => data.elements.find(item => item.id === id)
 
   return {
@@ -2197,7 +2199,7 @@ export const genShowContentElements = ({
     }
     API.annotationsAndBridgesByUrl(url)
     .then(fullfilBridgeAndAnnotation)
-    .then(data => {      
+    .then(data => {
       log('showContentElements got links', data)
       showElementsOnMouseReveal(data, url)
     })
