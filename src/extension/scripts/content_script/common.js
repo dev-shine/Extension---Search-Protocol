@@ -537,9 +537,14 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4,
     let $img = $upvoteElement.$img;
 
     $button.addEventListener('click',async () => {
-      const user = await API.fetchUserInfo();
-      if (user) onLikeElement("like");
-      else showMessage("Login to Count your upvote", {yOffset: $upvoteElement.top}, 1100002, 800);
+      API.fetchUserInfo()
+      .then (user => {
+        if (!user) showMessage("Login to Count your upvote", {yOffset: $upvoteElement.top}, 1300002, 800);
+        else onLikeElement("like")
+      })
+      .catch(err => {
+        showMessage("Login to Count your upvote", {yOffset: $upvoteElement.top}, 1300002, 800);
+      })
     })
     $close.addEventListener('click',() => onLikeElement('close'));
     $overlays = [];

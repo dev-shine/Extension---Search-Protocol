@@ -3,7 +3,7 @@
 
   "name": "Bridgit",
   "description": "__MSG_description__",
-  "version": "0.1.2.5",
+  "version": "0.1.2.7",
   "default_locale": "en",
 
   "icons": {
@@ -59,7 +59,7 @@
       "run_at": "document_start"
     }
   ],
-  "content_security_policy": "script-src 'self' https://graph.facebook.com 'self' 'unsafe-eval' https://www.google-analytics.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' 'https://demo.bridgit.io' 'self' https://graph.facebook.com 'self' 'unsafe-eval' https://www.google-analytics.com; object-src 'self'",
   "permissions": [
     "storage",
     "tabs",

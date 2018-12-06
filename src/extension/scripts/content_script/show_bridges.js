@@ -577,7 +577,7 @@ const loginMessage = () => {
 
         const message = data.message.replace(/<\/?[^>]+(>|$)/g, "");
         setTimeout(() => {
-          showMessage(message, {yOffset: 400 }, 1100002);
+          showMessage(message, {yOffset: 400 }, 1300002);
         }, 1000);
           // window.removeEventListener('mousemove', showMsg);
         // }
