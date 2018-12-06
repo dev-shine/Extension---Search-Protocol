@@ -403,7 +403,96 @@ export const createOverlayForRange = ({ range, ...rest }) => {
   return createOverlayForRects({ rects, ...rest })
 }
 
-export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4, zIndex }) => {
+
+export const getOverlaysForUpvoteBridge = (rects, color, opacity, zIndex, sx, sy) => {
+
+  let height = 125, width = 150, max_top = rects[0].top, min_left = rects[0].left;
+  for (let i = 1; i < rects.length; i++) {
+    let rect = rects[i];
+    if (rect.top > max_top) max_top = rect.top;
+    if (rect.left < min_left) min_left = rect.left;
+  }
+  
+  const $dom = createEl({
+    style: {
+      opacity,
+      'background-color':  color,
+      'color' : 'white',
+      'padding': "15px",
+      'border-radius': "10px",
+      'position':         'absolute',
+      'z-index':           zIndex + 500, //1, 100000
+      'top':              pixel(max_top + sy), //pixel(rect.top + sy)
+      'left':             pixel(min_left + sx), //pixel(rect.left + sx)
+      'width':            pixel(width), 
+      'height':           pixel(height),
+    },
+  })
+
+  const $close_section = createEl({
+    style: {
+      'display': "flex",
+      'justify-content': "flex-end",
+      'width': "100%"
+    }
+  })
+
+  const $close = createEl({
+    tag: "img",
+    style: {
+      'cursor': 'pointer'
+    },
+    attrs: {
+      'src': 'https://demo.bridgit.io/images/close.png',
+      'background-color':  'white',
+      'height': "18",
+      'width': "18",
+    }
+  })
+
+
+  const $text_section = createEl({
+    tag: "span",
+    style: {
+      'font-size': "20px",
+      'color': "white",
+      'justify-content': "center",
+      'line-height': "1"
+    },
+    text: "Upvote the Bridge you crossed to arrive here"
+  })
+
+  const $button_section = createEl({
+    style: {
+      'display': "flex",
+      'justify-content': "center",
+    },
+  })
+
+
+  const $button = createEl({
+    tag: 'button',
+    style: {
+      'cursor': 'pointer'
+    },
+  })
+
+
+  const $img = createEl({
+    tag: 'img',
+    attrs: {
+      'src': "http://demo.bridgit.io/images/like.png",
+      'background-color':  'white',
+      'height': "25",
+      'width': "25",
+    }
+  })
+
+  return {$dom, $close_section, $close, $text_section, $button_section, $img, $button, top: max_top};
+
+} 
+
+export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4, zIndex, upvoteBridge, onLikeElement }) => {
   const $root = createEl({})
   const sx    = scrollLeft(document)
   const sy    = scrollTop(document)
@@ -411,28 +500,64 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4,
 // log('createOverlayForRange rects', rects, sx, sy)
 
   // element overlay css
-  const $overlays = reduceRects(rects).map(rect => {
-    const $dom = createEl({
-      style: {
-        opacity,
-        'background-color':  color,
-        position:         'absolute',
-        'z-index':           zIndex, //1, 100000
-        top:              pixel(rect.top + sy),
-        left:             pixel(rect.left + sx),
-        width:            pixel(Math.abs(rect.width)),
-        height:           pixel(Math.abs(rect.height)),
-        'pointer-events':    'none'
-      }
-    })
 
-    return {
-      $dom,
-      destroy: () => $dom.remove()
+  let $overlays = reduceRects(rects).map(rect => {
+
+    if (!upvoteBridge) {
+      let $dom = createEl({
+        style: {
+          opacity,
+          'background-color':  color,
+          position:         'absolute',
+          'z-index':           zIndex, //1, 100000
+          top:              pixel(rect.top + sy),
+          left:             pixel(rect.left + sx),
+          width:            pixel(Math.abs(rect.width)),
+          height:           pixel(Math.abs(rect.height)),
+          'pointer-events':    'none'
+        }
+      })
+
+      return {
+        $dom,
+        destroy: () => $dom.remove()
+      }
     }
   })
+  
 
-  $overlays.forEach(item => $root.appendChild(item.$dom))
+  if (upvoteBridge) {
+    const $upvoteElement = getOverlaysForUpvoteBridge(rects, color, opacity, zIndex, sx, sy);
+    let $dom = $upvoteElement.$dom;
+    let $close_section = $upvoteElement.$close_section;
+    let $close = $upvoteElement.$close;
+    let $text_section = $upvoteElement.$text_section;
+    let $button_section = $upvoteElement.$button_section;
+    let $button = $upvoteElement.$button;
+    let $img = $upvoteElement.$img;
+
+    $button.addEventListener('click',async () => {
+      const user = await API.fetchUserInfo();
+      if (user) onLikeElement("like");
+      else showMessage("Login to Count your upvote", {yOffset: $upvoteElement.top}, 1100002, 800);
+    })
+    $close.addEventListener('click',() => onLikeElement('close'));
+    $overlays = [];
+    $overlays.push({$dom, $close_section, $close, $text_section, $button_section, $button, $img , destroy: () => $dom.remove()})
+  }
+  
+  $overlays.forEach(item => {
+    if (item.$button) {
+      item.$close_section.appendChild(item.$close);
+      item.$dom.appendChild(item.$close_section);
+      item.$dom.appendChild(item.$text_section);
+      item.$button.appendChild(item.$img);
+      item.$button_section.appendChild(item.$button);
+      item.$dom.appendChild(item.$button_section);
+    }
+    $root.appendChild(item.$dom)
+  })
+  
   document.body.appendChild($root)
 
   const api = {
@@ -1095,8 +1220,14 @@ export const showMsgAfterCreateBridge = () => {
   })
 }
 
-export const showElementDescription = ({ linkData, onSuccess }) => {
+export const showElementDescription = async ({ linkData, onSuccess }) => {
   const obj = !linkData.name ? {width: 600, height: 675} : {width: 500, height: 450}
+  
+  if (api_categories.length === 0) {
+    let data = await apiCallBridgesNotes(2);
+    api_noteCategories = data[0];
+    api_categories = data[1];
+  }
 
   // API.getCategories()
   // .then(categories => {

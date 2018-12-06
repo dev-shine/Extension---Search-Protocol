@@ -448,7 +448,7 @@ class App extends Component {
         log('ga message sent')
       })
       if (cpart) {
-        if (API.showElementInCurrentTab(cpart) !== true) {
+        if (API.showElementInCurrentTab(cpart, bridge) !== true) {
           e.preventDefault()
         }
       }

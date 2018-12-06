@@ -217,7 +217,7 @@ const API = {
       return storage.set('user_settings', {...settings, ...obj})
     })
   },
-  showElementInCurrentTab: (element) => {
+  showElementInCurrentTab: (element, bridge) => {
     return getCurrentTab()
     .then(tab => {
       tabIpcStore.del(tab.id)
@@ -226,7 +226,7 @@ const API = {
       .then(() => tabIpcStore.get(tab.id, 10000))
       .then(ipc => {
         log('showElementInCurrentTab got ipc', ipc)
-        return ipc.ask('HIGHLIGHT_ELEMENT', { element })
+        return ipc.ask('HIGHLIGHT_ELEMENT', { element, bridge })
       })
     })
   },

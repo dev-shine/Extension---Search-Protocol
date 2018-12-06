@@ -74,15 +74,15 @@ export const showLinks = ({ zIndex, elements, bridges, annotations, url, onCreat
   return linksAPI
 }
 
-export const showOneLink = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge = true, onCreate = () => {} }) => {
+export const showOneLink = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge = true, upvoteBridge = false, onCreate = () => {}, onLikeElement = () => {} }) => {
   log('showOneLink', link.type, link)
   
   switch (link.type) {
     case ELEMENT_TYPE.IMAGE:
-      return showImage({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate })
+      return showImage({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge, upvoteBridge, onCreate, onLikeElement })
 
     case ELEMENT_TYPE.SELECTION:
-      return showSelection({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate })
+      return showSelection({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge, upvoteBridge, onCreate, onLikeElement })
 
     default:
       throw new Error(`Unsupported type '${link.type}'`)
@@ -205,7 +205,7 @@ export const showHyperLinkBadge = ({ totalCount, url, $el }) => {
   return api
 }
 
-export const showImage = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate }) => {
+export const showImage = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge, upvoteBridge, onCreate, onLikeElement }) => {
   const { bridges = [], annotations = [] } = link
   const totalCount  = bridges.length + annotations.length
   let timer
@@ -250,7 +250,7 @@ export const showImage = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity,
         top:  pixel(pageY(rect.top)),
         left: pixel(pageX(rect.left + rect.width))
       }
-      const overlayAPI  = createOverlayForRects({ zIndex, color, opacity, rects: [rect] })
+      const overlayAPI  = createOverlayForRects({ zIndex, color, opacity, rects: [rect], upvoteBridge, onLikeElement })
       const badgeAPI    = needBadge ? showBridgeCount({
         zIndex,
         text:     '' + totalCount,
@@ -334,7 +334,7 @@ const bridgeCross = (bridges, link) => {
     
 }
 
-export const showSelection = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge, onCreate }) => {
+export const showSelection = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge, upvoteBridge, onCreate, onLikeElement }) => {
   const { bridges = [], annotations = [] } = link
   const totalCount  = bridges.length + annotations.length
   let timer
@@ -374,7 +374,7 @@ export const showSelection = ({ zIndex, link, getLinksAPI, getCsAPI, color, opac
         top:  pixel(pageY(rects[0].top)),
         left: pixel(pageX(rects[0].left + rects[0].width))
       }
-      const overlayAPI = createOverlayForRects({ color, opacity, rects, zIndex })
+      const overlayAPI = createOverlayForRects({ color, opacity, rects, zIndex, upvoteBridge, onLikeElement })
       const badgeAPI    = needBadge ? showBridgeCount({
         zIndex,
         text:     '' + totalCount,

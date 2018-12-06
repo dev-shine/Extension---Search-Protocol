@@ -176,37 +176,59 @@ const onBgRequest = (cmd, args) => {
     }
 
     case 'HIGHLIGHT_ELEMENT': {
-      const { element } = args
+      const { element, bridge } = args
 
-      until('element', () => {
-        let $el = getElementByXPath(element.locator || element.start.locator)
+      if (!bridge.is_like) {
+        until('element', () => {
+          let $el = getElementByXPath(element.locator || element.start.locator)
 
-        if ($el && $el.nodeType === 3) {
-          $el = $el.parentNode
-        }
+          if ($el && $el.nodeType === 3) {
+            $el = $el.parentNode
+          }
 
-        return {
-          pass: $el,
-          result: $el
-        }
-      }, 500, 10000)
-      .then($el => {
-        $el.scrollIntoView()
-
-        setTimeout(() => {
-          const linkAPI = showOneLink({
-            link:       element,
-            color:      'green',
-            opacity: 0.4,
-            needBadge:  false
-          })
-
+          return {
+            pass: $el,
+            result: $el
+          }
+        }, 500, 10000)
+        .then($el => {
+          $el.scrollIntoView()
+        
           setTimeout(() => {
-            linkAPI.destroy()
-          }, 2000)
-        }, 1000)
-      })
+            const linkAPI = showOneLink({
+              zIndex: state.zIndex,
+              link:       element,
+              color:      '#EF5D8F',
+              opacity: 1,
+              needBadge:  false,
+              upvoteBridge: true,
+              onLikeElement: (via) => {
+                
+                if (via === "close") {
+                  linkAPI.destroy();
+                  return;
+                }
 
+                const request_obj = {
+                  emoji_type: 'like',
+                  is_like: true,
+                  type: 0,
+                  type_id: bridge.id
+                }
+                API.likeAction(request_obj)
+                .then(response => {
+                  linkAPI.destroy();
+                  showContentElements();
+                })
+                
+              }
+            })
+            setTimeout(() => {
+              linkAPI.destroy()
+            }, 60000)
+          }, 1000)
+        })
+        }
       return true
     }
   }
