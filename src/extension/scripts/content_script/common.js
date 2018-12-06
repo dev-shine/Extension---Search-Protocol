@@ -405,11 +405,11 @@ export const createOverlayForRange = ({ range, ...rest }) => {
 
 
 export const getOverlaysForUpvoteBridge = (rects, color, opacity, zIndex, sx, sy) => {
-
-  let height = 125, width = 150, max_top = rects[0].top, min_left = rects[0].left;
+  
+  let height = 125, width = 150, max_top = rects[0].top + rects[0].height , min_left = rects[0].left;
   for (let i = 1; i < rects.length; i++) {
     let rect = rects[i];
-    if (rect.top > max_top) max_top = rect.top;
+    if ((rect.top + rect.height) > max_top) max_top = rect.top + rect.height;
     if (rect.left < min_left) min_left = rect.left;
   }
   

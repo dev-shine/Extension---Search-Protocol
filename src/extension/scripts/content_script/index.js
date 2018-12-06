@@ -225,7 +225,7 @@ const onBgRequest = (cmd, args) => {
             })
             setTimeout(() => {
               linkAPI.destroy()
-            }, 60000)
+            }, 60000 * 2)
           }, 1000)
         })
         }
