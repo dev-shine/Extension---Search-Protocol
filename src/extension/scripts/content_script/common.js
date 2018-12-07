@@ -2154,7 +2154,8 @@ const fullfilBridgeAndAnnotation = (data) => {
     annotations: data.annotations.map(item => ({
       ...item,
       targetElement: findElement(item.target)
-    }))
+    })),
+    z_index: data.z_index
   }
 }
 
@@ -2167,16 +2168,18 @@ export const genShowContentElements = ({
   onUpdateCurrentPage = () => {},
   onUpdateAPI = () => {},
   showSubMenu = true
-} = {}) => (() => {  
+} = {}) => (() => {
   let linksAPI
 
   const fn = ({ hide = false, isLoggedIn = true } = {}) => {
     // const url = window.location.href
     let url = '';
+    const host_name = window.location.origin;
     if (window.location.hash) url = window.location.origin + "" + window.location.pathname
     else url = window.location.href
 
-    const showElementsOnMouseReveal = (data, url) => {
+    const showElementsOnMouseReveal = (data, url, pageZIndex) => {
+      zIndex = pageZIndex;
       if (linksAPI) linksAPI.destroy()
       onUpdateCurrentPage(data)
       const oldAPI = showLinks({
@@ -2209,11 +2212,12 @@ export const genShowContentElements = ({
       if (linksAPI) linksAPI.destroy()
       return
     }
-    API.annotationsAndBridgesByUrl(url)
+    API.annotationsAndBridgesByUrl(url, host_name)
     .then(fullfilBridgeAndAnnotation)
     .then(data => {
+      const pageZIndex = data.z_index ? data.z_index : zIndex;
       log('showContentElements got links', data)
-      showElementsOnMouseReveal(data, url)
+      showElementsOnMouseReveal(data, url, pageZIndex)
     })
     .catch(e => log.error(e.stack))
       

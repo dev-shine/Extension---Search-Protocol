@@ -370,7 +370,7 @@ function getPageZindex() {
       break;
     }
   }
-  setState({zIndex: ((highest === 5) ? 500 : (highest > iFrameZindex) ? (iFrameZindex - 1) : highest) })
+  setState({zIndex: ((highest === 5) ? 500 : (highest > iFrameZindex) ? (iFrameZindex - 1) : (highest - 1)) })
   // console.log("========================");
   // console.log(state.zIndex);
   // console.log("========================");

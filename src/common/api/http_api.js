@@ -403,14 +403,15 @@ export const loadRelations = withCache(listRelations, 1000 * 5)
 
 export const loadNoteCategories = withCache(listNoteCategories, 1000 * 5)
 // others
-export const annotationsAndBridgesByUrl = wrap((url) => {
+export const annotationsAndBridgesByUrl = wrap((url, host) => {
   return jwtRequest.post(apiUrl('/search/page'))
-  .send({ url })
+  .send({ url, host_name: host })
 }, {
   post: (data) => ({
     elements:     data.elements.map(decodeElement),
     bridges:      data.bridges.map(decodeBridge),
-    annotations:  data.notes.map(decodeNote)
+    annotations:  data.notes.map(decodeNote),
+    z_index: data.z_index
   })
 })
 
