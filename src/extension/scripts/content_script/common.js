@@ -32,6 +32,14 @@ let localBridgeStatus = LOCAL_BRIDGE_STATUS.EMPTY;
 let localBridgeData = null;
 let contentElement = {element_id: null};
 
+
+export const getGlobalValue = () => {
+  return {
+    iFrameZindex : 1100001,
+    messageZindex: 1300002
+  }
+}
+
 export const commonStyle = {
   'box-sizing':  'border-box',
   'font-family': 'Arial'
@@ -406,7 +414,7 @@ export const createOverlayForRange = ({ range, ...rest }) => {
 
 export const getOverlaysForUpvoteBridge = (rects, color, opacity, zIndex, sx, sy) => {
   
-  let height = 125, width = 150, max_top = rects[0].top + rects[0].height , min_left = rects[0].left;
+  let height = 150, width = 150, max_top = rects[0].top + rects[0].height , min_left = rects[0].left;
   for (let i = 1; i < rects.length; i++) {
     let rect = rects[i];
     if ((rect.top + rect.height) > max_top) max_top = rect.top + rect.height;
@@ -421,7 +429,7 @@ export const getOverlaysForUpvoteBridge = (rects, color, opacity, zIndex, sx, sy
       'padding': "15px",
       'border-radius': "10px",
       'position':         'absolute',
-      'z-index':           zIndex + 500, //1, 100000
+      'z-index':           zIndex, //1, 100000
       'top':              pixel(max_top + sy), //pixel(rect.top + sy)
       'left':             pixel(min_left + sx), //pixel(rect.left + sx)
       'width':            pixel(width), 
@@ -430,10 +438,11 @@ export const getOverlaysForUpvoteBridge = (rects, color, opacity, zIndex, sx, sy
   })
 
   const $close_section = createEl({
+    tag: "p",
     style: {
-      'display': "flex",
-      'justify-content': "flex-end",
-      'width': "100%"
+      // 'display': "flex",
+      // 'justify-content': "flex-end",
+      'width': "100%" 
     }
   })
 
@@ -447,6 +456,7 @@ export const getOverlaysForUpvoteBridge = (rects, color, opacity, zIndex, sx, sy
       'background-color':  'white',
       'height': "18",
       'width': "18",
+      'align': 'right'
     }
   })
 
@@ -454,7 +464,7 @@ export const getOverlaysForUpvoteBridge = (rects, color, opacity, zIndex, sx, sy
   const $text_section = createEl({
     tag: "span",
     style: {
-      'font-size': "20px",
+      'font-size': "18px",
       'color': "white",
       'justify-content': "center",
       'line-height': "1"
@@ -537,13 +547,14 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4,
     let $img = $upvoteElement.$img;
 
     $button.addEventListener('click',async () => {
+      const msgZindex = getGlobalValue().messageZindex;
       API.fetchUserInfo()
       .then (user => {
-        if (!user) showMessage("Login to Count your upvote", {yOffset: $upvoteElement.top}, 1300002, 800);
+        if (!user) showMessage("Login to Count your upvote", {yOffset: $upvoteElement.top}, msgZindex, 800);
         else onLikeElement("like")
       })
       .catch(err => {
-        showMessage("Login to Count your upvote", {yOffset: $upvoteElement.top}, 1300002, 800);
+        showMessage("Login to Count your upvote", {yOffset: $upvoteElement.top}, msgZindex, 800);
       })
     })
     $close.addEventListener('click',() => onLikeElement('close'));
@@ -886,7 +897,7 @@ export const createContextMenus = ({
 }
 
 export const createIframeWithMask = (function () {  
-  let curZIndex = 1100001 // 110000
+  let curZIndex = getGlobalValue().iFrameZindex // 110000
 
   return (...args) => {
     const iframeAPI = createIframe(...args)
@@ -1029,7 +1040,7 @@ export const insertStyle = (css, id) => {
   return $style
 }
 
-export const showMessage = (text, options = {}, z_index = 1100002, msgTimeout = 2000) => {
+export const showMessage = (text, options = {}, z_index = getGlobalValue().messageZindex, msgTimeout = 2000) => {
   const css = `
     #__message_container__ {
       /*pointer-events: none;*/

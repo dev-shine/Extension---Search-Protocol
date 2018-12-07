@@ -9,7 +9,8 @@ import { captureClientAPI } from '../../../common/capture_screenshot'
 import { LOCAL_BRIDGE_STATUS } from '../../../common/models/local_model'
 import {
   annotate, buildBridge, selectImageArea, genShowContentElements,
-  initContextMenus, bindSelectionEvent, bindSocialLoginEvent, showMessage
+  initContextMenus, bindSelectionEvent, bindSocialLoginEvent, showMessage,
+  getGlobalValue
 } from './common'
 import { showOneLink } from './show_bridges'
 import { until, pick } from '../../../common/utils'
@@ -358,6 +359,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 
 
 function getPageZindex() {
+  const iFrameZindex = getGlobalValue().iFrameZindex;
   var elems = document.getElementsByTagName("*");
   var highest = 5;
   for (var i = 0; i < elems.length; i++) {
@@ -368,7 +370,10 @@ function getPageZindex() {
       break;
     }
   }
-  setState({zIndex: (highest === 5) ? 500 : (highest - 1) })
+  setState({zIndex: ((highest === 5) ? 500 : (highest > iFrameZindex) ? (iFrameZindex - 1) : highest) })
+  // console.log("========================");
+  // console.log(state.zIndex);
+  // console.log("========================");
 }
 
 // document.body.setAttribute('bridgit-installed', true)

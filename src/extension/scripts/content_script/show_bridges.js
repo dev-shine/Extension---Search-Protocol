@@ -15,6 +15,7 @@ import {
   createIframeWithMask,
   createOverlayForRects,
   showMessage,
+  getGlobalValue,
   copyTextToClipboard
 } from './common'
 import { rectsPointPosition } from './position'
@@ -577,7 +578,7 @@ const loginMessage = () => {
 
         const message = data.message.replace(/<\/?[^>]+(>|$)/g, "");
         setTimeout(() => {
-          showMessage(message, {yOffset: 400 }, 1300002);
+          showMessage(message, {yOffset: 400 }, getGlobalValue().messageZindex);
         }, 1000);
           // window.removeEventListener('mousemove', showMsg);
         // }
