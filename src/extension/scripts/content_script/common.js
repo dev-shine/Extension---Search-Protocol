@@ -548,14 +548,10 @@ export const createOverlayForRects = ({ rects, color = '#EF5D8F', opacity = 0.4,
 
     $button.addEventListener('click',async () => {
       const msgZindex = getGlobalValue().messageZindex;
-      API.fetchUserInfo()
-      .then (user => {
-        if (!user) showMessage("Login to Count your upvote", {yOffset: $upvoteElement.top}, msgZindex, 800);
-        else onLikeElement("like")
-      })
-      .catch(err => {
-        showMessage("Login to Count your upvote", {yOffset: $upvoteElement.top}, msgZindex, 800);
-      })
+
+      if(localStorage.getItem("bridgit-token")) onLikeElement("like")
+      else showMessage("Login to Count your upvote", {yOffset: $upvoteElement.top}, msgZindex, 800);
+    
     })
     $close.addEventListener('click',() => onLikeElement('close'));
     $overlays = [];

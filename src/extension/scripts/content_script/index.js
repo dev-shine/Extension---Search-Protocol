@@ -212,7 +212,7 @@ const onBgRequest = (cmd, args) => {
 
                 const request_obj = {
                   emoji_type: 'like',
-                  is_like: true,
+                  is_like: false,
                   type: 0,
                   type_id: bridge.id
                 }
