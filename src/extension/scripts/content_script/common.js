@@ -414,7 +414,7 @@ export const createOverlayForRange = ({ range, ...rest }) => {
 
 export const getOverlaysForUpvoteBridge = (rects, color, opacity, zIndex, sx, sy) => {
   
-  let height = 150, width = 150, max_top = rects[0].top + rects[0].height , min_left = rects[0].left;
+  let width = 175, max_top = rects[0].top + rects[0].height , min_left = rects[0].left;
   for (let i = 1; i < rects.length; i++) {
     let rect = rects[i];
     if ((rect.top + rect.height) > max_top) max_top = rect.top + rect.height;
@@ -433,7 +433,11 @@ export const getOverlaysForUpvoteBridge = (rects, color, opacity, zIndex, sx, sy
       'top':              pixel(max_top + sy), //pixel(rect.top + sy)
       'left':             pixel(min_left + sx), //pixel(rect.left + sx)
       'width':            pixel(width), 
-      'height':           pixel(height),
+      // 'height':           pixel(height),
+      "display":"flex",
+      "flex-direction":"column",
+      "justify-content":"space-between",
+      "box-sizing":"border-box"
     },
   })
 
@@ -442,7 +446,8 @@ export const getOverlaysForUpvoteBridge = (rects, color, opacity, zIndex, sx, sy
     style: {
       // 'display': "flex",
       // 'justify-content': "flex-end",
-      'width': "100%" 
+      'width': "100%" ,
+      "margin":"0px"
     }
   })
 
@@ -467,7 +472,8 @@ export const getOverlaysForUpvoteBridge = (rects, color, opacity, zIndex, sx, sy
       'font-size': "18px",
       'color': "white",
       'justify-content': "center",
-      'line-height': "1"
+      'line-height': "1.4",
+      "flex":"1 1 auto"
     },
     text: "Upvote the Bridge you crossed to arrive here"
   })
