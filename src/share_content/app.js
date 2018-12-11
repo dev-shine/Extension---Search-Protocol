@@ -207,10 +207,19 @@ trackSocialShare = (social_type) => {
 renderShareContent = () => {
   const { t } = this.props
   const { shareContent, isEmailSectionEnable, isBridgitSectionEnable, isLinkSectionEnabled, isSendEmailDisabled, isSendBridgitDisabled, type, followers } = this.state
-  let shareUrl = "";
-  if (type == "0") shareUrl = URL_PATTERN.BRIDGE + shareContent.id;
-  else if (type == "1") shareUrl = URL_PATTERN.NOTE + shareContent.id;
-  else shareUrl = URL_PATTERN.ELEMENT + shareContent.id;
+  let shareUrl = "", titleToShow = "";
+  if (type == "0") {
+    shareUrl = URL_PATTERN.BRIDGE + shareContent.id;
+    titleToShow = shareContent.desc || ""; 
+  }
+  else if (type == "1") {
+    shareUrl = URL_PATTERN.NOTE + shareContent.id;
+    titleToShow = shareContent.title || "";
+  }
+  else {
+    shareUrl = URL_PATTERN.ELEMENT + shareContent.id;
+    titleToShow = shareContent.name || shareContent.text;
+  }
 
 
   return (
@@ -236,7 +245,7 @@ renderShareContent = () => {
           <div className="social-share">
               <FacebookShareButton
                 url={shareUrl}
-                quote={shareContent.desc || (shareContent.text) ? shareContent.text : ""}
+                quote={titleToShow || ""}
                 hashtag="#bridgit"
                 windowHeight= {600}
                 windowWidth= {600}
@@ -300,6 +309,7 @@ renderShareContent = () => {
             <div className="social-share">
               <TwitterShareButton
                 url={shareUrl}
+                title={titleToShow || ""}
                 windowHeight= {600}
                 windowWidth= {600}
                 hashtags={["Bridgit"]}
