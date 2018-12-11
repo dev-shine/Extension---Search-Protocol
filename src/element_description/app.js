@@ -17,7 +17,8 @@ class App extends Component {
     elementData: {},
     categories: [],
     selectedCategory: '',
-    disableInputs: true
+    disableInputs: true,
+    disableSaveButton: false
   }
 
   followUnFollowElement = (linkData) => {
@@ -89,16 +90,19 @@ class App extends Component {
   .then(() => {
     notifySuccess(t('successfullySaved'))
     this.followUnFollowElement(linkData)
+    this.setState({disableSaveButton: true})
   })
   .catch(e => {
     notifyError(e.message)
+    this.setState({disableSaveButton: false})
     // setTimeout(() => this.onClickCancel(), 1500)
   })
  }
  onClickSubmit = () => {
-  const { elementData: linkData } = this.state
+  const { elementData: linkData, disableSaveButton } = this.state
   this.props.form.validateFields((err, values) => {
     if (err)  return
+    this.setState({disableSaveButton: true})
     const { t } = this.props
     let dataValues = {...values}
     dataValues.name = values.title
@@ -146,7 +150,7 @@ onUpdateField = (val, key) => {
 renderForm = () => {
   const { t } = this.props
   const { getFieldDecorator } = this.props.form
-  const { disableInputs, categories, selectedCategory } = this.state
+  const { disableInputs, categories, selectedCategory, disableSaveButton } = this.state
   return (
     <Fragment>
       <h3>
@@ -299,7 +303,7 @@ renderForm = () => {
             type="primary"
             size="large"
             className="save-button"
-            disabled={disableInputs}
+            disabled={disableSaveButton}
             onClick={this.onClickSubmit}
           >
             {t('save')}
