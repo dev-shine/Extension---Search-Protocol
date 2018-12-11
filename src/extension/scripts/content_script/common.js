@@ -2165,6 +2165,7 @@ const fullfilBridgeAndAnnotation = (data) => {
   }
 }
 
+let linksAPI;
 export const genShowContentElements = ({
   zIndex,
   currentUser,
@@ -2175,7 +2176,7 @@ export const genShowContentElements = ({
   onUpdateAPI = () => {},
   showSubMenu = true
 } = {}) => (() => {
-  let linksAPI
+  // let linksAPI
 
   const fn = ({ hide = false, isLoggedIn = true } = {}) => {
     // const url = window.location.href
@@ -2211,7 +2212,7 @@ export const genShowContentElements = ({
         duration: mrConfig.nearVisibleDuration,
         onDestroy: () => oldAPI.destroy()
       })
-
+      
       onUpdateAPI(linksAPI)
     }
     if (hide) {
