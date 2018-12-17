@@ -13,7 +13,8 @@ const isProduction = process.env.NODE_ENV === 'production'
 module.exports = {
   entry: {
     sdk:            './src/sdk/sdk.js',
-    related_elements: './src/related_elements/index.js'
+    related_elements: './src/related_elements/index.js',
+    widget_bridge_notes: './src/widget_bridge_notes/index.js'
   },
   output: {
     path: path.join(__dirname, 'dist_sdk'),
@@ -98,6 +99,9 @@ module.exports = {
       const list = [
         {
           from: 'src/extension/assets/related_elements.html'
+        },
+        {
+          from: 'src/extension/assets/widget_bridge_notes.html'
         },
         {
           from: 'src/extension/assets/svg',

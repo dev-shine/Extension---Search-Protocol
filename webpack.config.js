@@ -27,7 +27,8 @@ module.exports = {
     after_create_bridge: './src/after_create_bridge/index.js',
     element_description: './src/element_description/index.js',
     flag_content: './src/flag_content/index.js',
-    share_content: './src/share_content/index.js'
+    share_content: './src/share_content/index.js',
+    widget_bridge_notes: './src/widget_bridge_notes/index.js'
   },
   output: {
     path: path.join(__dirname, 'dist'),

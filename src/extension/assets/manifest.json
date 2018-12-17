@@ -28,6 +28,8 @@
     "inject.js",
     "related_elements.html",
     "related_elements.js",
+    "widget_bridge_notes.html",
+    "widget_bridge_notes.js",
     "annotate.html",
     "annotate.js",
     "image_area.html",
@@ -59,7 +61,7 @@
       "run_at": "document_start"
     }
   ],
-  "content_security_policy": "script-src 'self' 'https://demo.bridgit.io' 'self' https://graph.facebook.com 'self' 'unsafe-eval' https://www.google-analytics.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://demo.bridgit.io 'self' https://graph.facebook.com 'self' 'unsafe-eval' https://www.google-analytics.com; object-src 'self'",
   "permissions": [
     "storage",
     "tabs",

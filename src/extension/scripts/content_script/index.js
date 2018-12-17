@@ -10,7 +10,8 @@ import { LOCAL_BRIDGE_STATUS } from '../../../common/models/local_model'
 import {
   annotate, buildBridge, selectImageArea, genShowContentElements,
   initContextMenus, bindSelectionEvent, bindSocialLoginEvent, showMessage,
-  getGlobalValue
+  getGlobalValue,
+  getPageZindex
 } from './common'
 import { showOneLink } from './show_bridges'
 import { until, pick } from '../../../common/utils'
@@ -358,22 +359,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 });
 
 
-function getPageZindex() {
-  const iFrameZindex = getGlobalValue().iFrameZindex;
-  var elems = document.getElementsByTagName("*");
-  var highest = 5;
-  for (var i = 0; i < elems.length; i++) {
-    var position =document.defaultView.getComputedStyle(elems[i],null).getPropertyValue("position");
-    var zindex=document.defaultView.getComputedStyle(elems[i],null).getPropertyValue("z-index");
-    if ( (position == "fixed" || position == "sticky") && zindex != 'auto' && zindex > highest ) {
-      highest = zindex;
-      break;
-    }
-  }
-  setState({zIndex: ((highest === 5) ? 500 : (highest > iFrameZindex) ? (iFrameZindex - 1) : (highest - 1)) })
-  // console.log("========================");
-  // console.log(state.zIndex);
-  // console.log("========================");
+function setPageZIndex() {
+  const zIndex = getPageZindex();
+  setState({zIndex:zIndex })
 }
 
 // document.body.setAttribute('bridgit-installed', true)
@@ -382,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log("DOMContentLoaded :: ");
 
   setTimeout(() => {
-    getPageZindex();
+    setPageZIndex();
     listen_token_message();
     checkUserBeforeInit({fromListening: 1}); // fromListening: 1  is for solving reloading issue in login uniform fnctionality 
   }, 1000);

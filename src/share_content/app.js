@@ -245,7 +245,7 @@ renderShareContent = () => {
           <div className="social-share">
               <FacebookShareButton
                 url={shareUrl}
-                quote={titleToShow || ""}
+                // quote={titleToShow || ""}
                 hashtag="#bridgit"
                 windowHeight= {600}
                 windowWidth= {600}
@@ -309,10 +309,10 @@ renderShareContent = () => {
             <div className="social-share">
               <TwitterShareButton
                 url={shareUrl}
-                title={titleToShow || ""}
+                // title={titleToShow || ""}
                 windowHeight= {600}
                 windowWidth= {600}
-                hashtags={["Bridgit"]}
+                // hashtags={["Bridgit"]}
                 onShareWindowClose = { () => this.trackSocialShare(sharePlatorm.TWITTER) }
                 className="social-share-button">
                 <TwitterIcon

@@ -907,7 +907,7 @@ export const createIframeWithMask = (function () {
       style: {
         position: 'fixed',
         'z-index': curZIndex,
-        'background-color': 'rgba(0, 0, 0, 0.25)',
+        'background-color': `rgba(0, 0, 0, ${args[0].bgOpacity ? 0 : 0.25})`,
         top: 0,
         bottom: 0,
         left: 0,
@@ -1561,6 +1561,53 @@ export function clearAPIData() {
   api_relations = [];
 }
 
+export const widgetBridgeNotes = async () => {
+  let url = '';
+  const host_name = window.location.origin;
+  if (window.location.hash) url = window.location.origin + "" + window.location.pathname
+  else url = window.location.href
+
+  const bridge_notes = await API.annotationsAndBridgesByUrl(url, host_name);
+  const iframeAPI = createIframeWithMask({
+
+    url: Ext.extension.getURL('widget_bridge_notes.html'),
+    width:  '100%',
+    height: '80%',
+    bgOpacity: true,
+    onAsk: (cmd, args) => {
+
+      switch (cmd) {
+        case 'INIT':
+          return {
+            ...bridge_notes
+          }
+        case 'DESTROY':
+          iframeAPI.destroy();
+          return;
+      }
+
+    }
+
+  })
+
+  setStyle(iframeAPI.$iframe, {
+    position: 'fixed',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    'background-color': '#e8e8e8',
+    border: '1px solid #ccc'
+  })
+
+
+}
+
+// setTimeout(() => {
+//   if (window.location.host == "medium.com")
+//     widgetBridgeNotes();
+// }, 1000);
+
+
 export const annotate = async({ mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}, onSuccess } = {}) => {
   // Promise.all( [API.loadNoteCategories(), API.getCategories() ] )
   // .then(values => {
@@ -2165,6 +2212,22 @@ const fullfilBridgeAndAnnotation = (data) => {
   }
 }
 
+export const getPageZindex = () => {
+  const iFrameZindex = getGlobalValue().iFrameZindex;
+  var elems = document.getElementsByTagName("*");
+  var highest = 5, zIndex ;
+  for (var i = 0; i < elems.length; i++) {
+    var position =document.defaultView.getComputedStyle(elems[i],null).getPropertyValue("position");
+    var zindex=document.defaultView.getComputedStyle(elems[i],null).getPropertyValue("z-index");
+    if ( (position == "fixed" || position == "sticky") && zindex != 'auto' && zindex > highest ) {
+      highest = zindex;
+      break;
+    }
+  }
+  zIndex =  (highest === 5) ? 500 : (highest > iFrameZindex) ? (iFrameZindex - 1) : (highest - 1);
+  return zIndex;
+}
+
 let linksAPI;
 export const genShowContentElements = ({
   zIndex,
@@ -2187,6 +2250,7 @@ export const genShowContentElements = ({
 
     const showElementsOnMouseReveal = (data, url, pageZIndex) => {
       zIndex = pageZIndex;
+      if (!zIndex) zIndex = getPageZindex();
       if (linksAPI) linksAPI.destroy()
       onUpdateCurrentPage(data)
       const oldAPI = showLinks({

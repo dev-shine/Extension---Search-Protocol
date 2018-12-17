@@ -1,4 +1,5 @@
-import { genShowContentElements, bindSelectionEvent } from '../extension/scripts/content_script/common'
+import 'babel-polyfill';
+import { genShowContentElements, bindSelectionEvent } from '../extension/scripts/content_script/common'; //, widgetBridgeNotes
 import { getPPI } from '../common/dom_utils'
 
 ;(function () {
@@ -27,7 +28,10 @@ import { getPPI } from '../common/dom_utils'
     getMouseRevealConfig: () => mouseRevealConfig,
     onUpdateCurrentPage:  (page) => { currentPage = page }
   })
-
+  
   showContentElements()
   bindSelectionEvent({ getCurrentPage })
+  // if (window.location.host == "bridgit.io")
+  //   widgetBridgeNotes();
+
 })()
