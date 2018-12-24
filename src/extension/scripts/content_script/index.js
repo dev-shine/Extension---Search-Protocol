@@ -348,7 +348,7 @@ const listen_token_message = () => {
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   if (request.method == 'youtube_video') {
-    var elements = document.getElementsByClassName("bridge_count");
+    var elements = document.getElementsByClassName("bridgit_bridge_count");
     while (elements[0]) {
         elements[0].parentNode.removeChild(elements[0]);
     }
@@ -373,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setPageZIndex();
     listen_token_message();
     checkUserBeforeInit({fromListening: 1}); // fromListening: 1  is for solving reloading issue in login uniform fnctionality 
-  }, 1000);
+    }, 1000);
 
   // Run your code here...
 });

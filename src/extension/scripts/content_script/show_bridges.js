@@ -123,22 +123,22 @@ const commonShowAPI = ({ rects }) => {
   }
 }
 
-const isShowHyperLinkBadgeCalled = () => {
-  return(
-    window.location.host !== "www.youtube.com" && window.location.host !== "www.quora.com"
-  )
-}
+// const isShowHyperLinkBadgeCalled = () => {
+//   return(
+//     window.location.host !== "www.youtube.com" && window.location.host !== "www.quora.com"
+//   )
+// }
 
-export const showHyperLinkBadge = ({ totalCount, url, $el }) => {
+export const showHyperLinkBadge = ({ totalCount, url, $el, globalLiveBuildAPI }) => {
   let timer
 
   const liveBuildAPI = liveBuild({
     bindEvent: (fn) => {
-      if ( isShowHyperLinkBadgeCalled() ) {
+      // if ( isShowHyperLinkBadgeCalled() ) {
         window.addEventListener('resize', fn)
         window.addEventListener('scroll', fn)
         timer = setInterval(fn, 2000)
-      }
+      // }
     },
     unbindEvent: (fn) => {
       window.removeEventListener('resize', fn)
@@ -167,7 +167,8 @@ export const showHyperLinkBadge = ({ totalCount, url, $el }) => {
           background: '#ef5d8f',
           color:      '#fff'
         },
-        onClick:  () => { window.location.href = url }
+        onClick:  () => { window.location.href = url },
+        isHyperLinkBadge: true
       })
 
       const api = {
@@ -189,6 +190,7 @@ export const showHyperLinkBadge = ({ totalCount, url, $el }) => {
       return api
     }
   })
+  globalLiveBuildAPI.push(liveBuildAPI);
 
   const api = ['getOverlayContainer', 'getBadgeContainer', 'getElement', 'show', 'hide', 'isInView', 'pointPosition'].reduce((prev, key) => {
     prev[key] = (...args) => {
@@ -345,7 +347,7 @@ export const showSelection = ({ zIndex, link, getLinksAPI, getCsAPI, color, opac
     bindEvent: (fn) => {
       window.addEventListener('resize', fn)
       window.addEventListener('scroll', fn)
-      // timer = setInterval(fn, 20000)
+      // timer = setInterval(fn, 2000)
     },
     unbindEvent: (fn) => {
       window.removeEventListener('resize', fn)
@@ -441,7 +443,10 @@ export const showSelection = ({ zIndex, link, getLinksAPI, getCsAPI, color, opac
   return api
 }
 
-export const showBridgeCount = ({ zIndex, position, text, onClick, style = {} }) => {
+export const showBridgeCount = ({ zIndex, position, text, onClick, style = {}, isHyperLinkBadge = false }) => {
+  
+  const className = isHyperLinkBadge ? "bridgit_bridge_count" : "bridgit_content_element";
+
   const size  = 40
   const $el   = createEl({
     text,
@@ -467,7 +472,7 @@ export const showBridgeCount = ({ zIndex, position, text, onClick, style = {} })
       ...style
     },
     attrs: {
-      class: 'bridge_count'
+      class: className
     }
   })
 

@@ -14,7 +14,7 @@ module.exports = {
   entry: {
     popup:            './src/popup/index.js',
     content_script:   './src/extension/scripts/content_script/index.js',
-    inject:           './src/extension/scripts/inject.js',
+    inject:           './src/extension/scripts/content_script/inject.js',
     background:       './src/extension/scripts/bg.js',
     sign_in_google:   './src/extension/scripts/sign_in_google.js',
     related_elements: './src/related_elements/index.js',
@@ -22,6 +22,7 @@ module.exports = {
     build_bridge:     './src/build_bridge/index.js',
     image_area:       './src/image_area/index.js',
     upsert_relation:  './src/upsert_relation/index.js',
+    video_frame:  './src/video_frame/index.js',
     upsert_note_type:  './src/upsert_note_type/index.js',
     sub_category:  './src/sub_category/index.js',
     after_create_bridge: './src/after_create_bridge/index.js',

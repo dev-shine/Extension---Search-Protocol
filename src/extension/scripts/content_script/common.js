@@ -898,7 +898,7 @@ export const createContextMenus = ({
   }
 }
 
-export const createIframeWithMask = (function () {  
+export const createIframeWithMask = (function () {
   let curZIndex = getGlobalValue().iFrameZindex // 110000
 
   return (...args) => {
@@ -1121,6 +1121,35 @@ export const showMessage = (text, options = {}, z_index = getGlobalValue().messa
   insertStyle(css, cssStyleId)
   createMessage(text, msgTimeout * 2)
 }
+
+export const videoFrame = () => {
+  const iframeAPI = createIframeWithMask({
+    url:    Ext.extension.getURL('video_frame.html'),
+    width:  605,
+    height: 605,
+    onAsk:  (cmd, args) => {
+      switch (cmd) {
+        case 'CLOSE_VIDEO_IFRAME':
+          iframeAPI.destroy()
+          return true
+
+      }
+    }
+  })
+
+  setStyle(iframeAPI.$iframe, {
+    position: 'fixed',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+    border: '1px solid #ccc'
+  })
+}
+
+// setTimeout(() => {
+  // if (location.hostname === "www.youtube.com")
+    // videoFrame();
+// }, 5000);
 
 export const upsertRelation = ({ onSuccess = () => {} }) => {
   const iframeAPI = createIframeWithMask({
@@ -1375,6 +1404,23 @@ export const buildBridge = async ({
   // .catch(ex => console.log(ex))
 }
 
+export const removeHyperLinkBadges = () => {
+
+  if (globalLiveBuildAPI.length > 0) {
+    globalLiveBuildAPI.forEach(api => {
+      api.destroy();
+    });
+    globalLiveBuildAPI = [];
+  }
+
+  [].forEach.call(document.querySelectorAll('.bridgit_bridge_count'),function(e){
+    e.parentNode.removeChild(e);
+  });
+
+}
+
+let globalLiveBuildAPI = [];
+
 export const showHyperLinkBadges = () => {
   const pageUrl = window.location.href
   const $links  = Array.from(document.getElementsByTagName('a'))
@@ -1390,6 +1436,7 @@ export const showHyperLinkBadges = () => {
   if (pageUrl.indexOf('bridgit.io') > -1) {
     return
   }
+  removeHyperLinkBadges();
   API.annotationsAndBridgesByUrls(urls)
   .then(result => {
     objMap((data, url) => {
@@ -1400,7 +1447,8 @@ export const showHyperLinkBadges = () => {
         return showHyperLinkBadge({
           $el,
           url,
-          totalCount: '' + count
+          totalCount: '' + count,
+          globalLiveBuildAPI
         })
       })
     }, result)

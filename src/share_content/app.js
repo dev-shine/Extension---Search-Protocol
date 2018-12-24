@@ -228,7 +228,7 @@ renderShareContent = () => {
       <Row>
         <Col span="23"/>
         <Col>
-          <Icon type="close-circle" onClick={this.onClickCancel} />
+          <Icon type="close-circle" className="pointer" onClick={this.onClickCancel} />
         </Col>
       </Row>
 
@@ -236,13 +236,13 @@ renderShareContent = () => {
 
       <Row>
         <Col span="4">
-          <div className="social-share">
+          <div className="social-share pointer">
               <img src="./img/old_icon.png" height="32" width="32" onClick={() => this.formShow("bridgit")}/>
           </div>
         </Col>
 
         <Col span="4">
-          <div className="social-share">
+          <div className="social-share pointer">
               <FacebookShareButton
                 url={shareUrl}
                 // quote={titleToShow || ""}
@@ -289,7 +289,7 @@ renderShareContent = () => {
 
 
         <Col span="4">
-          <div className="social-share">
+          <div className="social-share pointer">
               <Icon type="mail" onClick={() => this.formShow("email")} style={{fontSize: 32}} />
             {/* <LinkedinShareCount
               url={shareUrl}
@@ -300,7 +300,7 @@ renderShareContent = () => {
         </Col>
 
         <Col span="4">
-          <div className="social-share">
+          <div className="social-share pointer">
               <Icon type="link" onClick={() => this.formShow("link")} style={{fontSize: 32}} />
           </div>
         </Col>
@@ -332,7 +332,7 @@ renderShareContent = () => {
         <div>
           <Row>
             <Col span="23"><Input name="web_url" id="web_url" value={shareUrl} /></Col>
-            <Col span="1"><img src="./img/copy_icon.png" height="32" width="32" onClick={() => ipc.ask("COPIED_URL",{share_url: shareUrl}) }  /></Col>
+            <Col span="1"><img src="./img/copy_icon.png" className="pointer" height="32" width="32" onClick={() => ipc.ask("COPIED_URL",{share_url: shareUrl}) }  /></Col>
           </Row>
           <br/>
         </div>
