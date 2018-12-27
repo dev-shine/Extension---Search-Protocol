@@ -42,6 +42,8 @@
     "upsert_relation.js",
     "video_frame.html",
     "video_frame.js",
+    "bridgit_sidebar.html",
+    "bridgit_sidebar.js",
     "upsert_note_type.html",
     "upsert_note_type.js",
     "sub_category.html",

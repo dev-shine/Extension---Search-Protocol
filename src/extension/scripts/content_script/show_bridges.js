@@ -347,12 +347,12 @@ export const showSelection = ({ zIndex, link, getLinksAPI, getCsAPI, color, opac
     bindEvent: (fn) => {
       window.addEventListener('resize', fn)
       window.addEventListener('scroll', fn)
-      // timer = setInterval(fn, 2000)
+      timer = setInterval(fn, 2000)
     },
     unbindEvent: (fn) => {
       window.removeEventListener('resize', fn)
       window.removeEventListener('scroll', fn)
-      // clearInterval(timer)
+      clearInterval(timer)
     },
     getFuse: () => {
       try {

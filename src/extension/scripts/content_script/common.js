@@ -903,6 +903,7 @@ export const createIframeWithMask = (function () {
 
   return (...args) => {
     const iframeAPI = createIframe(...args)
+    const isMaskAppend = (!args[0].isMaskAppend) ? true : false;
     const $mask = createEl({
       style: {
         position: 'fixed',
@@ -915,7 +916,8 @@ export const createIframeWithMask = (function () {
       }
     })
 
-    document.body.appendChild($mask)
+    if (isMaskAppend)
+      document.body.appendChild($mask)
 
     setStyle(iframeAPI.$iframe, {
       'z-index':     curZIndex + 1
@@ -1126,11 +1128,24 @@ export const videoFrame = () => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('video_frame.html'),
     width:  605,
-    height: 605,
+    height: 750,
     onAsk:  (cmd, args) => {
       switch (cmd) {
         case 'CLOSE_VIDEO_IFRAME':
           iframeAPI.destroy()
+          return true
+
+        case 'ANNOTATE':
+          annotate();
+          console.log("videoFrame ANNOTATE")
+          return true
+
+        case 'BEGIN_BRIDGE':
+          console.log("videoFrame BEGIN_BRIDGE")
+          return true
+
+        case 'BUILD_BRIDGE':
+          console.log("videoFrame BUILD_BRIDGE")
           return true
 
       }
@@ -1147,9 +1162,38 @@ export const videoFrame = () => {
 }
 
 // setTimeout(() => {
-  // if (location.hostname === "www.youtube.com")
-    // videoFrame();
+//   if (location.hostname === "www.youtube.com")
+//     videoFrame();
 // }, 5000);
+
+export const openBridgitSidebar = () => {
+
+  const $sidebar_identity = createEl({tag: 'span',attrs: {id: "bridgit_sidebar"}})
+  document.body.appendChild($sidebar_identity)
+
+  const iframeAPI = createIframeWithMask({
+    url:    Ext.extension.getURL('bridgit_sidebar.html'),
+    width:  100,
+    height: 900,
+    isMaskAppend: 1,
+    onAsk:  (cmd, args) => {
+      switch (cmd) {
+        case 'CLOSE_BRIDGIT_SIDEBAR':
+          iframeAPI.destroy()
+          return true
+      }
+    }
+  })
+
+  setStyle(iframeAPI.$iframe, {
+    position: 'fixed',
+    left: '0%',
+    top: '0%',
+    // transform: 'translate(-50%, -50%)',
+    border: '1px solid #ccc'
+  })
+
+}
 
 export const upsertRelation = ({ onSuccess = () => {} }) => {
   const iframeAPI = createIframeWithMask({
@@ -2316,6 +2360,9 @@ export const genShowContentElements = ({
                     : () => {}
       })
       oldAPI.hide()
+
+      // if (!document.getElementById("bridgit_sidebar"))
+      //   openBridgitSidebar();
 
       const mrConfig = getMouseRevealConfig()
       linksAPI = new MouseReveal({
