@@ -9,7 +9,8 @@ import {
   clientWidth, clientHeight,
   pixel, xpath, imageSize,
   dataUrlFromImageElement,
-  pageX, pageY, bindSelectionEnd
+  pageX, pageY, bindSelectionEnd,
+  getElementByXPath
 } from '../../../common/dom_utils'
 import { Box, getAnchorRects, BOX_ANCHOR_POS } from '../../../common/shapes/box'
 import { isPointInRange, selectionToJSON, storeImageOrContent,  parseRangeJSON } from '../../../common/selection'
@@ -43,6 +44,12 @@ export const getGlobalValue = () => {
 export const commonStyle = {
   'box-sizing':  'border-box',
   'font-family': 'Arial'
+}
+
+export const SOURCE = {
+  "BRIDGE": "Bridges",
+  "NOTES": "Notes",
+  "NONE": "None"
 }
 
 export const createEl = ({ tag = 'div', attrs = {}, style = {}, text }) => {
@@ -1161,38 +1168,91 @@ export const videoFrame = () => {
   })
 }
 
-// setTimeout(() => {
-//   if (location.hostname === "www.youtube.com")
-//     videoFrame();
-// }, 5000);
 
-export const openBridgitSidebar = () => {
+let sidebarIframeAPI;
+export const openBridgitSidebar = (data) => {
 
   const $sidebar_identity = createEl({tag: 'span',attrs: {id: "bridgit_sidebar"}})
   document.body.appendChild($sidebar_identity)
 
-  const iframeAPI = createIframeWithMask({
+  sidebarIframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('bridgit_sidebar.html'),
     width:  100,
     height: 900,
     isMaskAppend: 1,
     onAsk:  (cmd, args) => {
       switch (cmd) {
-        case 'CLOSE_BRIDGIT_SIDEBAR':
-          iframeAPI.destroy()
+
+        case 'INIT_SIDEBAR':
+          return {data}
+
+        case 'BRIDGIT_SIDEBAR':
+          if (sidebarDataIframeAPI)
+            sidebarDataIframeAPI.destroy();
+          openBridgitSidebarData(args);
+          return true
+
+      }
+    }
+  })
+
+  setStyle(sidebarIframeAPI.$iframe, {
+    position: 'fixed',
+    left: '0%',
+    top: '0%',
+    border: '1px solid #ccc'
+  })
+
+}
+
+let sidebarDataIframeAPI;
+export const openBridgitSidebarData = (data) => {
+  sidebarDataIframeAPI = createIframeWithMask({
+    url:    Ext.extension.getURL('bridgit_sidebar_data.html'),
+    width:  350,
+    height: 900,
+    isMaskAppend: 1,
+    onAsk:  (cmd, args) => {
+      switch (cmd) {
+
+        case 'INIT_SIDEBAR_DATA':
+          return {data}
+
+        case 'SCROLL_ELEMENT':
+          scrollElement(args);
+          return true
+
+        case 'CLOSE_SIDEBAR_DATA':
+          sidebarDataIframeAPI.destroy();
+          sidebarDataIframeAPI = undefined;
           return true
       }
     }
   })
 
-  setStyle(iframeAPI.$iframe, {
+  setStyle(sidebarDataIframeAPI.$iframe, {
     position: 'fixed',
     left: '0%',
     top: '0%',
-    // transform: 'translate(-50%, -50%)',
+    'margin-left': '100px',
     border: '1px solid #ccc'
   })
 
+}
+
+export const scrollElement = (data) => {
+  const {source, elem} = data;
+  let $el;
+  if (source === SOURCE.NOTES) {
+    const locator = elem.targetElement.start ? elem.targetElement.start.locator : elem.targetElement.locator;
+    $el = getElementByXPath(locator);
+    if ($el && $el.nodeType === 3) $el = $el.parentNode
+  } else if (source === SOURCE.BRIDGE) {
+    const locator = elem.fromElement ? (elem.fromElement.start ? elem.fromElement.start.locator : elem.fromElement.locator) : (elem.toElement.start ? elem.toElement.start.locator : elem.toElement.locator);
+    $el = getElementByXPath(locator);
+    if ($el && $el.nodeType === 3) $el = $el.parentNode
+  }
+  $el.scrollIntoView();
 }
 
 export const upsertRelation = ({ onSuccess = () => {} }) => {
@@ -2361,9 +2421,6 @@ export const genShowContentElements = ({
       })
       oldAPI.hide()
 
-      // if (!document.getElementById("bridgit_sidebar"))
-      //   openBridgitSidebar();
-
       const mrConfig = getMouseRevealConfig()
       linksAPI = new MouseReveal({
         items:    oldAPI.links,
@@ -2384,6 +2441,8 @@ export const genShowContentElements = ({
       const pageZIndex = data.z_index ? data.z_index : zIndex;
       log('showContentElements got links', data)
       showElementsOnMouseReveal(data, url, pageZIndex)
+      addSidebarEventListener(data);
+      // sidebarDrawer(data);
     })
     .catch(e => log.error(e.stack))
       
@@ -2394,3 +2453,29 @@ export const genShowContentElements = ({
 
   return fn
 })()
+
+const sidebarDrawer = (data, isOpen = true) => {
+  if (!document.getElementById("bridgit_sidebar"))
+    openBridgitSidebar(data);
+  else {
+    document.getElementById("bridgit_sidebar").remove();
+    sidebarIframeAPI.destroy();
+    if (sidebarDataIframeAPI)
+      sidebarDataIframeAPI.destroy();
+    sidebarIframeAPI = undefined;
+    sidebarDataIframeAPI = undefined;
+    if (isOpen) sidebarDrawer(data);
+  }
+
+}
+
+const addSidebarEventListener = (data) => {
+ 
+  window.addEventListener("keypress", event => {
+
+    if (event.key === "b") {
+      sidebarDrawer(data, false);
+    }
+  })
+  
+}

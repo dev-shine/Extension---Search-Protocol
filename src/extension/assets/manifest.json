@@ -44,6 +44,8 @@
     "video_frame.js",
     "bridgit_sidebar.html",
     "bridgit_sidebar.js",
+    "bridgit_sidebar_data.html",
+    "bridgit_sidebar_data.js",
     "upsert_note_type.html",
     "upsert_note_type.js",
     "sub_category.html",
