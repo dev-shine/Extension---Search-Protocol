@@ -46,10 +46,17 @@ export const commonStyle = {
   'font-family': 'Arial'
 }
 
-export const SOURCE = {
+const SOURCE = {
   "BRIDGE": "Bridges",
   "NOTES": "Notes",
+  "BOARD": "Board",
   "NONE": "None"
+}
+
+const TYPE = {
+  "BRIDGE": 0,
+  "NOTE": 1,
+  "ELEMENT": 2
 }
 
 export const createEl = ({ tag = 'div', attrs = {}, style = {}, text }) => {
@@ -1168,10 +1175,25 @@ export const videoFrame = () => {
   })
 }
 
+let followers = [];
+export const getFollowers = () => {
+  API.getUserFollowers()
+  .then(users => {
+    followers = users;
+  })
+  .catch(err => {
+    this.setState({
+      followers: []
+    })
+
+  })
+
+}
 
 let sidebarIframeAPI;
 export const openBridgitSidebar = (data) => {
 
+  getFollowers();
   const $sidebar_identity = createEl({tag: 'span',attrs: {id: "bridgit_sidebar"}})
   document.body.appendChild($sidebar_identity)
 
@@ -1184,9 +1206,10 @@ export const openBridgitSidebar = (data) => {
       switch (cmd) {
 
         case 'INIT_SIDEBAR':
-          return {data}
+          return {data, SOURCE}
 
         case 'BRIDGIT_SIDEBAR':
+          args.followers = followers;
           if (sidebarDataIframeAPI)
             sidebarDataIframeAPI.destroy();
           openBridgitSidebarData(args);
@@ -1216,10 +1239,18 @@ export const openBridgitSidebarData = (data) => {
       switch (cmd) {
 
         case 'INIT_SIDEBAR_DATA':
-          return {data}
+          return {data, SOURCE}
 
         case 'SCROLL_ELEMENT':
           scrollElement(args);
+          return true
+
+        case 'SHARE_CONTENT_SIDEBAR':
+          let type;
+          if (SOURCE.BRIDGE === args.source) type = 0
+          else if (SOURCE.NOTES === args.source) type = 1
+          else if (SOURCE.BOARD === args.source) type = 2
+          showShareContent({shareContent: args.shareContent, type, followers: args.followers})
           return true
 
         case 'CLOSE_SIDEBAR_DATA':
@@ -1246,12 +1277,14 @@ export const scrollElement = (data) => {
   if (source === SOURCE.NOTES) {
     const locator = elem.targetElement.start ? elem.targetElement.start.locator : elem.targetElement.locator;
     $el = getElementByXPath(locator);
-    if ($el && $el.nodeType === 3) $el = $el.parentNode
   } else if (source === SOURCE.BRIDGE) {
     const locator = elem.fromElement ? (elem.fromElement.start ? elem.fromElement.start.locator : elem.fromElement.locator) : (elem.toElement.start ? elem.toElement.start.locator : elem.toElement.locator);
     $el = getElementByXPath(locator);
-    if ($el && $el.nodeType === 3) $el = $el.parentNode
+  } else if (source === SOURCE.BOARD) {
+    const locator = elem.start.locator;
+    $el = getElementByXPath(locator);
   }
+  if ($el && $el.nodeType === 3) $el = $el.parentNode
   $el.scrollIntoView();
 }
 
@@ -2472,7 +2505,6 @@ const sidebarDrawer = (data, isOpen = true) => {
 const addSidebarEventListener = (data) => {
  
   window.addEventListener("keypress", event => {
-
     if (event.key === "b") {
       sidebarDrawer(data, false);
     }

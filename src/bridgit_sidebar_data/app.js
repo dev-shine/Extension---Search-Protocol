@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Drawer, Card } from 'antd'
+import { Drawer, Card, Icon } from 'antd'
 import { translate } from 'react-i18next'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import { setIn, updateIn, compose } from '../common/utils'
@@ -8,29 +8,30 @@ import './app.scss'
 
 const ipc = ipcForIframe()
 
-const SOURCE = {
-    "BRIDGE": "Bridges",
-    "NOTES": "Notes",
-    "NONE": "None"
-}
+let SOURCE;
 
 class App extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            source: SOURCE.NONE,
+            source: "",
             notes: [],
-            bridges: []
+            bridges: [],
+            elements: [],
+            followers: []
         }
         
         ipc.ask('INIT_SIDEBAR_DATA')
         .then(data => {
             const bridgeObj = data.data;
+            SOURCE = data.SOURCE;
             this.setState({
                 source: bridgeObj.via,
                 bridges: bridgeObj.bridges || [],
-                notes: bridgeObj.notes || []
+                notes: bridgeObj.notes || [],
+                elements: bridgeObj.elements || [],
+                followers: bridgeObj.followers || []
             })
         })
 
@@ -41,11 +42,15 @@ class App extends Component {
         ipc.ask("SCROLL_ELEMENT",{elem, source})
     }
 
+    shareContent = (e, shareContent) => {
+        e.preventDefault();
+        const {followers, source} = this.state;
+        ipc.ask("SHARE_CONTENT_SIDEBAR",{shareContent, followers, source})
+    }
+
     render () {
         const { t } = this.props
-        const { source, bridges, notes } = this.state;
-        console.log("notes :: ", notes);
-        console.log("bridges :: ", bridges);
+        const { source, bridges, notes, elements, followers } = this.state;
 
         return (
 
@@ -59,21 +64,50 @@ class App extends Component {
                 onClose = {() => ipc.ask("CLOSE_SIDEBAR_DATA")}
                 >
 
-                {source === SOURCE.BRIDGE && bridges.map(bridge => {
+                {SOURCE && source === SOURCE.BRIDGE && bridges.map(bridge => {
                     return (
-                        <Card key={bridge.id} className="cursor" onClick={() => this.scrollElement(bridge)}>
-                            <p>{bridge.desc}</p>
-                        </Card>
+                        <React.Fragment key={bridge.id}>
+                            <Card 
+                            className="cursor"
+                            extra={<Icon type="share-alt" className="cursor-1" onClick={(e) => this.shareContent(e, bridge)} />} 
+                            hoverable
+                            onClick={() => this.scrollElement(bridge)}
+                            >
+                                <p>{bridge.desc}</p>
+                            </Card><br/>
+                        </React.Fragment>
                     )
                 })}
 
-                {source === SOURCE.NOTES && notes.map(note => {
+                {SOURCE && source === SOURCE.NOTES && notes.map(note => {
                     return (
-                        <Card key={note.id} className="cursor" onClick={() => this.scrollElement(note)}>
-                            <h4>{note.title}</h4>
-                            <p>{note.desc}</p>
-                        </Card>
+                        <React.Fragment key={note.id}>
+                            <Card
+                            className="cursor"
+                            title={note.title}
+                            extra={<Icon type="share-alt" className="cursor-1" onClick={(e) => this.shareContent(e, note)} />} 
+                            hoverable
+                            onClick={() => this.scrollElement(note)}>
+                                {/* <h4>{note.title}</h4> */}
+                                <p>{note.desc}</p>
+                            </Card><br/>
+                        </React.Fragment>
                     )
+                })}
+                {SOURCE && source === SOURCE.BOARD && elements.map(element => {
+                    if (element.saveBoard === 1) {
+                        return (
+                            <React.Fragment key={element.id}>
+                                <Card
+                                hoverable
+                                extra={<Icon type="share-alt" className="cursor-1" onClick={(e) => this.shareContent(e, element)} />} 
+                                onClick={() => this.scrollElement(element)}
+                                >
+                                <p>{element.text}</p>
+                                </Card><br/>
+                            </React.Fragment>
+                        )
+                    }
                 })}
 
 

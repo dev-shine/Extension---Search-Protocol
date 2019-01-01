@@ -8,43 +8,44 @@ import './app.scss'
 
 const ipc = ipcForIframe()
 
-const SOURCE = {
-    "BRIDGE": "Bridges",
-    "NOTES": "Notes",
-    "NONE": "None"
-}
+let SOURCE;
 
 class App extends Component {
 
     constructor(props) {
         super(props);
         this.state= {
-            source: SOURCE.NONE,
+            source: "",
             bridges: [],
             notes: [],
-            via: SOURCE.NONE
+            elements: []
         }
         
         ipc.ask('INIT_SIDEBAR')
         .then(data => {
             const bridgeObj = data.data;
+            SOURCE = data.SOURCE;
             this.setState({
                 bridges: bridgeObj.bridges,
-                notes: bridgeObj.annotations
+                notes: bridgeObj.annotations,
+                elements: bridgeObj.elements
             })
         })
 
     }
 
     bridgeNoteData = (via) => {
-        const {bridges, notes} = this.state;
-        ipc.ask("BRIDGIT_SIDEBAR", {via, bridges, notes})
+        const {bridges, notes, elements} = this.state;
+        this.setState({
+            source: via
+        })
+        ipc.ask("BRIDGIT_SIDEBAR", {via, bridges, notes, elements})
     }
 
     render () {
         const { t } = this.props
         const { source } = this.state
-
+        
         return (
             <React.Fragment>
                 <Drawer
@@ -54,8 +55,27 @@ class App extends Component {
                 closable={false}
                 visible={true}
                 >
-                  <img src="./img/old_icon.png" className="bridge_style" height="64" width="64" onClick={() => this.bridgeNoteData(SOURCE.BRIDGE)} /><br/><br/>
-                  <img src="./img/edit.png" className="bridge_style" height="64" width="64" onClick={() => this.bridgeNoteData(SOURCE.NOTES)} />
+                  <img
+                    src={ SOURCE && source === SOURCE.BRIDGE ? "./img/bridge_active.png" : "./img/bridge_inactive.png"}
+                    className="bridge_style"
+                    height="64"
+                    width="64"
+                    onClick={() => this.bridgeNoteData(SOURCE.BRIDGE)}
+                  /><br/><br/>
+                  <img 
+                    src={ SOURCE && source === SOURCE.NOTES ? "./img/notes_active.png" : "./img/notes_inactive.png"}
+                    className="bridge_style"
+                    height="64"
+                    width="64"
+                    onClick={() => this.bridgeNoteData(SOURCE.NOTES)}
+                  /><br/><br/>
+                  <img 
+                    src={ SOURCE && source === SOURCE.BOARD ? "./img/board_active.png" : "./img/board_inactive.png"}
+                    className="bridge_style"
+                    height="64"
+                    width="64"
+                    onClick={() => this.bridgeNoteData(SOURCE.BOARD)} 
+                  />
 
                 </Drawer>
             </React.Fragment>
