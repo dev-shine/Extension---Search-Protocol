@@ -19,7 +19,8 @@ class App extends Component {
             notes: [],
             bridges: [],
             elements: [],
-            followers: []
+            followers: [],
+            saveBoard: false
         }
         
         ipc.ask('INIT_SIDEBAR_DATA')
@@ -31,7 +32,8 @@ class App extends Component {
                 bridges: bridgeObj.bridges || [],
                 notes: bridgeObj.notes || [],
                 elements: bridgeObj.elements || [],
-                followers: bridgeObj.followers || []
+                followers: bridgeObj.followers || [],
+                saveBoard: data.saveBoard
             })
         })
 
@@ -50,7 +52,7 @@ class App extends Component {
 
     render () {
         const { t } = this.props
-        const { source, bridges, notes, elements, followers } = this.state;
+        const { source, bridges, notes, elements, saveBoard } = this.state;
 
         return (
 
@@ -63,6 +65,16 @@ class App extends Component {
                 visible={true}
                 onClose = {() => ipc.ask("CLOSE_SIDEBAR_DATA")}
                 >
+
+                {SOURCE && source === SOURCE.BRIDGE && bridges.length === 0 &&
+                    <p className="blank-elements">Not any Bridge Yet!</p>
+                }
+                {SOURCE && source === SOURCE.NOTES && notes.length === 0 &&
+                    <p className="blank-elements">Not any Notes Yet!</p>
+                }
+                {SOURCE && source === SOURCE.BOARD && !saveBoard &&
+                    <p className="blank-elements">Not any Board Yet!</p>
+                }
 
                 {SOURCE && source === SOURCE.BRIDGE && bridges.map(bridge => {
                     return (
@@ -109,7 +121,6 @@ class App extends Component {
                         )
                     }
                 })}
-
 
                 </Drawer>
         </React.Fragment>

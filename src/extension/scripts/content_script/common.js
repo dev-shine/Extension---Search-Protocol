@@ -32,6 +32,7 @@ let api_relations = [];
 let localBridgeStatus = LOCAL_BRIDGE_STATUS.EMPTY;
 let localBridgeData = null;
 let contentElement = {element_id: null};
+let pageData;
 
 
 export const getGlobalValue = () => {
@@ -1239,7 +1240,16 @@ export const openBridgitSidebarData = (data) => {
       switch (cmd) {
 
         case 'INIT_SIDEBAR_DATA':
-          return {data, SOURCE}
+          let saveBoard = false;
+          let elem_len = data.elements.length;
+          for (let i = 0; i < elem_len ; i++) {
+            let element = data.elements[i];
+            if (element.saveBoard === 1) {
+              saveBoard = true;
+              break;
+            }
+          }
+          return {data, SOURCE, saveBoard}
 
         case 'SCROLL_ELEMENT':
           scrollElement(args);
@@ -2434,6 +2444,9 @@ export const genShowContentElements = ({
     else url = window.location.href
 
     const showElementsOnMouseReveal = (data, url, pageZIndex) => {
+      pageData = data;
+      if (linksAPI)
+        sidebarDrawer();
       zIndex = pageZIndex;
       if (!zIndex) zIndex = getPageZindex();
       if (linksAPI) linksAPI.destroy()
@@ -2474,8 +2487,6 @@ export const genShowContentElements = ({
       const pageZIndex = data.z_index ? data.z_index : zIndex;
       log('showContentElements got links', data)
       showElementsOnMouseReveal(data, url, pageZIndex)
-      addSidebarEventListener(data);
-      // sidebarDrawer(data);
     })
     .catch(e => log.error(e.stack))
       
@@ -2487,27 +2498,27 @@ export const genShowContentElements = ({
   return fn
 })()
 
-const sidebarDrawer = (data, isOpen = true) => {
-  if (!document.getElementById("bridgit_sidebar"))
-    openBridgitSidebar(data);
-  else {
-    document.getElementById("bridgit_sidebar").remove();
-    sidebarIframeAPI.destroy();
-    if (sidebarDataIframeAPI)
-      sidebarDataIframeAPI.destroy();
-    sidebarIframeAPI = undefined;
-    sidebarDataIframeAPI = undefined;
-    if (isOpen) sidebarDrawer(data);
+const sidebarDrawer = (isOpen = true) => {
+  if (pageData) {
+    if (!document.getElementById("bridgit_sidebar"))
+      openBridgitSidebar(pageData);
+    else {
+      document.getElementById("bridgit_sidebar").remove();
+      sidebarIframeAPI.destroy();
+      if (sidebarDataIframeAPI)
+        sidebarDataIframeAPI.destroy();
+      sidebarIframeAPI = undefined;
+      sidebarDataIframeAPI = undefined;
+      if (isOpen) sidebarDrawer(pageData);
+    }
   }
 
 }
 
-const addSidebarEventListener = (data) => {
- 
+export const addSidebarEventListener = () => {
   window.addEventListener("keypress", event => {
     if (event.key === "b") {
-      sidebarDrawer(data, false);
-    }
-  })
-  
+      sidebarDrawer(false);
+    }}
+  )
 }

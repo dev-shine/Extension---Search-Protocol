@@ -11,7 +11,7 @@ import {
   annotate, buildBridge, selectImageArea, genShowContentElements,
   initContextMenus, bindSelectionEvent, bindSocialLoginEvent, showMessage,
   getGlobalValue,
-  getPageZindex
+  getPageZindex, addSidebarEventListener
 } from './common'
 import { showOneLink } from './show_bridges'
 import { until, pick } from '../../../common/utils'
@@ -111,6 +111,7 @@ const init = ({ isLoggedIn = false }) => {
 
   bindEvents()
   bindReloadEvent(getCsAPI);
+  addSidebarEventListener();
   isLoggedIn // && bindSelectionEvent({ getCurrentPage })
   API.getUserSettings()
   .then(settings => {
