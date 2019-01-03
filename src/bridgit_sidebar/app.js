@@ -30,6 +30,7 @@ class App extends Component {
                 notes: bridgeObj.annotations,
                 elements: bridgeObj.elements
             })
+            this.bridgeNoteData(SOURCE.BOARD)
         })
 
     }
@@ -55,6 +56,13 @@ class App extends Component {
                 closable={false}
                 visible={true}
                 >
+                <img 
+                    src={ SOURCE && source === SOURCE.BOARD ? "./img/board_active.png" : "./img/board_inactive.png"}
+                    className="bridge_style"
+                    height="64"
+                    width="64"
+                    onClick={() => this.bridgeNoteData(SOURCE.BOARD)}
+                />
                 <img
                     src={ SOURCE && source === SOURCE.BRIDGE ? "./img/bridge_active.png" : "./img/bridge_inactive.png"}
                     className="bridge_style"
@@ -69,13 +77,6 @@ class App extends Component {
                     width="64"
                     onClick={() => this.bridgeNoteData(SOURCE.NOTES)}
                 /><br/><br/>
-                <img 
-                    src={ SOURCE && source === SOURCE.BOARD ? "./img/board_active.png" : "./img/board_inactive.png"}
-                    className="bridge_style"
-                    height="64"
-                    width="64"
-                    onClick={() => this.bridgeNoteData(SOURCE.BOARD)}
-                />
                 <img 
                     src={ "./img/profile.png"}
                     className="bridge_style profile_section"

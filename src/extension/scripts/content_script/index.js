@@ -111,7 +111,7 @@ const init = ({ isLoggedIn = false }) => {
 
   bindEvents()
   bindReloadEvent(getCsAPI);
-  addSidebarEventListener();
+  addSidebarEventListener(showContentElements);
   isLoggedIn // && bindSelectionEvent({ getCurrentPage })
   API.getUserSettings()
   .then(settings => {

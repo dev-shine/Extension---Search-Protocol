@@ -1183,16 +1183,13 @@ export const getFollowers = () => {
     followers = users;
   })
   .catch(err => {
-    this.setState({
-      followers: []
-    })
-
+    followers = []
   })
 
 }
 
 let sidebarIframeAPI;
-export const openBridgitSidebar = (data) => {
+export const openBridgitSidebar = (data, showContentElements) => {
 
   getFollowers();
   const $sidebar_identity = createEl({tag: 'span',attrs: {id: "bridgit_sidebar"}})
@@ -1213,7 +1210,7 @@ export const openBridgitSidebar = (data) => {
           args.followers = followers;
           if (sidebarDataIframeAPI)
             sidebarDataIframeAPI.destroy();
-          openBridgitSidebarData(args);
+          openBridgitSidebarData(args, showContentElements);
           return true
 
       }
@@ -1230,7 +1227,7 @@ export const openBridgitSidebar = (data) => {
 }
 
 let sidebarDataIframeAPI;
-export const openBridgitSidebarData = (data) => {
+export const openBridgitSidebarData = (data, showContentElements) => {
   sidebarDataIframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('bridgit_sidebar_data.html'),
     width:  350,
@@ -1254,6 +1251,18 @@ export const openBridgitSidebarData = (data) => {
         case 'SCROLL_ELEMENT':
           scrollElement(args);
           return true
+
+        case 'SIDEBAR_ANNOTATE':
+          annotate({ linkData: args.element, onSuccess: showContentElements })
+          return true
+
+        case 'SIDEBAR_BRIDGE':
+          setTimeout(async () => {
+            await beginBridge( args.from_bridge, {clientY: 388});
+            bridgeCreated(args.to_bridge, showContentElements)
+          }, 1);
+          return true
+
 
         case 'SHARE_CONTENT_SIDEBAR':
           let type;
@@ -1390,7 +1399,7 @@ export const showMsgAfterCreateBridge = () => {
   return API.getUserSettings()
   .then(settings => {
     if (settings.hideAfterCreateMsg)  return true
-
+    
     const iframeAPI = createIframeWithMask({
       url:    Ext.extension.getURL('after_create_bridge.html'),
       width:  520,
@@ -1742,7 +1751,6 @@ export const selectImageArea = ({ $img, linkData, getCurrentPage, showContentEle
 }
 
 export const copyTextToClipboard = (text, e) => {
-
   chrome.runtime.sendMessage({type: 'copy',text: text}, response => {
     const z_index = 1200002, msgTimeout = 400;
     showMessage('Copied', { yOffset: e.clientY }, z_index, msgTimeout)
@@ -1899,6 +1907,28 @@ export const commonMenuOptions = {
   }
 }
 
+export const beginBridge = async (linkData, e) => {
+  copyTextToClipboard(linkData.text, e);
+  API.resetLocalBridge()
+  .then(() => {
+    API.createLocalBridge(linkData)
+    fetchLocalData()
+  })
+  .then(showMsgAfterCreateBridge)
+  .catch(e => log.error(e.stack))
+  resetLocalContentData();
+  api_relations = (await apiCallBridgesNotes(1))[0];
+}
+
+export const bridgeCreated = (linkData, showContentElements) => {
+  API.buildLocalBridge(linkData)
+  .then(() => buildBridge({
+    mode:       C.UPSERT_MODE.ADD,
+    onSuccess:  showContentElements
+  }))
+  .catch(e => log.error(e.stack))
+}
+
 export const commonMenuItems = (getCurrentPage) => ({
   annotate: ({ showContentElements }) => ({
     text: i18n.t('annotate'),
@@ -1911,8 +1941,8 @@ export const commonMenuItems = (getCurrentPage) => ({
         checkForPartialWord({getCurrentPage}, e);
     }
   }),
-  saveToBoard: ({ showContentElements }) => ({
-    text: i18n.t('saveToBoard'),
+  saveToBoard: ({ showContentElements, addSelection = 0 }) => ({
+    text: addSelection === 1 ? i18n.t('addSelection') : i18n.t('saveToBoard'),
     key: 'saveToBoard',
     onClick: (e, { linkData }) => {
       const data = {
@@ -1963,16 +1993,17 @@ export const commonMenuItems = (getCurrentPage) => ({
     text: i18n.t('createBridge'),
     key: 'createBridge',
     onClick: async (e, { linkData }) => {
-      copyTextToClipboard(linkData.text, e);
-      API.resetLocalBridge()
-      .then(() => {
-        API.createLocalBridge(linkData)
-        fetchLocalData()
-      })
-      .then(showMsgAfterCreateBridge)
-      .catch(e => log.error(e.stack))
-      resetLocalContentData();
-      api_relations = (await apiCallBridgesNotes(1))[0];
+      await beginBridge(linkData, e);
+      // copyTextToClipboard(linkData.text, e);
+      // API.resetLocalBridge()
+      // .then(() => {
+      //   API.createLocalBridge(linkData)
+      //   fetchLocalData()
+      // })
+      // .then(showMsgAfterCreateBridge)
+      // .catch(e => log.error(e.stack))
+      // resetLocalContentData();
+      // api_relations = (await apiCallBridgesNotes(1))[0];
     },
     onMouseOver: (e) => {
       checkForPartialWord({getCurrentPage}, e);
@@ -1982,12 +2013,13 @@ export const commonMenuItems = (getCurrentPage) => ({
     text: i18n.t('buildBridge'),
     key: 'buildBridge',
     onClick: (e, { linkData }) => {
-      API.buildLocalBridge(linkData)
-      .then(() => buildBridge({
-        mode:       C.UPSERT_MODE.ADD,
-        onSuccess:  showContentElements
-      }))
-      .catch(e => log.error(e.stack))
+      bridgeCreated(linkData, showContentElements);
+      // API.buildLocalBridge(linkData)
+      // .then(() => buildBridge({
+      //   mode:       C.UPSERT_MODE.ADD,
+      //   onSuccess:  showContentElements
+      // }))
+      // .catch(e => log.error(e.stack))
     },
     onMouseOver: (e) => {
       checkForPartialWord({getCurrentPage}, e);
@@ -2174,7 +2206,8 @@ export const initContextMenus = ({ getCurrentPage, getLocalBridge, showContentEl
         getCurrentPage,
         getLocalBridge,
         fixedMenus: [
-          commonMenuItems(getCurrentPage).createBridge(), 
+          commonMenuItems(getCurrentPage).saveToBoard({ showContentElements, addSelection: 1 }),
+          commonMenuItems(getCurrentPage).createBridge(),
           commonMenuItems(getCurrentPage).annotate({ showContentElements }),
           commonMenuItems(getCurrentPage).saveToBoard({ showContentElements }),
           commonMenuItems(getCurrentPage).followElement({ showContentElements })
@@ -2445,8 +2478,8 @@ export const genShowContentElements = ({
 
     const showElementsOnMouseReveal = (data, url, pageZIndex) => {
       pageData = data;
-      if (linksAPI)
-        sidebarDrawer();
+      if (linksAPI && document.getElementById("bridgit_sidebar"))
+        sidebarDrawer(true, fn);
       zIndex = pageZIndex;
       if (!zIndex) zIndex = getPageZindex();
       if (linksAPI) linksAPI.destroy()
@@ -2498,10 +2531,10 @@ export const genShowContentElements = ({
   return fn
 })()
 
-const sidebarDrawer = (isOpen = true) => {
+const sidebarDrawer = (isOpen = true, showContentElements) => {
   if (pageData) {
     if (!document.getElementById("bridgit_sidebar"))
-      openBridgitSidebar(pageData);
+      openBridgitSidebar(pageData, showContentElements);
     else {
       document.getElementById("bridgit_sidebar").remove();
       sidebarIframeAPI.destroy();
@@ -2509,16 +2542,16 @@ const sidebarDrawer = (isOpen = true) => {
         sidebarDataIframeAPI.destroy();
       sidebarIframeAPI = undefined;
       sidebarDataIframeAPI = undefined;
-      if (isOpen) sidebarDrawer(pageData);
+      if (isOpen) sidebarDrawer(pageData, showContentElements);
     }
   }
 
 }
 
-export const addSidebarEventListener = () => {
+export const addSidebarEventListener = (showContentElements) => {
   window.addEventListener("keypress", event => {
     if (event.key === "b") {
-      sidebarDrawer(false);
+      sidebarDrawer(false, showContentElements);
     }}
   )
 }

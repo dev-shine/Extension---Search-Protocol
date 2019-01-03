@@ -27,6 +27,7 @@ export default {
     shareContentElements: 'Share Content Element',
     movedContentElements: 'Move Here',
     saveToBoard: "Save To Board",
+    addSelection: "Add Selection",
     successfullyPosted: 'Successfully posted',
     successfullySaved: 'Successfully saved',
     successfullyLoggedIn: 'successfully logged in',
