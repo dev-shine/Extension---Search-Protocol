@@ -3,8 +3,8 @@ import { Drawer, Card, Icon } from 'antd'
 import { translate } from 'react-i18next'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import { setIn, updateIn, compose } from '../common/utils'
-import API from 'cs_api'
 import './app.scss'
+import ListElement from './list_element';
 
 const ipc = ipcForIframe()
 
@@ -20,8 +20,11 @@ class App extends Component {
             notes: [],
             bridges: [],
             elements: [],
+            lists: [],
             followers: [],
-            saveBoard: false
+            saveBoard: false,
+            isListElement: false,
+            list_element: ''
         }
         
         ipc.ask('INIT_SIDEBAR_DATA')
@@ -33,10 +36,35 @@ class App extends Component {
                 bridges: bridgeObj.bridges || [],
                 notes: bridgeObj.notes || [],
                 elements: bridgeObj.elements || [],
+                lists: bridgeObj.lists || [],
                 followers: bridgeObj.followers || [],
                 saveBoard: data.saveBoard
             })
         })
+
+        ipc.onAsk((cmd, args) => {
+
+            switch (cmd) {
+      
+                case 'RELOAD_SIDEBAR_DATA':
+                {
+                    const data = args;
+                    const bridgeObj = data.data;
+                    SOURCE = data.SOURCE;
+                    this.setState({
+                        source: bridgeObj.via,
+                        bridges: bridgeObj.bridges || [],
+                        notes: bridgeObj.notes || [],
+                        elements: bridgeObj.elements || [],
+                        lists: bridgeObj.lists || [],
+                        followers: bridgeObj.followers || [],
+                        saveBoard: data.saveBoard
+                    })
+                    return true
+                }
+            }  
+        })
+
 
     }
 
@@ -65,9 +93,30 @@ class App extends Component {
         ipc.ask("SIDEBAR_ANNOTATE",{element})
     }
 
+    listElement = (element) => {
+
+        this.setState({
+            isListElement: true,
+            list_element: element
+        })
+    }
+
+    listCancel = () => {
+        this.setState({
+            isListElement: false,
+            list_element: ''
+        })
+    }
+
     render () {
         const { t } = this.props
-        const { source, bridges, notes, elements, saveBoard } = this.state;
+        const { source, bridges, notes, lists, elements, saveBoard, isListElement, list_element } = this.state;
+
+        if (isListElement) {
+            return (
+                <ListElement element={list_element} onListCancel = {this.listCancel}/>
+            )
+        }
 
         return (
 
@@ -87,6 +136,9 @@ class App extends Component {
                 {SOURCE && source === SOURCE.NOTES && notes.length === 0 &&
                     <p className="blank-elements">Not any Notes Yet!</p>
                 }
+                {SOURCE && source === SOURCE.LIST && lists.length === 0 &&
+                    <p className="blank-elements">There is no List Yet!</p>
+                }
                 {SOURCE && source === SOURCE.BOARD && !saveBoard &&
                     <p className="blank-elements">Add Selection to See Elements!</p>
                 }
@@ -100,13 +152,11 @@ class App extends Component {
                                 draggable={true}
                                 extra={
                                     <React.Fragment>
-                                        <img src="./img/small.png" className="cursor-1" height="20" width="20" onClick={() => this.annotate(element)} /> &nbsp;&nbsp;
+                                        
+                                        <img src="./img/list_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.listElement(element)} />&nbsp;&nbsp;
                                         <Icon type="share-alt" className="cursor-1" onClick={(e) => this.shareContent(e, element)} />
                                     </React.Fragment>
                                 }
-                                onDragStart = {() => this.onDragStart(element)}
-                                onDragOver = {(event) => event.preventDefault()}
-                                onDrop = {() => this.onDrop(element)}
                                 onClick={() => this.scrollElement(element)}
                                 >
                                 <p>{element.text}</p>
@@ -115,6 +165,32 @@ class App extends Component {
                         )
                     }
                 })}
+
+
+                {SOURCE && source === SOURCE.LIST && lists.map(list => {
+                    return (
+                        <React.Fragment key={list.id}>
+                            <Card
+                            className="cursor"
+                            title={list.title}
+                            draggable={true}
+                            extra={
+                                <React.Fragment>
+                                    <img src="./img/notes_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.annotate(list.targetElement)} />
+                                </React.Fragment>
+                            } 
+                            onDragStart = {() => this.onDragStart(list.targetElement)}
+                            onDragOver = {(event) => event.preventDefault()}
+                            onDrop = {() => this.onDrop(list.targetElement)}
+                            onClick={() => this.scrollElement(list.targetElement)}
+                            hoverable
+                            onClick={() => this.scrollElement(list)}>
+                                <p>{list.desc}</p>
+                            </Card><br/>
+                        </React.Fragment>
+                    )
+                })}
+
 
                 {SOURCE && source === SOURCE.BRIDGE && bridges.map(bridge => {
                     return (

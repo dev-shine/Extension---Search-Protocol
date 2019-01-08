@@ -44,7 +44,7 @@ class App extends Component {
 
   init = () => {
     ipc.ask('INIT_RELATED_ELEMENTS')
-    .then(({ relations, bridges, annotations, elementId, userInfo, noteCategories, element }) => {
+    .then(({ relations, bridges, annotations, lists, elementId, userInfo, noteCategories, element }) => {
       log('INIT WITH', { relations, bridges, annotations, elementId, userInfo, noteCategories, element })
       API.addGAMessage({
         eventCategory:'Clicked',
@@ -64,11 +64,12 @@ class App extends Component {
         relations,
         bridges,
         annotations,
+        lists,
         elementId,
         element,
         noteCategories,
         ready: elementIds.length === 0,
-        tabActivekey: bridges.length > 0 ? '1' : '2' // 1 tab for bridges 2 for notes
+        tabActivekey: bridges.length > 0 ? '1' : (annotations.length > 0) ? '2': '3' // 1 tab for bridges 2 for notes 3 for lists
       })
 
       API.loadElementsByIds(elementIds)
@@ -394,6 +395,148 @@ class App extends Component {
           </Button>
           ) : null
         }
+        </div>
+      </div>
+    )
+  }
+
+
+  renderList (list, key, isEditable) {
+    const { t } = this.props
+    const { userInfo, followers } = this.state
+    const isLoggedIn = !(userInfo === null)
+    const tags  = list.tags.split(',').map(s => s.trim())
+    const menu = (
+      <Menu>
+        {/* {isEditable &&
+            <MenuItem key="1" >
+              <a onClick={e => {
+                ipc.ask('EDIT_ANNOTATION', { annotation })
+              }}>
+                Edit
+              </a>
+            </MenuItem>
+        } */}
+        {isEditable &&
+            <MenuItem key="2" >
+              <Popconfirm
+                onConfirm={() => {
+                  API.deleteList(list.id)
+                  .then(() => {
+                    notifySuccess(t('successfullyDeleted'))
+                    // Note: tell page to reload bridges and notes
+                    ipc.ask('RELOAD_BRIDGES_AND_NOTES')
+
+                    // Note: update local data                    
+                    this.setState({
+                      lists: this.state.lists.filter(item => item.id !== list.id)
+                    })
+              
+                  })
+                  .catch(e => {
+                    notifyError(e.message)
+                  })
+                }}
+                title={t('relatedElements:sureToDeleteList')}
+                okText={t('delete')}
+                cancelText={t('cancel')}
+              >
+                <a>
+                  Delete
+                </a>
+                </Popconfirm>
+            </MenuItem>
+        }
+        {/* <MenuItem key="3">
+          <a onClick={e => { this.openFlagContent({type_id: annotation.id, type: 1}) }}>Flag</a>
+        </MenuItem> */}
+      </Menu>
+    );
+    return (
+      <div className="annotation-item base-item" key={list.id}>
+        <div className="item-content">
+          <h4 style={{marginBottom: '2px'}}>
+            <span>{list.title}</span>
+          </h4>
+          <h4>
+            {/* <span className="annotation-relation">
+              {relStr}
+            </span> */}
+            <span className="creator-info">
+              <span>{list.created_by_username}</span>
+              {/* {this.state.userInfo && this.state.userInfo.id !== annotation.created_by ? (
+                <Button
+                  type="default"
+                  size="small"
+                  onClick={() => {
+                    API.userFollow({ user_id: annotation.created_by })
+                    .then(() => {
+                      notifySuccess(`${annotation.is_follow ? t('Successfully Unfollowed') : t('Successfully Followed')}`)
+
+                      // Note: tell page to reload bridges and notes
+                      ipc.ask('RELOAD_BRIDGES_AND_NOTES')
+                      // locally update status
+                      this.updateFollowUnFollowStatus(annotation.created_by)
+                    })
+                  }}
+                >
+                  {annotation.is_follow ? t('unfollow') : t('follow')}
+                </Button>
+              ) : null} */}
+            </span>
+          </h4>
+          <ClampPre
+            onShowMore = {() => {
+              API.addGAMessage({
+                eventCategory:'Clicked',
+                eventAction:'ShowMoreNotes',
+                eventLabel:`for elementId=${list.id}`
+              }).then(() => {
+                log('ga message sent')
+              })
+            }}
+            extraActions={(
+              <div className="extra">
+                {list.privacy !== 0 ? (
+                  <img src="./img/lock.png" className="lock-icon" />
+                ) : null}
+                {tags.map((tag, i) => (
+                  <span key={i} className="tag-item">{tag}</span>
+                ))}
+              </div>
+            )}
+          >
+            {list.desc}
+          </ClampPre>
+        </div>
+        <div className="actions">
+          <Dropdown
+            overlay={menu}
+            // trigger={['click']}
+            placement="bottomRight"
+          >
+            <Icon type="ellipsis" style={{fontSize:'20px'}} />
+          </Dropdown>
+
+          {/* {isLoggedIn &&
+          <Button
+            type="default"
+            onClick={() => { this.openShareContent({...list}, 2, followers) }}
+          >
+            <img src="./img/share.png" style={{ height: '14px' }} />
+          </Button>} */}
+          {/* {isLoggedIn ? (<Button
+            type="default"
+            size="large"
+            onClick={() => {
+              this.likeContent({type_id:annotation.id, type: 1, is_like: annotation.is_like})
+            }}
+          >
+            <img src={annotation.is_like ? './img/liked_heart.png' : './img/like_heart.png'} style={{ height: '14px' }} />
+            <div style={{ fontSize: '10px' }}> {annotation.like_count} </div>
+          </Button>
+          ) : null
+        } */}
         </div>
       </div>
     )
@@ -744,7 +887,7 @@ class App extends Component {
 
   renderT () {
     const { t } = this.props
-    const { annotations, elementId, userInfo, tabActivekey } = this.state
+    const { annotations, elementId, userInfo, tabActivekey, lists } = this.state
     const sortBridges  = (list) => {
       list.sort((a, b) => {
         const relationA = this.state.relations.find(r => '' + r.id === '' + a.relation)
@@ -759,12 +902,15 @@ class App extends Component {
       return list
     }
     const bridges   = sortBridges(this.state.bridges)
+
+    const activeKeys = (bridges.length > 0) ? '1' : (annotations.length > 0) ? '2' : '3';
+
     const canEdit   = (item, userInfo) => userInfo && (userInfo.admin || item.created_by === userInfo.id)
     const filteredNotes = this.searchFilterNotes(annotations)
     const filteredBridges = this.searchFilterBridges(bridges)
     return (
       <Tabs
-        defaultActiveKey={bridges.length > 0 ? '1' : '2'}
+        defaultActiveKey={activeKeys}
         onChange={(key) => {
           log(key)
           this.setState({
@@ -797,6 +943,20 @@ class App extends Component {
             }
           </div>
         </TabPane>
+
+        <TabPane
+          tab={ <span className={tabActivekey === '3' ? 'active-tab' : ''}> {'Lists (' + lists.length + ')'} </span>}
+          key="3"
+          disabled={ lists.length < 1 }
+        >
+          <div className='tab-pane'>
+            {lists.map((item, index) => {
+                return this.renderList(item, index, canEdit(item, userInfo))
+              })
+            }
+          </div>
+        </TabPane>
+
       </Tabs>
     )
   }
@@ -938,7 +1098,7 @@ class App extends Component {
 
   render () {
     const { t } = this.props
-    const {element, bridges, annotations, userInfo} = this.state;
+    const {element, bridges, annotations, userInfo, lists} = this.state;
     
     if (!this.state.ready)  {
       return (
@@ -976,7 +1136,7 @@ class App extends Component {
         width={700}
         className="links-modal"
         // footer={null}
-        footer={(userInfo && userInfo.admin == 1 && element && annotations.length === 0 && bridges.length === 0 && element.is_follow === false ) ? [
+        footer={(userInfo && userInfo.admin == 1 && element && annotations.length === 0 && bridges.length === 0 && lists.length === 0 && element.is_follow === false ) ? [
           <Button key="Delete" type="primary"  onClick={this.deleteLink}>
             Delete
           </Button>

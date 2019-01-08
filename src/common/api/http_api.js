@@ -240,6 +240,15 @@ export const createElementDescription = wrap((data) => {
   .send(data)
 })
 
+export const createList = wrap((data) => {
+  return jwtRequest.post(apiUrl('/lists'))
+  .send(data)
+})
+
+export const deleteList = wrap((id) => {
+  return jwtRequest.delete(apiUrl(`/lists/${id}`))
+})
+
 export const elementFollow = wrap((data) => {
   return jwtRequest.post(apiUrl('/elementFollow'))
   .send(data)
@@ -407,12 +416,15 @@ export const annotationsAndBridgesByUrl = wrap((url, host) => {
   return jwtRequest.post(apiUrl('/search/page'))
   .send({ url, host_name: host })
 }, {
-  post: (data) => ({
-    elements:     data.elements.map(decodeElement),
-    bridges:      data.bridges.map(decodeBridge),
-    annotations:  data.notes.map(decodeNote),
-    z_index: data.z_index
-  })
+  post: (data) => {
+    return{
+      elements:     data.elements.map(decodeElement),
+      bridges:      data.bridges.map(decodeBridge),
+      annotations:  data.notes.map(decodeNote),
+      lists:  data.lists ? data.lists.map(decodeNote): [],
+      z_index: data.z_index
+    }
+  }
 })
 
 export const annotationsAndBridgesByUrls = wrap((urls) => {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Drawer } from 'antd'
+import { Drawer, Badge } from 'antd'
 import { translate } from 'react-i18next'
 import { ipcForIframe } from '../common/ipc/cs_postmessage'
 import { setIn, updateIn, compose } from '../common/utils'
@@ -18,7 +18,9 @@ class App extends Component {
             source: "",
             bridges: [],
             notes: [],
-            elements: []
+            elements: [],
+            lists: [],
+            boardLen: 0
         }
         
         ipc.ask('INIT_SIDEBAR')
@@ -28,25 +30,48 @@ class App extends Component {
             this.setState({
                 bridges: bridgeObj.bridges,
                 notes: bridgeObj.annotations,
-                elements: bridgeObj.elements
+                elements: bridgeObj.elements,
+                lists: bridgeObj.lists || [],
+                boardLen: data.boardLen
             })
             this.bridgeNoteData(SOURCE.BOARD)
+        })
+
+        ipc.onAsk((cmd, args) => {
+
+            switch (cmd) {
+      
+                case 'RELOAD_SIDEBAR':
+                {
+                    const data = args;
+                    const bridgeObj = data.data;
+                    SOURCE = data.SOURCE;
+                    this.setState({
+                        bridges: bridgeObj.bridges,
+                        notes: bridgeObj.annotations,
+                        elements: bridgeObj.elements,
+                        lists: bridgeObj.lists || [],
+                        boardLen: data.boardLen
+                    })
+                    this.bridgeNoteData(SOURCE.BOARD)
+                    return true
+                }
+            }  
         })
 
     }
 
     bridgeNoteData = (via) => {
-        const {bridges, notes, elements} = this.state;
+        const {bridges, notes, elements, lists} = this.state;
         this.setState({
             source: via
         })
-        ipc.ask("BRIDGIT_SIDEBAR", {via, bridges, notes, elements})
+        ipc.ask("BRIDGIT_SIDEBAR", {via, bridges, notes, elements, lists})
     }
 
     render () {
         const { t } = this.props
-        const { source } = this.state
-        
+        const { source, bridges, notes, elements, lists, boardLen } = this.state
         return (
             <React.Fragment>
                 <Drawer
@@ -55,28 +80,53 @@ class App extends Component {
                 width={100}
                 closable={false}
                 visible={true}
+                className="darwer_section"
                 >
-                <img 
-                    src={ SOURCE && source === SOURCE.BOARD ? "./img/board_active.png" : "./img/board_inactive.png"}
-                    className="bridge_style"
-                    height="64"
-                    width="64"
-                    onClick={() => this.bridgeNoteData(SOURCE.BOARD)}
-                />
-                <img
-                    src={ SOURCE && source === SOURCE.BRIDGE ? "./img/bridge_active.png" : "./img/bridge_inactive.png"}
-                    className="bridge_style"
-                    height="64"
-                    width="64"
-                    onClick={() => this.bridgeNoteData(SOURCE.BRIDGE)}
-                /><br/><br/>
-                <img 
-                    src={ SOURCE && source === SOURCE.NOTES ? "./img/notes_active.png" : "./img/notes_inactive.png"}
-                    className="bridge_style"
-                    height="64"
-                    width="64"
-                    onClick={() => this.bridgeNoteData(SOURCE.NOTES)}
-                /><br/><br/>
+
+                <div className="badge_section">
+                    <img
+                        src={ SOURCE && source === SOURCE.BOARD ? "./img/board_active.png" : "./img/board_inactive.png"}
+                        className="bridge_style"
+                        height="64"
+                        width="64"
+                        onClick={() => this.bridgeNoteData(SOURCE.BOARD)}
+                    />
+                    {boardLen != 0 &&<Badge className="badge_icon_section" style={{ backgroundColor: '#ff6699' }}  count={boardLen} />}
+                </div>
+
+                <div className="badge_section">
+                    <img
+                        src={ SOURCE && source === SOURCE.LIST ? "./img/organize_active.png" : "./img/organize_inactive.png"}
+                        className="bridge_style"
+                        height="64"
+                        width="64"
+                        onClick={() => this.bridgeNoteData(SOURCE.LIST)}
+                    />
+                    {<Badge className="badge_icon_section" count={lists.length} style={{ backgroundColor: '#ff6699' }}/>}
+                </div>
+
+                <div className="badge_section">
+                    <img
+                        src={ SOURCE && source === SOURCE.BRIDGE ? "./img/bridge_active.png" : "./img/bridge_inactive.png"}
+                        className="bridge_style"
+                        height="64"
+                        width="64"
+                        onClick={() => this.bridgeNoteData(SOURCE.BRIDGE)}
+                    />
+                    <Badge className="badge_icon_section" count={bridges.length} style={{ backgroundColor: '#ff6699' }}/>
+                </div>
+
+                <div className="badge_section">
+                    <img 
+                        src={ SOURCE && source === SOURCE.NOTES ? "./img/notes_active.png" : "./img/notes_inactive.png"}
+                        className="bridge_style"
+                        height="64"
+                        width="64"
+                        onClick={() => this.bridgeNoteData(SOURCE.NOTES)}
+                    />
+                    <Badge className="badge_icon_section" count={notes.length} style={{ backgroundColor: '#ff6699' }}/>
+                </div>
+
                 <img 
                     src={ "./img/profile.png"}
                     className="bridge_style profile_section"

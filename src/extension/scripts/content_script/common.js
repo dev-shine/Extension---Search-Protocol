@@ -51,7 +51,8 @@ const SOURCE = {
   "BRIDGE": "Bridges",
   "NOTES": "Notes",
   "BOARD": "Board",
-  "NONE": "None"
+  "NONE": "None",
+  "LIST": "List"
 }
 
 const TYPE = {
@@ -1189,104 +1190,147 @@ export const getFollowers = () => {
 }
 
 let sidebarIframeAPI;
-export const openBridgitSidebar = (data, showContentElements) => {
+export const openBridgitSidebar = (data, showContentElements, createIframe) => {
+
+  const sideBarData = () => {
+    let boardLen = 0;
+    let elem_len = data.elements.length;
+    for (let i = 0; i < elem_len ; i++) {
+      let element = data.elements[i];
+      if (element.saveBoard === 1) boardLen = boardLen + 1;
+    }
+    return {data, SOURCE, boardLen}
+  }
 
   getFollowers();
-  const $sidebar_identity = createEl({tag: 'span',attrs: {id: "bridgit_sidebar"}})
-  document.body.appendChild($sidebar_identity)
 
-  sidebarIframeAPI = createIframeWithMask({
-    url:    Ext.extension.getURL('bridgit_sidebar.html'),
-    width:  100,
-    height: 900,
-    isMaskAppend: 1,
-    onAsk:  (cmd, args) => {
-      switch (cmd) {
+  if (createIframe) {
+    const $sidebar_identity = createEl({tag: 'span',attrs: {id: "bridgit_sidebar"}})
+    document.body.appendChild($sidebar_identity)
 
-        case 'INIT_SIDEBAR':
-          return {data, SOURCE}
+    sidebarIframeAPI = createIframeWithMask({
+      url:    Ext.extension.getURL('bridgit_sidebar.html'),
+      width:  100,
+      height: 900,
+      isMaskAppend: 1,
+      onAsk:  (cmd, args) => {
+        switch (cmd) {
 
-        case 'BRIDGIT_SIDEBAR':
-          args.followers = followers;
-          if (sidebarDataIframeAPI)
-            sidebarDataIframeAPI.destroy();
-          openBridgitSidebarData(args, showContentElements);
-          return true
+          case 'INIT_SIDEBAR':
+            return sideBarData();
 
+          case 'BRIDGIT_SIDEBAR':
+            args.followers = followers;
+            openBridgitSidebarData(args, showContentElements);
+            return true
+
+        }
       }
-    }
-  })
+    })
 
-  setStyle(sidebarIframeAPI.$iframe, {
-    position: 'fixed',
-    left: '0%',
-    top: '0%',
-    border: '1px solid #ccc'
-  })
+    setStyle(sidebarIframeAPI.$iframe, {
+      position: 'fixed',
+      left: '0%',
+      top: '0%',
+      border: '1px solid #ccc'
+    })
+  }
+  else {
+    const result = sideBarData();
+    sidebarIframeAPI.ask("RELOAD_SIDEBAR", result);
+  }
 
 }
 
 let sidebarDataIframeAPI;
-export const openBridgitSidebarData = (data, showContentElements) => {
-  sidebarDataIframeAPI = createIframeWithMask({
-    url:    Ext.extension.getURL('bridgit_sidebar_data.html'),
-    width:  350,
-    height: 900,
-    isMaskAppend: 1,
-    onAsk:  (cmd, args) => {
-      switch (cmd) {
+export const openBridgitSidebarData = async (data, showContentElements) => {
 
-        case 'INIT_SIDEBAR_DATA':
-          let saveBoard = false;
-          let elem_len = data.elements.length;
-          for (let i = 0; i < elem_len ; i++) {
-            let element = data.elements[i];
-            if (element.saveBoard === 1) {
-              saveBoard = true;
-              break;
-            }
-          }
-          return {data, SOURCE, saveBoard}
-
-        case 'SCROLL_ELEMENT':
-          scrollElement(args);
-          return true
-
-        case 'SIDEBAR_ANNOTATE':
-          annotate({ linkData: args.element, onSuccess: showContentElements })
-          return true
-
-        case 'SIDEBAR_BRIDGE':
-          setTimeout(async () => {
-            await beginBridge( args.from_bridge, {clientY: 388});
-            bridgeCreated(args.to_bridge, showContentElements)
-          }, 1);
-          return true
-
-
-        case 'SHARE_CONTENT_SIDEBAR':
-          let type;
-          if (SOURCE.BRIDGE === args.source) type = 0
-          else if (SOURCE.NOTES === args.source) type = 1
-          else if (SOURCE.BOARD === args.source) type = 2
-          showShareContent({shareContent: args.shareContent, type, followers: args.followers})
-          return true
-
-        case 'CLOSE_SIDEBAR_DATA':
-          sidebarDataIframeAPI.destroy();
-          sidebarDataIframeAPI = undefined;
-          return true
+  const sidebarData = () => {
+    let saveBoard = false;
+    let elem_len = data.elements.length;
+    for (let i = 0; i < elem_len ; i++) {
+      let element = data.elements[i];
+      if (element.saveBoard === 1) {
+        saveBoard = true;
+        break;
       }
     }
-  })
+    return {data, SOURCE, saveBoard}
 
-  setStyle(sidebarDataIframeAPI.$iframe, {
-    position: 'fixed',
-    left: '0%',
-    top: '0%',
-    'margin-left': '100px',
-    border: '1px solid #ccc'
-  })
+  }
+
+  if (!sidebarDataIframeAPI) {
+
+    sidebarDataIframeAPI = createIframeWithMask({
+      url:    Ext.extension.getURL('bridgit_sidebar_data.html'),
+      width:  350,
+      height: 900,
+      isMaskAppend: 1,
+      onAsk:  (cmd, args) => {
+        switch (cmd) {
+
+          case 'INIT_SIDEBAR_DATA':
+            return sidebarData();
+
+          case 'SCROLL_ELEMENT':
+            scrollElement(args);
+            return true
+
+          case 'LIST_CREATED':
+            showContentElements()
+            return true
+
+          case 'ADD_SUB_CATEGORY':
+            createSubCategory({
+              onSuccess: ({ sub_category }) => {
+                sidebarDataIframeAPI.ask('SELECT_NEW_SUB_CATEGORY', { sub_category })
+              },
+              categories: args.categories,
+              selected_category: args.selected_category
+            })
+            return true
+
+
+          case 'SIDEBAR_ANNOTATE':
+            annotate({ linkData: args.element, onSuccess: showContentElements })
+            return true
+
+          case 'SIDEBAR_BRIDGE':
+            setTimeout(async () => {
+              await beginBridge( args.from_bridge, {clientY: 388});
+              bridgeCreated(args.to_bridge, showContentElements)
+            }, 1);
+            return true
+
+
+          case 'SHARE_CONTENT_SIDEBAR':
+            let type;
+            if (SOURCE.BRIDGE === args.source) type = 0
+            else if (SOURCE.NOTES === args.source) type = 1
+            else if (SOURCE.BOARD === args.source) type = 2
+            showShareContent({shareContent: args.shareContent, type, followers: args.followers})
+            return true
+
+          case 'CLOSE_SIDEBAR_DATA':
+            sidebarDataIframeAPI.destroy();
+            sidebarDataIframeAPI = undefined;
+            return true
+        }
+      }
+    })
+
+    setStyle(sidebarDataIframeAPI.$iframe, {
+      position: 'fixed',
+      left: '0%',
+      top: '0%',
+      'margin-left': '100px',
+      border: '1px solid #ccc'
+    })
+  }
+  else {
+    const result = sidebarData();
+    sidebarDataIframeAPI.ask("RELOAD_SIDEBAR_DATA", result);
+  }
 
 }
 
@@ -1301,6 +1345,9 @@ export const scrollElement = (data) => {
     $el = getElementByXPath(locator);
   } else if (source === SOURCE.BOARD) {
     const locator = elem.start.locator;
+    $el = getElementByXPath(locator);
+  } else if (source === SOURCE.LIST) {
+    const locator = elem.targetElement.start.locator;
     $el = getElementByXPath(locator);
   }
   if ($el && $el.nodeType === 3) $el = $el.parentNode
@@ -1336,6 +1383,8 @@ export const upsertRelation = ({ onSuccess = () => {} }) => {
 }
 
 export const createSubCategory = ({onSuccess = () => {}, selected_category, categories }) => {
+  if (!categories) return
+
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('sub_category.html'),
     width:  500,
@@ -1535,7 +1584,7 @@ export const buildBridge = async ({
             })
             return true
           case 'ADD_SUB_CATEGORY':
-            
+
             createSubCategory({
               onSuccess: ({ sub_category }) => {
                 iframeAPI.ask('SELECT_NEW_SUB_CATEGORY', { sub_category })
@@ -1954,12 +2003,12 @@ export const commonMenuItems = (getCurrentPage) => ({
         end_locator: linkData.end.locator,
         end_offset: linkData.end.offset,
         type: 2,
-        saveBoard: 1
+        saveBoard: 1,
+        image_path: linkData.image_path
       }
 
       API.createElement(data)
       .then(res => {
-        console.log(res);
         showContentElements();
       })
       .catch(err => {
@@ -2436,6 +2485,10 @@ const fullfilBridgeAndAnnotation = (data) => {
       ...item,
       targetElement: findElement(item.target)
     })),
+    lists: data.lists.map(item => ({
+      ...item,
+      targetElement: findElement(item.target)
+    })),
     z_index: data.z_index
   }
 }
@@ -2479,7 +2532,7 @@ export const genShowContentElements = ({
     const showElementsOnMouseReveal = (data, url, pageZIndex) => {
       pageData = data;
       if (linksAPI && document.getElementById("bridgit_sidebar"))
-        sidebarDrawer(true, fn);
+        openBridgitSidebar(pageData, fn, false);
       zIndex = pageZIndex;
       if (!zIndex) zIndex = getPageZindex();
       if (linksAPI) linksAPI.destroy()
@@ -2531,27 +2584,24 @@ export const genShowContentElements = ({
   return fn
 })()
 
-const sidebarDrawer = (isOpen = true, showContentElements) => {
-  if (pageData) {
-    if (!document.getElementById("bridgit_sidebar"))
-      openBridgitSidebar(pageData, showContentElements);
-    else {
-      document.getElementById("bridgit_sidebar").remove();
-      sidebarIframeAPI.destroy();
-      if (sidebarDataIframeAPI)
-        sidebarDataIframeAPI.destroy();
-      sidebarIframeAPI = undefined;
-      sidebarDataIframeAPI = undefined;
-      if (isOpen) sidebarDrawer(pageData, showContentElements);
-    }
-  }
-
-}
-
 export const addSidebarEventListener = (showContentElements) => {
   window.addEventListener("keypress", event => {
     if (event.key === "b") {
-      sidebarDrawer(false, showContentElements);
+      if (pageData) {
+        if (!document.getElementById("bridgit_sidebar"))
+          openBridgitSidebar(pageData, showContentElements, true);
+        else {
+          document.getElementById("bridgit_sidebar").remove();
+          sidebarIframeAPI.destroy();
+          if (sidebarDataIframeAPI)
+            sidebarDataIframeAPI.destroy();
+          sidebarIframeAPI = undefined;
+          sidebarDataIframeAPI = undefined;
+        }
+      }
+    
+
+
     }}
   )
 }

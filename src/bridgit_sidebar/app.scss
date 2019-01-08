@@ -3,6 +3,23 @@
 }
 
 .profile_section {
-    margin-top: 475px;
+    margin-top: 350px;
     margin-left: 5px;
+}
+
+.badge_section {
+    padding: 10px 0;
+    position: relative;
+    width: 64px;
+    margin: auto;
+}
+
+.badge_icon_section {
+    position: absolute;
+    top: 0;
+    right: -3px;
+}
+
+.darwer_section .ant-drawer-body {
+    padding: 24px 0;
 }

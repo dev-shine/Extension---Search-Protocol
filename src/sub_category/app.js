@@ -79,7 +79,7 @@ class App extends Component {
                   placeholder={t('contentCategory:categoryPlaceholder')}
                   onChange={val => this.onUpdateField('category_id', parseInt(val, 10) )}
                 >
-                  {categories.map((category) => (
+                  {categories && categories.map((category) => (
                     <Select.Option key={category.id} value={'' + category.id}>{category.name}</Select.Option>
                   ))}
                     </Select>

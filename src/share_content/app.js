@@ -77,68 +77,6 @@ class App extends Component {
 onUpdateField = (val, key) => {
   this.setState({ [key]: val })
 }
-// renderForm = () => {
-//   const { t } = this.props
-//   const { getFieldDecorator } = this.props.form
-//   const { content } = this.state
-//   return (
-//     <Fragment>
-//       <h3>
-//         {content.type === 0 ? t('flagContent:headingBridge') : t('flagContent:headingNote')}
-//       </h3>
-//       <Form>
-//         <Form.Item label={t('flagContent:categoryLabel')}>
-//           <div style={{ display: 'flex' }}>
-//             {getFieldDecorator('report', {
-//               validateTrigger: ['onBlur'],
-//               rules: [
-//                 { required: true, message: t('flagContent:categoryErrMsg') }
-//               ]
-//             })(
-//               <Select
-//                 placeholder={t('flagContent:categoryPlaceholder')}
-//                 onChange={val => this.onUpdateField(val, 'report')}
-//               >
-//                 {selectCategories.map(p => (
-//                   <Select.Option key={p} value={p}>{p}</Select.Option>
-//                 ))}
-//               </Select>
-//             )}
-//             </div>
-//           </Form.Item>
-//         <Form.Item label={t('flagContent:commentLabel')}>
-//           {getFieldDecorator('comment')(
-//             <Input.TextArea
-//               rows={4}
-//               // placeholder={t('elementDescription:descPlaceholder')}
-//               onChange={e => this.onUpdateField(e.target.value, 'comment')}
-//               // disabled={disableInputs}
-//             />
-//           )}
-//         </Form.Item>
-//         <div className="actions">
-//           <Button
-//             type="primary"
-//             size="large"
-//             className="save-button"
-//             disabled={!this.state.report}
-//             onClick={this.onClickSubmit}
-//           >
-//             {t('save')}
-//           </Button>
-//           <Button
-//             type="danger"
-//             size="large"
-//             className="cancel-button"
-//             onClick={this.onClickCancel}
-//           >
-//             {t('cancel')}
-//           </Button>
-//         </div>
-//       </Form>
-//     </Fragment>
-//   )
-// }
 
 formShow = (via) => {
   this.setState({
@@ -197,10 +135,8 @@ trackSocialShare = (social_type) => {
   let obj = {social_type, type: this.state.type, type_id: this.state.shareContent.id };
   API.trackSocialSiteCross(obj)
   .then(res => {
-      // this.closeShareWindow();
   })
   .catch(err => {
-    // this.closeShareWindow();
   })
 }
 
@@ -226,7 +162,7 @@ renderShareContent = () => {
     <Fragment>
 
       <Row>
-        <Col span="23"/>
+        <Col span={23}/>
         <Col>
           <Icon type="close-circle" className="pointer" onClick={this.onClickCancel} />
         </Col>
@@ -235,13 +171,13 @@ renderShareContent = () => {
       <h3>Share With Your Friends on</h3><br/>
 
       <Row>
-        <Col span="4">
+        <Col span={4}>
           <div className="social-share pointer">
               <img src="./img/old_icon.png" height="32" width="32" onClick={() => this.formShow("bridgit")}/>
           </div>
         </Col>
 
-        <Col span="4">
+        <Col span={4}>
           <div className="social-share pointer">
               <FacebookShareButton
                 url={shareUrl}
@@ -264,7 +200,7 @@ renderShareContent = () => {
           </div>
         </Col>
 
-        <Col span="4">
+        <Col span={4}>
           <div className="social-share">
             <LinkedinShareButton
               url={shareUrl}
@@ -288,7 +224,7 @@ renderShareContent = () => {
         </Col>
 
 
-        <Col span="4">
+        <Col span={4}>
           <div className="social-share pointer">
               <Icon type="mail" onClick={() => this.formShow("email")} style={{fontSize: 32}} />
             {/* <LinkedinShareCount
@@ -299,13 +235,13 @@ renderShareContent = () => {
           </div>
         </Col>
 
-        <Col span="4">
+        <Col span={4}>
           <div className="social-share pointer">
               <Icon type="link" onClick={() => this.formShow("link")} style={{fontSize: 32}} />
           </div>
         </Col>
 
-        <Col span="4">
+        <Col span={4}>
             <div className="social-share">
               <TwitterShareButton
                 url={shareUrl}
@@ -331,8 +267,8 @@ renderShareContent = () => {
       { isLinkSectionEnabled &&
         <div>
           <Row>
-            <Col span="23"><Input name="web_url" id="web_url" value={shareUrl} /></Col>
-            <Col span="1"><img src="./img/copy_icon.png" className="pointer" height="32" width="32" onClick={() => ipc.ask("COPIED_URL",{share_url: shareUrl}) }  /></Col>
+            <Col span={23}><Input name="web_url" id="web_url" value={shareUrl} /></Col>
+            <Col span={1}><img src="./img/copy_icon.png" className="pointer" height="32" width="32" onClick={() => ipc.ask("COPIED_URL",{share_url: shareUrl}) }  /></Col>
           </Row>
           <br/>
         </div>
@@ -341,8 +277,8 @@ renderShareContent = () => {
       { isEmailSectionEnable &&
         <div>
           <Row>
-            <Col span="20"><Input placeholder="Email" name="email" onChange={val => this.valueChange(val) }/></Col>
-            <Col span="4"><Button type="primary" placeholder="Email" onClick={() => this.sendMail(mailThrough.EMAIL) } disabled={isSendEmailDisabled}>Send</Button></Col>
+            <Col span={20}><Input placeholder="Email" name="email" onChange={val => this.valueChange(val) }/></Col>
+            <Col span={4}><Button type="primary" placeholder="Email" onClick={() => this.sendMail(mailThrough.EMAIL) } disabled={isSendEmailDisabled}>Send</Button></Col>
           </Row><br/>
           <Row>
             <Input.TextArea placeholder="Add Notes" name="notes" onChange={val => this.valueChange(val) }/><br/>
@@ -355,7 +291,7 @@ renderShareContent = () => {
      { isBridgitSectionEnable &&
         <div>
           <Row>
-            <Col span="20">
+            <Col span={20}>
               {/* <Input placeholder="To: Name" name="user_name" onChange={val => this.bridgitValueChange(val) }/> */}
 
                   <Select
@@ -381,7 +317,7 @@ renderShareContent = () => {
                   </Select>
 
             </Col>
-            <Col span="4"><Button type="primary" placeholder="Email" onClick={() => this.sendMail(mailThrough.USER_NAME) } disabled={isSendBridgitDisabled}>Send</Button></Col>
+            <Col span={4}><Button type="primary" placeholder="Email" onClick={() => this.sendMail(mailThrough.USER_NAME) } disabled={isSendBridgitDisabled}>Send</Button></Col>
           </Row><br/>
           <Row>
             <Input.TextArea placeholder="Add a Note ..." name="notes" onChange={val => this.bridgitValueChange(val) }/><br/>

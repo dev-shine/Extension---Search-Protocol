@@ -10,6 +10,7 @@ export default {
     relation: 'Relation',
     link: 'Link',
     notes: 'Notes',
+    lists: 'Lists',
     bridges: 'Bridges',
     close: 'Close',
     edit: 'Edit',
@@ -73,6 +74,14 @@ export default {
     successfullyFollowed: 'Sucessfully followed',
     defineElementBeforeFollow: 'Please give title and description of the element to follow'
   },
+  listElement: {
+    titleLabel: 'Title',
+    titleErrMsg: 'Please input title',
+    titlePatternErrMsg: 'Title should Start with Letters',
+    descLabel: 'Description',
+    titlePlaceholder: 'Add a title for this List',
+    descPlaceholder: 'Add a description for this List',
+  },
   buildBridge: {
     relationLabel: 'How are these content elements related?',
     relationErrMsg: 'Please select a relationship between the two content elements',
@@ -102,6 +111,7 @@ export default {
     source: 'Source',
     relatedElements: 'Bridgit: Related Bridges and Notes',
     sureToDeleteNote: 'Are you sure you want to Permanently delete this Note?',
+    sureToDeleteList: 'Are you sure you want to Permanently delete this List?',
     sureToDeleteBridge: 'Are you sure you want to Permanently delete this Bridge?'
   },
   settings: {

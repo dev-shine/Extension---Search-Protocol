@@ -37,15 +37,16 @@ export const apiCallBridgesNotes = (call_for) => {
 
 }
 
-export const showLinks = ({ zIndex, elements, bridges, annotations, url, onCreate, getCsAPI }) => {
+export const showLinks = ({ zIndex, elements, bridges, annotations, lists, url, onCreate, getCsAPI }) => {
   const links = elements.map(item => {
     return {
       ...item,
       bridges:      bridges.filter(a => a.from === item.id || a.to === item.id),
-      annotations:  annotations.filter(b => b.target === item.id)
+      annotations:  annotations.filter(b => b.target === item.id),
+      lists:  lists.filter(l => l.target === item.id)
     }
   })
-  .filter(item => item.bridges.length + item.annotations.length >= 0)
+  .filter(item => item.bridges.length + item.annotations.length + item.lists.length >= 0)
 
   const allLinks  = links.map(link => showOneLink({
     zIndex,
@@ -209,8 +210,8 @@ export const showHyperLinkBadge = ({ totalCount, url, $el, globalLiveBuildAPI })
 }
 
 export const showImage = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge, upvoteBridge, onCreate, onLikeElement }) => {
-  const { bridges = [], annotations = [] } = link
-  const totalCount  = bridges.length + annotations.length
+  const { bridges = [], annotations = [], lists = [] } = link
+  const totalCount  = bridges.length + annotations.length + lists.length
   let timer
 
   const liveBuildAPI = liveBuild({
@@ -260,7 +261,7 @@ export const showImage = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity,
         position: topRight,
         onClick:  () => {
           // if (totalCount > 0) {
-            showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id, element: link })
+            showBridgesModal({ getCsAPI, bridges, annotations, lists, elementId: link.id, element: link })
           // }
         }
       }) : {
@@ -338,8 +339,8 @@ const bridgeCross = (bridges, link) => {
 }
 
 export const showSelection = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity, needBadge, upvoteBridge, onCreate, onLikeElement }) => {
-  const { bridges = [], annotations = [] } = link
-  const totalCount  = bridges.length + annotations.length
+  const { bridges = [], annotations = [], lists = [] } = link
+  const totalCount  = bridges.length + annotations.length + lists.length
   let timer
 
   const liveBuildAPI = liveBuild({
@@ -384,7 +385,7 @@ export const showSelection = ({ zIndex, link, getLinksAPI, getCsAPI, color, opac
         position: topRight,
         onClick:  () => {
           // if (totalCount > 0) {
-            showBridgesModal({ getCsAPI, bridges, annotations, elementId: link.id, element: link })
+            showBridgesModal({ getCsAPI, bridges, annotations, lists, elementId: link.id, element: link })
             bridgeCross(bridges, link)
           // }
         }
@@ -594,7 +595,7 @@ const loginMessage = () => {
   .catch(err => console.log(err))
 }
 
-export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId, element }) => {
+export const showBridgesModal = ({ getCsAPI, bridges, annotations, lists, elementId, element }) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('related_elements.html'),
     width:  clientWidth(document),
@@ -647,6 +648,7 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, elementId, el
                 annotations,
                 elementId,
                 element,
+                lists,
                 relations: [...relations, ...extraRelations],
                 noteCategories: [...noteCategories, ...extraCategories]
               }

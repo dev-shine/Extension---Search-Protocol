@@ -31,6 +31,8 @@ export const methods = [
   'getUserFollowers',
   'trackSocialSiteCross',
   'createSubCategory',
+  'createList',
+  'deleteList',
   'bridgeCross',
   'sendMail',
   'fetchUserInfo',
