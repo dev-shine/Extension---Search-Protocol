@@ -20,7 +20,8 @@ class App extends Component {
     categories: [],
     privacy: 0,
     selectedCategory: '',
-    isButtonDisabled: false
+    isButtonDisabled: false,
+    listPrivacy: ''
   }
 
   encodeData = (values) => {
@@ -162,7 +163,7 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT') 
-    .then(({ annotationData = {}, linkData, mode, noteCategories, categories }) => {
+    .then(({ annotationData = {}, linkData, mode, noteCategories, categories, privacy }) => {
       log('init got annotation', linkData, annotationData, mode, noteCategories, categories)
       this.setState({
         linkData,
@@ -170,7 +171,8 @@ class App extends Component {
         mode,
         noteCategories,
         categories,
-        selectedCategory: annotationData.category || ''
+        selectedCategory: annotationData.category || '',
+        listPrivacy: privacy || ''
       })
 
       if (annotationData.category) this.bindTags(annotationData.category);
@@ -226,7 +228,7 @@ class App extends Component {
   render () {
     const { t } = this.props
     const { getFieldDecorator } = this.props.form
-    const { categories, selectedCategory, isButtonDisabled } = this.state
+    const { categories, selectedCategory, isButtonDisabled, listPrivacy } = this.state
 
     return (
       <div className="annotation-wrapper">
@@ -338,12 +340,15 @@ class App extends Component {
           <div style={{display:'flex', justifyContent: 'space-between'}}>
             <Form.Item label={t('contentCategory:categorylabel')}>
               <div style={{ display: 'flex' }}>
-                {getFieldDecorator('category', {
+                {getFieldDecorator('category',
+                  (listPrivacy === '' || listPrivacy == 0 ) ?
+                {
                   validateTrigger: ['onBlur'],
                   rules: [
                     { required: true, message: t('contentCategory:categoryErrMsg') }
                   ]
-                })(
+                } : {}
+                )(
                   <Select
                     placeholder={t('contentCategory:categoryPlaceholder')}
                     onChange={val =>
@@ -366,12 +371,15 @@ class App extends Component {
 
             <Form.Item label={t('subCategory:subCategorylabel')}>
               <div style={{ display: 'flex' }}>
-                {getFieldDecorator('sub_category', {
+                {getFieldDecorator('sub_category',
+                (listPrivacy === '' || listPrivacy == 0 ) ?
+                {
                   validateTrigger: ['onBlur'],
                   rules: [
                     { required: true, message: t('subCategory:subCategoryErrMsg') }
                   ]
-                })(
+                } : {}
+                )(
                   <Select
                     mode="multiple"
                     placeholder={t('subCategory:subCategoryPlaceholder')}

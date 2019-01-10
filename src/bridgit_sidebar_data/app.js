@@ -10,6 +10,7 @@ const ipc = ipcForIframe()
 
 let SOURCE;
 let from_bridge, to_bridge;
+let from_bridge_privacy, to_bridge_privacy;
 
 class App extends Component {
 
@@ -24,7 +25,8 @@ class App extends Component {
             followers: [],
             saveBoard: false,
             isListElement: false,
-            list_element: ''
+            list_element: '',
+            activeElements: []
         }
         
         ipc.ask('INIT_SIDEBAR_DATA')
@@ -38,7 +40,8 @@ class App extends Component {
                 elements: bridgeObj.elements || [],
                 lists: bridgeObj.lists || [],
                 followers: bridgeObj.followers || [],
-                saveBoard: data.saveBoard
+                saveBoard: data.saveBoard,
+                activeElements: data.activeElements
             })
         })
 
@@ -58,7 +61,8 @@ class App extends Component {
                         elements: bridgeObj.elements || [],
                         lists: bridgeObj.lists || [],
                         followers: bridgeObj.followers || [],
-                        saveBoard: data.saveBoard
+                        saveBoard: data.saveBoard,
+                        activeElements: data.activeElements
                     })
                     return true
                 }
@@ -73,14 +77,19 @@ class App extends Component {
         ipc.ask("SCROLL_ELEMENT",{elem, source})
     }
 
-    onDragStart = (element) => {
+    onDragStart = (element, privacy) => {
         from_bridge = element;
+        from_bridge_privacy = privacy;
     }
 
-    onDrop = (element) => {
+    onDrop = (element, privacy) => {
         to_bridge = element;
-        if (from_bridge && to_bridge && from_bridge.id !== to_bridge.id)
-            ipc.ask("SIDEBAR_BRIDGE", {from_bridge, to_bridge});
+        to_bridge_privacy = privacy;
+
+        if (from_bridge && to_bridge && from_bridge.id !== to_bridge.id) {
+            let privacy = (from_bridge_privacy === to_bridge_privacy) ? to_bridge_privacy : '';
+            ipc.ask("SIDEBAR_BRIDGE", {from_bridge, to_bridge, privacy});
+        }
     }
 
     shareContent = (e, shareContent) => {
@@ -89,8 +98,8 @@ class App extends Component {
         ipc.ask("SHARE_CONTENT_SIDEBAR",{shareContent, followers, source})
     }
 
-    annotate = (element) => {
-        ipc.ask("SIDEBAR_ANNOTATE",{element})
+    annotate = (element, privacy) => {
+        ipc.ask("SIDEBAR_ANNOTATE",{element, privacy})
     }
 
     listElement = (element) => {
@@ -110,7 +119,7 @@ class App extends Component {
 
     render () {
         const { t } = this.props
-        const { source, bridges, notes, lists, elements, saveBoard, isListElement, list_element } = this.state;
+        const { source, bridges, notes, lists, elements, saveBoard, isListElement, list_element, activeElements } = this.state;
 
         if (isListElement) {
             return (
@@ -150,6 +159,7 @@ class App extends Component {
                                 <Card
                                 hoverable
                                 draggable={true}
+                                style={{backgroundColor: activeElements.includes(element.id) ? "#d4d4d4" : 'white'}}
                                 extra={
                                     <React.Fragment>
                                         
@@ -174,14 +184,15 @@ class App extends Component {
                             className="cursor"
                             title={list.title}
                             draggable={true}
+                            style={{backgroundColor: activeElements.includes(list.target) ? "#d4d4d4" : 'white'}}
                             extra={
                                 <React.Fragment>
-                                    <img src="./img/notes_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.annotate(list.targetElement)} />
+                                    <img src="./img/notes_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.annotate(list.targetElement, list.privacy)} />
                                 </React.Fragment>
                             } 
-                            onDragStart = {() => this.onDragStart(list.targetElement)}
+                            onDragStart = {() => this.onDragStart(list.targetElement, list.privacy)}
                             onDragOver = {(event) => event.preventDefault()}
-                            onDrop = {() => this.onDrop(list.targetElement)}
+                            onDrop = {() => this.onDrop(list.targetElement, list.privacy)}
                             onClick={() => this.scrollElement(list.targetElement)}
                             hoverable
                             onClick={() => this.scrollElement(list)}>
@@ -197,6 +208,7 @@ class App extends Component {
                         <React.Fragment key={bridge.id}>
                             <Card 
                             className="cursor"
+                            style={{backgroundColor: activeElements.includes(bridge.from) || activeElements.includes(bridge.to) ? "#d4d4d4" : 'white'}}
                             draggable={true}
                             extra={<Icon type="share-alt" className="cursor-1" onClick={(e) => this.shareContent(e, bridge)} />} 
                             hoverable
@@ -214,6 +226,7 @@ class App extends Component {
                             <Card
                             className="cursor"
                             title={note.title}
+                            style={{backgroundColor: activeElements.includes(note.target) ? "#d4d4d4" : 'white'}}
                             draggable={true}
                             extra={<Icon type="share-alt" className="cursor-1" onClick={(e) => this.shareContent(e, note)} />} 
                             hoverable

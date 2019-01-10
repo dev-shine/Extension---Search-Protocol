@@ -20,7 +20,8 @@ class App extends Component {
     categories:  [],
     selectedCategory: '',
     selectedRelation: undefined,
-    isButtonDisabled: false
+    isButtonDisabled: false,
+    listPrivacy: ''
   }
 
   onClose = () => {
@@ -107,8 +108,7 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT')
-    .then(({ bridgeData, linkPair, mode, relations, categories }) => {
-      
+    .then(({ bridgeData, linkPair, mode, relations, categories, privacy }) => {
       log('buildBridge, INIT GOT', { bridgeData, linkPair, mode })
       this.setState({
         mode,
@@ -116,6 +116,7 @@ class App extends Component {
         relations,
         categories,
         selectedRelation: bridgeData ? bridgeData.relation : undefined,
+        listPrivacy: privacy,
         selectedCategory: bridgeData.category || '',
         ...(linkPair ? { linkPair } : {})
       })
@@ -171,6 +172,7 @@ class App extends Component {
         bridge={this.state.bridgeData}
         relations={this.state.relations}
         categories={this.state.categories}
+        listPrivacy={this.state.listPrivacy}
         selectedRelation={this.state.selectedRelation}
         selectedCategory={this.state.selectedCategory}
         linkPair={this.state.linkPair}

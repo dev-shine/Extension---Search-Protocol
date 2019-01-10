@@ -196,7 +196,7 @@ class CreateLinkComp extends React.Component {
   render () {
     if (!this.props.linkPair) return null
 
-    const { t, categories, selectedCategory } = this.props
+    const { t, categories, selectedCategory, listPrivacy } = this.props
     const { getFieldDecorator } = this.props.form
     const pair = this.props.linkPair.data
     if (!pair.links || !pair.links.length)  return null
@@ -296,13 +296,16 @@ class CreateLinkComp extends React.Component {
 
             <Form.Item label={t('contentCategory:categorylabel')}>
               <div style={{ display: 'flex' }}>
-                {getFieldDecorator('category', {
+                {getFieldDecorator('category',
+                (listPrivacy === '' || listPrivacy == 0 ) ?
+                {
                   validateTrigger: ['onBlur'],
                   initialValue: pair.category,
                   rules: [
                     { required: true, message: t('contentCategory:categoryErrMsg') }
                   ]
-                })(
+                } : {}
+                )(
                   <Select
                     placeholder={t('contentCategory:categoryPlaceholder')}
                     // defaultValue="0"
@@ -328,13 +331,16 @@ class CreateLinkComp extends React.Component {
 
             <Form.Item label={t('subCategory:subCategorylabel')}>
               <div style={{ display: 'flex' }}>
-                {getFieldDecorator('sub_category', {
+                {getFieldDecorator('sub_category',
+                (listPrivacy === '' || listPrivacy == 0 ) ?
+                {
                   validateTrigger: ['onBlur'],
                   // initialValue: pair.category,
                   rules: [
                     { required: true, message: t('subCategory:subCategoryErrMsg') }
                   ]
-                })(
+                }: {}
+                )(
                   <Select
                     mode="multiple"
                     placeholder={t('subCategory:subCategoryPlaceholder')}

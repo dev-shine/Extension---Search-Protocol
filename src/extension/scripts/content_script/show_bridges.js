@@ -16,7 +16,8 @@ import {
   createOverlayForRects,
   showMessage,
   getGlobalValue,
-  copyTextToClipboard
+  copyTextToClipboard,
+  appendActiveElements
 } from './common'
 import { rectsPointPosition } from './position'
 import { setInterval, clearInterval } from 'timers';
@@ -261,6 +262,7 @@ export const showImage = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity,
         position: topRight,
         onClick:  () => {
           // if (totalCount > 0) {
+            appendActiveElements({element_id: link.id, showContentElements: getCsAPI().showContentElements})
             showBridgesModal({ getCsAPI, bridges, annotations, lists, elementId: link.id, element: link })
           // }
         }
@@ -385,6 +387,7 @@ export const showSelection = ({ zIndex, link, getLinksAPI, getCsAPI, color, opac
         position: topRight,
         onClick:  () => {
           // if (totalCount > 0) {
+            appendActiveElements({element_id: link.id, showContentElements: getCsAPI().showContentElements})
             showBridgesModal({ getCsAPI, bridges, annotations, lists, elementId: link.id, element: link })
             bridgeCross(bridges, link)
           // }
