@@ -10,7 +10,7 @@ const ipc = ipcForIframe()
 
 let SOURCE;
 let from_bridge, to_bridge;
-let from_bridge_privacy, to_bridge_privacy;
+let from_bridge_list, to_bridge_list;
 
 class App extends Component {
 
@@ -26,7 +26,8 @@ class App extends Component {
             saveBoard: false,
             isListElement: false,
             list_element: '',
-            activeElements: []
+            activeElements: [],
+            element_id: ''
         }
         
         ipc.ask('INIT_SIDEBAR_DATA')
@@ -62,7 +63,8 @@ class App extends Component {
                         lists: bridgeObj.lists || [],
                         followers: bridgeObj.followers || [],
                         saveBoard: data.saveBoard,
-                        activeElements: data.activeElements
+                        activeElements: data.activeElements,
+                        isListElement: false
                     })
                     return true
                 }
@@ -77,18 +79,17 @@ class App extends Component {
         ipc.ask("SCROLL_ELEMENT",{elem, source})
     }
 
-    onDragStart = (element, privacy) => {
+    onDragStart = (element, list) => {
         from_bridge = element;
-        from_bridge_privacy = privacy;
+        from_bridge_list = list;
     }
 
-    onDrop = (element, privacy) => {
+    onDrop = (element, list) => {
         to_bridge = element;
-        to_bridge_privacy = privacy;
+        to_bridge_list = list;
 
         if (from_bridge && to_bridge && from_bridge.id !== to_bridge.id) {
-            let privacy = (from_bridge_privacy === to_bridge_privacy) ? to_bridge_privacy : '';
-            ipc.ask("SIDEBAR_BRIDGE", {from_bridge, to_bridge, privacy});
+            ipc.ask("SIDEBAR_BRIDGE", {from_bridge, to_bridge, list: from_bridge_list});
         }
     }
 
@@ -98,15 +99,16 @@ class App extends Component {
         ipc.ask("SHARE_CONTENT_SIDEBAR",{shareContent, followers, source})
     }
 
-    annotate = (element, privacy) => {
-        ipc.ask("SIDEBAR_ANNOTATE",{element, privacy})
+    annotate = (element, list) => {
+        ipc.ask("SIDEBAR_ANNOTATE",{element, list})
     }
 
-    listElement = (element) => {
+    listElement = (list, element_id) => {
 
         this.setState({
             isListElement: true,
-            list_element: element
+            list_element: list,
+            element_id
         })
     }
 
@@ -119,11 +121,11 @@ class App extends Component {
 
     render () {
         const { t } = this.props
-        const { source, bridges, notes, lists, elements, saveBoard, isListElement, list_element, activeElements } = this.state;
+        const { source, bridges, notes, lists, elements, saveBoard, isListElement, list_element, activeElements, element_id } = this.state;
 
         if (isListElement) {
             return (
-                <ListElement element={list_element} onListCancel = {this.listCancel}/>
+                <ListElement list={list_element} onListCancel = {this.listCancel} element_id={element_id}/>
             )
         }
 
@@ -163,7 +165,7 @@ class App extends Component {
                                 extra={
                                     <React.Fragment>
                                         
-                                        <img src="./img/list_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.listElement(element)} />&nbsp;&nbsp;
+                                        <img src="./img/list_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.listElement('', element.id)} />&nbsp;&nbsp;
                                         <Icon type="share-alt" className="cursor-1" onClick={(e) => this.shareContent(e, element)} />
                                     </React.Fragment>
                                 }
@@ -187,12 +189,13 @@ class App extends Component {
                             style={{backgroundColor: activeElements.includes(list.target) ? "#d4d4d4" : 'white'}}
                             extra={
                                 <React.Fragment>
-                                    <img src="./img/notes_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.annotate(list.targetElement, list.privacy)} />
+                                    <Icon type="edit" className="cursor-1" height="35" width="35" onClick={() => this.listElement(list, list.target)}/> &nbsp;&nbsp;&nbsp;
+                                    <img src="./img/notes_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.annotate(list.targetElement, list)} />
                                 </React.Fragment>
                             } 
-                            onDragStart = {() => this.onDragStart(list.targetElement, list.privacy)}
+                            onDragStart = {() => this.onDragStart(list.targetElement, list)}
                             onDragOver = {(event) => event.preventDefault()}
-                            onDrop = {() => this.onDrop(list.targetElement, list.privacy)}
+                            onDrop = {() => this.onDrop(list.targetElement, list)}
                             onClick={() => this.scrollElement(list.targetElement)}
                             hoverable
                             onClick={() => this.scrollElement(list)}>

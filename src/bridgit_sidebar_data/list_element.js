@@ -15,30 +15,38 @@ class ListElement extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            element: props.element,
+            list: props.list,
+            element_id: props.element_id,
             categories: [],
-            selectedCategory: '',
+            selectedCategory: undefined,
             isButtonDisabled: false
         }
     }
 
     componentDidMount() {
-        
+
+        const {list} = this.state;
+        const category = list.category ? list.category.toString() : undefined;
+
+        this.props.form.setFieldsValue({
+            title: list.title || '',
+            desc: list.desc || '',
+            privacy: list.privacy !== undefined ? list.privacy.toString() : '1',
+            tags: list.tags ? list.tags.split(",") : [],
+        })
+
         API.getCategories()
         .then((categories) => {
-            this.props.form.setFieldsValue({
-                title: '',
-                desc: '',
-                privacy: '1',
-                category: undefined,
-                sub_category: [],
-                tags: []
 
+            this.props.form.setFieldsValue({
+                category,
+                sub_category: list.sub_category ? list.sub_category.split(",") : [],
             })
             this.setState({
-                categories
+                categories,
+                selectedCategory: category
             })
-            
+                    
         })
 
         ipc.onAsk((cmd, args) => {
@@ -80,15 +88,19 @@ class ListElement extends Component {
 
     onClickSubmit = () => {
         this.props.form.validateFields((err, values) => {
+            const {list, element_id} = this.state
             values.category = values.category ? parseInt(values.category) : "";
             values.sub_category = values.sub_category ? values.sub_category.join(",") : "";
             values.tags = values.tags ? values.tags.join(",") : "";
-            values.target = this.state.element.id;
             if (err) return
+            values.target = element_id;
             this.setState({isButtonDisabled: true})
-
-            API.createList(values)
-            .then(result => {
+            let result;
+            if (list)
+                result = API.updateList(list.id, values)
+            else
+                result = API.createList(values)
+            result.then(result => {
                 ipc.ask("LIST_CREATED")
                 setTimeout(() => {
                     this.setState({isButtonDisabled: false})
@@ -100,13 +112,6 @@ class ListElement extends Component {
                 this.setState({isButtonDisabled: false})
             })
 
-        //   switch (this.state.mode) {
-        //     case C.UPSERT_MODE.ADD:
-        //       return this.onSubmitAdd(values)
-    
-        //     case C.UPSERT_MODE.EDIT:
-        //       return this.onSubmitEdit(values)
-        //   }
         })
     }
 
@@ -148,7 +153,8 @@ class ListElement extends Component {
     render() {
         const { t, onListCancel } = this.props
         const { getFieldDecorator, getFieldValue } = this.props.form
-        const {element, categories, selectedCategory, isButtonDisabled} = this.state;
+        const {list, categories, selectedCategory, isButtonDisabled} = this.state;
+
         return (
             <Drawer
             title= {"List"}
@@ -264,7 +270,7 @@ class ListElement extends Component {
                                     }}
                                     style={{ width: '200px' }}
                                 >
-                                    {selectedCategory != '' &&
+                                    {selectedCategory != '' && selectedCategory !== undefined &&
                                     categories.filter(category => category.id == selectedCategory)[0].
                                     sub_category.map(SC => {
                                     return (

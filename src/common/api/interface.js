@@ -32,6 +32,7 @@ export const methods = [
   'trackSocialSiteCross',
   'createSubCategory',
   'createList',
+  'updateList',
   'deleteList',
   'bridgeCross',
   'sendMail',

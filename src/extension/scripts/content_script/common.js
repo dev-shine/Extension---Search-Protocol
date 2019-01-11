@@ -34,6 +34,7 @@ let localBridgeData = null;
 let contentElement = {element_id: null};
 let pageData;
 let activeElements = [];
+let activeSource = "";
 
 
 export const getGlobalValue = () => {
@@ -1205,7 +1206,7 @@ export const openBridgitSidebar = (data, showContentElements, createIframe) => {
       let element = data.elements[i];
       if (element.saveBoard === 1) boardLen = boardLen + 1;
     }
-    return {data, SOURCE, boardLen, activeElements}
+    return {data, SOURCE, boardLen, activeElements, activeSource}
   }
 
   getFollowers();
@@ -1226,6 +1227,7 @@ export const openBridgitSidebar = (data, showContentElements, createIframe) => {
             return sideBarData();
 
           case 'BRIDGIT_SIDEBAR':
+            activeSource = args.via;
             args.followers = followers;
             openBridgitSidebarData(args, showContentElements);
             return true
@@ -1283,6 +1285,7 @@ export const openBridgitSidebarData = async (data, showContentElements) => {
             return true
 
           case 'LIST_CREATED':
+            activeSource = SOURCE.LIST;
             showContentElements()
             return true
 
@@ -1298,13 +1301,15 @@ export const openBridgitSidebarData = async (data, showContentElements) => {
 
 
           case 'SIDEBAR_ANNOTATE':
-            annotate({ linkData: args.element, onSuccess: showContentElements, privacy: args.privacy, fromList: true })
+            annotate({ linkData: args.element, onSuccess: showContentElements, list: args.list, fromList: true })
+            activeSource = SOURCE.NOTES
             return true
 
           case 'SIDEBAR_BRIDGE':
+            activeSource = SOURCE.BRIDGE
             setTimeout(async () => {
               await beginBridge( args.from_bridge, {clientY: 388});
-              bridgeCreated(args.to_bridge, showContentElements, true, args.privacy);
+              bridgeCreated(args.to_bridge, showContentElements, true, args.list);
             }, 1);
             return true
 
@@ -1537,7 +1542,7 @@ export const buildBridge = async ({
   linkPair,
   onSuccess,
   fromList,
-  privacy,
+  list,
   mode = C.UPSERT_MODE.ADD } = {}
 ) => {
   // Promise.all( [API.loadRelations(), API.getCategories() ] ) // API.loadRelations()
@@ -1572,7 +1577,7 @@ export const buildBridge = async ({
               linkPair,
               relations,
               categories,
-              privacy
+              list
             }
 
           case 'DONE':
@@ -1870,7 +1875,7 @@ export const widgetBridgeNotes = async () => {
 // }, 1000);
 
 
-export const annotate = async({ fromList = false, privacy, mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}, onSuccess } = {}) => {
+export const annotate = async({ fromList = false, list = '', mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}, onSuccess } = {}) => {
 
   // Promise.all( [API.loadNoteCategories(), API.getCategories() ] )
   // .then(values => {
@@ -1904,7 +1909,7 @@ export const annotate = async({ fromList = false, privacy, mode = C.UPSERT_MODE.
             linkData,
             noteCategories,
             categories,
-            privacy
+            list
           }
 
         case 'DONE':
@@ -1982,13 +1987,13 @@ export const beginBridge = async (linkData, e) => {
   api_relations = (await apiCallBridgesNotes(1))[0];
 }
 
-export const bridgeCreated = (linkData, showContentElements, fromList = false, privacy = '') => {
+export const bridgeCreated = (linkData, showContentElements, fromList = false, list = '') => {
   API.buildLocalBridge(linkData)
   .then(() => buildBridge({
     mode:       C.UPSERT_MODE.ADD,
     onSuccess:  showContentElements,
     fromList,
-    privacy
+    list
   }))
   .catch(e => log.error(e.stack))
 }

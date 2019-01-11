@@ -245,6 +245,11 @@ export const createList = wrap((data) => {
   .send(data)
 })
 
+export const updateList = wrap((id, data) => {
+  return jwtRequest.put(apiUrl(`/lists/${id}`))
+  .send(data)
+})
+
 export const deleteList = wrap((id) => {
   return jwtRequest.delete(apiUrl(`/lists/${id}`))
 })

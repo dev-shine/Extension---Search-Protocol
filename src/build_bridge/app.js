@@ -108,7 +108,15 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT')
-    .then(({ bridgeData, linkPair, mode, relations, categories, privacy }) => {
+    .then(({ bridgeData, linkPair, mode, relations, categories, list }) => {
+
+      if (list) {
+        if (list.category) bridgeData.category = list.category
+        bridgeData.sub_category = list.sub_category
+        bridgeData.tags = list.tags
+        bridgeData.privacy = list.privacy
+      }
+
       log('buildBridge, INIT GOT', { bridgeData, linkPair, mode })
       this.setState({
         mode,
@@ -116,7 +124,7 @@ class App extends Component {
         relations,
         categories,
         selectedRelation: bridgeData ? bridgeData.relation : undefined,
-        listPrivacy: privacy,
+        listPrivacy: list ? list.privacy : '',
         selectedCategory: bridgeData.category || '',
         ...(linkPair ? { linkPair } : {})
       })

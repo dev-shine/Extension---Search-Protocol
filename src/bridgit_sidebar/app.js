@@ -34,7 +34,7 @@ class App extends Component {
                 lists: bridgeObj.lists || [],
                 boardLen: data.boardLen
             })
-            this.bridgeNoteData(SOURCE.BOARD)
+            this.bridgeNoteData(data.activeSource ? data.activeSource : SOURCE.BOARD);
         })
 
         ipc.onAsk((cmd, args) => {
@@ -53,7 +53,7 @@ class App extends Component {
                         lists: bridgeObj.lists || [],
                         boardLen: data.boardLen
                     })
-                    this.bridgeNoteData(SOURCE.BOARD)
+                    this.bridgeNoteData(data.activeSource ? data.activeSource : SOURCE.BOARD);
                     return true
                 }
             }  
