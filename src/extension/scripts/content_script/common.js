@@ -1197,7 +1197,10 @@ export const appendActiveElements = ({element_id, showContentElements}) => {
 }
 
 let sidebarIframeAPI;
-export const openBridgitSidebar = (data, showContentElements, createIframe) => {
+export const openBridgitSidebar = async (data, showContentElements, createIframe, list = '') => {
+
+  const user = await API.fetchUserInfo();
+  if (!data) data = pageData;
 
   const sideBarData = () => {
     let boardLen = 0;
@@ -1206,12 +1209,12 @@ export const openBridgitSidebar = (data, showContentElements, createIframe) => {
       let element = data.elements[i];
       if (element.saveBoard === 1) boardLen = boardLen + 1;
     }
-    return {data, SOURCE, boardLen, activeElements, activeSource}
+    return {data, SOURCE, boardLen, activeElements, activeSource, list, user}
   }
 
   getFollowers();
 
-  if (createIframe) {
+  if (createIframe && !sidebarIframeAPI) {
     const $sidebar_identity = createEl({tag: 'span',attrs: {id: "bridgit_sidebar"}})
     document.body.appendChild($sidebar_identity)
 
@@ -1230,6 +1233,10 @@ export const openBridgitSidebar = (data, showContentElements, createIframe) => {
             activeSource = args.via;
             args.followers = followers;
             openBridgitSidebarData(args, showContentElements);
+            return true
+          
+          case 'OPEN_PROFILE_PAGE':
+            window.open("http://demo.bridgit.io/search")
             return true
 
         }

@@ -27,7 +27,8 @@ class App extends Component {
             isListElement: false,
             list_element: '',
             activeElements: [],
-            element_id: ''
+            element_id: '',
+            user: null
         }
         
         ipc.ask('INIT_SIDEBAR_DATA')
@@ -40,10 +41,15 @@ class App extends Component {
                 notes: bridgeObj.notes || [],
                 elements: bridgeObj.elements || [],
                 lists: bridgeObj.lists || [],
+                list_element: bridgeObj.list || '',
                 followers: bridgeObj.followers || [],
+                user: bridgeObj.user,
                 saveBoard: data.saveBoard,
                 activeElements: data.activeElements
             })
+            if (bridgeObj.list)
+                this.listElement(bridgeObj.list, bridgeObj.list.target);
+
         })
 
         ipc.onAsk((cmd, args) => {
@@ -61,11 +67,15 @@ class App extends Component {
                         notes: bridgeObj.notes || [],
                         elements: bridgeObj.elements || [],
                         lists: bridgeObj.lists || [],
+                        list_element: bridgeObj.list || '',
                         followers: bridgeObj.followers || [],
+                        user: bridgeObj.user,
                         saveBoard: data.saveBoard,
                         activeElements: data.activeElements,
                         isListElement: false
                     })
+                    if (bridgeObj.list)
+                        this.listElement(bridgeObj.list, bridgeObj.list.target);
                     return true
                 }
             }  
@@ -121,7 +131,7 @@ class App extends Component {
 
     render () {
         const { t } = this.props
-        const { source, bridges, notes, lists, elements, saveBoard, isListElement, list_element, activeElements, element_id } = this.state;
+        const { source, bridges, notes, lists, elements, saveBoard, isListElement, list_element, activeElements, element_id, user } = this.state;
 
         if (isListElement) {
             return (
@@ -189,8 +199,8 @@ class App extends Component {
                             style={{backgroundColor: activeElements.includes(list.target) ? "#d4d4d4" : 'white'}}
                             extra={
                                 <React.Fragment>
-                                    <Icon type="edit" className="cursor-1" height="35" width="35" onClick={() => this.listElement(list, list.target)}/> &nbsp;&nbsp;&nbsp;
-                                    <img src="./img/notes_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.annotate(list.targetElement, list)} />
+                                    { user && <Icon type="edit" className="cursor-1" height="35" width="35" onClick={() => this.listElement(list, list.target)}/> } &nbsp;&nbsp;&nbsp;
+                                    { user && <img src="./img/notes_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.annotate(list.targetElement, list)} />}
                                 </React.Fragment>
                             } 
                             onDragStart = {() => this.onDragStart(list.targetElement, list)}

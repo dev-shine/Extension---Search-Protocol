@@ -20,7 +20,9 @@ class App extends Component {
             notes: [],
             elements: [],
             lists: [],
-            boardLen: 0
+            boardLen: 0,
+            user: null,
+            list: "" // incase of edit LIST it fill with list object
         }
         
         ipc.ask('INIT_SIDEBAR')
@@ -32,6 +34,8 @@ class App extends Component {
                 notes: bridgeObj.annotations,
                 elements: bridgeObj.elements,
                 lists: bridgeObj.lists || [],
+                list: data.list || '',
+                user: data.user,
                 boardLen: data.boardLen
             })
             this.bridgeNoteData(data.activeSource ? data.activeSource : SOURCE.BOARD);
@@ -51,6 +55,8 @@ class App extends Component {
                         notes: bridgeObj.annotations,
                         elements: bridgeObj.elements,
                         lists: bridgeObj.lists || [],
+                        list: data.list || '',
+                        user: data.user || null,
                         boardLen: data.boardLen
                     })
                     this.bridgeNoteData(data.activeSource ? data.activeSource : SOURCE.BOARD);
@@ -62,11 +68,12 @@ class App extends Component {
     }
 
     bridgeNoteData = (via) => {
-        const {bridges, notes, elements, lists} = this.state;
+        const {bridges, notes, elements, lists, list, user} = this.state;
         this.setState({
-            source: via
+            source: via,
+            list: ''
         })
-        ipc.ask("BRIDGIT_SIDEBAR", {via, bridges, notes, elements, lists})
+        ipc.ask("BRIDGIT_SIDEBAR", {via, bridges, notes, elements, lists, list, user})
     }
 
     render () {
@@ -132,6 +139,7 @@ class App extends Component {
                     className="bridge_style profile_section"
                     height="47"
                     width="45"
+                    onClick = {() => ipc.ask("OPEN_PROFILE_PAGE")} 
                 />
 
                 </Drawer>

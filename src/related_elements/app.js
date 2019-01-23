@@ -171,13 +171,13 @@ class App extends Component {
     ipc.ask('FLAG_CONTENT', { content })
   }
 
-  // type =>  0= Bridge; 1= notes; 2 = content elements 
+  // type =>  0= Bridge; 1= notes; 2 = content elements; 3 = list
   openShareContent = (shareContent, type, followers) => {
     ipc.ask('SHARE_CONTENT', { shareContent, type, followers })
   }
   likeContent (obj) {
     const { type, type_id:id, is_like: isLike } = obj
-    let { bridges, annotations } = this.state
+    let { bridges, annotations, lists } = this.state
     const dataObj = {...obj, emoji_type: 'like'}
     if (type === 0) { // update in bridge
       console.log('liking bridge')
@@ -208,6 +208,21 @@ class App extends Component {
       })
       this.setState({
         annotations
+      })
+    } else if (type === 3) {
+      console.log('liking list')
+      lists = lists.map(a => {
+        if (a.id === id) {
+          return {
+            ...a,
+            like_count: a.like_count + (isLike ? -1 : 1),
+            is_like: !isLike
+          }
+        }
+        return a
+      })
+      this.setState({
+        lists
       })
     }
      API.likeAction(dataObj)
@@ -408,34 +423,24 @@ class App extends Component {
     const tags  = list.tags.split(',').map(s => s.trim())
     const menu = (
       <Menu>
-        {/* {isEditable &&
+        {isEditable &&
             <MenuItem key="1" >
               <a onClick={e => {
-                ipc.ask('EDIT_ANNOTATION', { annotation })
+                ipc.ask('EDIT_LIST', { list })
+                setTimeout(() => {
+                  this.onClose();
+                }, 100);
               }}>
                 Edit
               </a>
             </MenuItem>
-        } */}
+        }
         {isEditable &&
             <MenuItem key="2" >
               <Popconfirm
                 onConfirm={() => {
-                  API.deleteList(list.id)
-                  .then(() => {
-                    notifySuccess(t('successfullyDeleted'))
-                    // Note: tell page to reload bridges and notes
-                    ipc.ask('RELOAD_BRIDGES_AND_NOTES')
-
-                    // Note: update local data                    
-                    this.setState({
-                      lists: this.state.lists.filter(item => item.id !== list.id)
-                    })
-              
-                  })
-                  .catch(e => {
-                    notifyError(e.message)
-                  })
+                    ipc.ask('EDIT_LIST')
+                    
                 }}
                 title={t('relatedElements:sureToDeleteList')}
                 okText={t('delete')}
@@ -518,25 +523,25 @@ class App extends Component {
             <Icon type="ellipsis" style={{fontSize:'20px'}} />
           </Dropdown>
 
-          {/* {isLoggedIn &&
+          {isLoggedIn &&
           <Button
             type="default"
-            onClick={() => { this.openShareContent({...list}, 2, followers) }}
+            onClick={() => { this.openShareContent({...list}, 3, followers) }}
           >
             <img src="./img/share.png" style={{ height: '14px' }} />
-          </Button>} */}
-          {/* {isLoggedIn ? (<Button
+          </Button>}
+          {isLoggedIn ? (<Button
             type="default"
             size="large"
             onClick={() => {
-              this.likeContent({type_id:annotation.id, type: 1, is_like: annotation.is_like})
+              this.likeContent({type_id:list.id, type: 3, is_like: list.is_like})
             }}
           >
-            <img src={annotation.is_like ? './img/liked_heart.png' : './img/like_heart.png'} style={{ height: '14px' }} />
-            <div style={{ fontSize: '10px' }}> {annotation.like_count} </div>
+            <img src={list.is_like ? './img/liked_heart.png' : './img/like_heart.png'} style={{ height: '14px' }} />
+            <div style={{ fontSize: '10px' }}> {list.like_count} </div>
           </Button>
           ) : null
-        } */}
+        }
         </div>
       </div>
     )

@@ -30,7 +30,8 @@ const BASE_URL = 'https://demo.bridgit.io/'
 const URL_PATTERN = {
   BRIDGE: BASE_URL + 'bridges/',
   NOTE: BASE_URL + 'notes/',
-  ELEMENT: BASE_URL + 'elements/'
+  ELEMENT: BASE_URL + 'elements/',
+  LIST: BASE_URL + 'lists/'
 }
 
 const sharePlatorm = {
@@ -152,9 +153,13 @@ renderShareContent = () => {
     shareUrl = URL_PATTERN.NOTE + shareContent.id;
     titleToShow = shareContent.title || "";
   }
-  else {
+  else if (type == "2") {
     shareUrl = URL_PATTERN.ELEMENT + shareContent.id;
     titleToShow = shareContent.name || shareContent.text;
+  }
+  else if (type == "3") {
+    shareUrl = URL_PATTERN.LIST + shareContent.id;
+    titleToShow = shareContent.title || "";
   }
 
 

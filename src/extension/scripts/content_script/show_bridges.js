@@ -17,7 +17,8 @@ import {
   showMessage,
   getGlobalValue,
   copyTextToClipboard,
-  appendActiveElements
+  appendActiveElements,
+  openBridgitSidebar
 } from './common'
 import { rectsPointPosition } from './position'
 import { setInterval, clearInterval } from 'timers';
@@ -667,10 +668,16 @@ export const showBridgesModal = ({ getCsAPI, bridges, annotations, lists, elemen
           return true
         }
         case 'SHARE_CONTENT': {
-          //0 : bridge, 1: notes, 2= content elements
+          //0 : bridge, 1: notes, 2= content elements, 3 = lists
           showShareContent({shareContent: args.shareContent, type: args.type, followers: args.followers})
           return true
         }
+        case 'EDIT_LIST': {
+          const csAPI = getCsAPI()
+          openBridgitSidebar('', csAPI.showContentElements, true, args.list);
+          return true
+        }
+
         case 'EDIT_ANNOTATION': {
           const csAPI = getCsAPI()
 
