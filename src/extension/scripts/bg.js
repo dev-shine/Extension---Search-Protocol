@@ -45,7 +45,7 @@ const bindEvents = () => {
 
       if (settingsChange.key === "userInfo") {
         isLoggedIn = (token) ? true : false;
-        triggerEvent = true;
+        triggerEvent = !token ? true : false;
       }
       else if(settingsChange.key === "user_settings") {
         settings = settingsChange.newValue;
@@ -63,7 +63,7 @@ const bindEvents = () => {
           triggerEvent = true;
         }
       }
-
+      
     }
     
     // const settings = settingsChange.newValue

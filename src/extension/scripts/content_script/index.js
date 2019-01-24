@@ -11,7 +11,7 @@ import {
   annotate, buildBridge, selectImageArea, genShowContentElements,
   initContextMenus, bindSelectionEvent, bindSocialLoginEvent, showMessage,
   getGlobalValue,
-  getPageZindex, addSidebarEventListener
+  getPageZindex, addSidebarEventListener, eventBind
 } from './common'
 import { showOneLink } from './show_bridges'
 import { until, pick } from '../../../common/utils'
@@ -111,13 +111,13 @@ const init = ({ isLoggedIn = false }) => {
 
   bindEvents()
   bindReloadEvent(getCsAPI);
-  addSidebarEventListener(showContentElements);
+  !eventBind && addSidebarEventListener(showContentElements);
   isLoggedIn // && bindSelectionEvent({ getCurrentPage })
   API.getUserSettings()
   .then(settings => {
     i18n.changeLanguage(settings.language)
     setStateWithSettings(settings)
-      if (showContentElements && typeof showContentElements === 'function') {
+    if (showContentElements && typeof showContentElements === 'function') {
         showContentElements({ hide : true })
       }
       if (settings.showOnLoad) {

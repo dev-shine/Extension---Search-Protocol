@@ -35,6 +35,7 @@ let contentElement = {element_id: null};
 let pageData;
 let activeElements = [];
 let activeSource = "";
+export let eventBind = false;
 
 
 export const getGlobalValue = () => {
@@ -2615,6 +2616,7 @@ export const genShowContentElements = ({
 
 export const addSidebarEventListener = (showContentElements) => {
   window.addEventListener("keypress", event => {
+    eventBind = true;
     if (event.key === "b") {
       if (pageData) {
         if (!document.getElementById("bridgit_sidebar"))
