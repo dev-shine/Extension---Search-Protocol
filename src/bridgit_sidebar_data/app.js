@@ -95,6 +95,7 @@ class App extends Component {
     }
 
     onDrop = (element, list) => {
+        if (!this.state.user) return
         to_bridge = element;
         to_bridge_list = list;
 
@@ -199,8 +200,9 @@ class App extends Component {
                             style={{backgroundColor: activeElements.includes(list.target) ? "#d4d4d4" : 'white'}}
                             extra={
                                 <React.Fragment>
-                                    { user && <Icon type="edit" className="cursor-1" height="35" width="35" onClick={() => this.listElement(list, list.target)}/> } &nbsp;&nbsp;&nbsp;
-                                    { user && <img src="./img/notes_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.annotate(list.targetElement, list)} />}
+                                    { user && <Icon type="edit" className="cursor-1" height="35" width="35" onClick={() => this.listElement(list, list.target)}/> } &nbsp;&nbsp;
+                                    { user && <img src="./img/notes_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.annotate(list.targetElement, list)} />} &nbsp;&nbsp;
+                                    { user && <Icon type="share-alt" className="cursor-1" onClick={(e) => this.shareContent(e, list)} /> }
                                 </React.Fragment>
                             } 
                             onDragStart = {() => this.onDragStart(list.targetElement, list)}

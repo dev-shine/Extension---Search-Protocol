@@ -60,7 +60,8 @@ const SOURCE = {
 const TYPE = {
   "BRIDGE": 0,
   "NOTE": 1,
-  "ELEMENT": 2
+  "ELEMENT": 2,
+  "LIST": 3
 }
 
 export const createEl = ({ tag = 'div', attrs = {}, style = {}, text }) => {
@@ -1315,7 +1316,7 @@ export const openBridgitSidebarData = async (data, showContentElements) => {
           case 'SIDEBAR_BRIDGE':
             activeSource = SOURCE.BRIDGE
             setTimeout(async () => {
-              await beginBridge( args.from_bridge, {clientY: 388});
+              await beginBridge( args.from_bridge, {clientY: 388}, true);
               bridgeCreated(args.to_bridge, showContentElements, true, args.list);
             }, 1);
             return true
@@ -1326,6 +1327,7 @@ export const openBridgitSidebarData = async (data, showContentElements) => {
             if (SOURCE.BRIDGE === args.source) type = 0
             else if (SOURCE.NOTES === args.source) type = 1
             else if (SOURCE.BOARD === args.source) type = 2
+            else if (SOURCE.LIST === args.source) type = 3
             showShareContent({shareContent: args.shareContent, type, followers: args.followers})
             return true
 
@@ -1981,14 +1983,14 @@ export const commonMenuOptions = {
   }
 }
 
-export const beginBridge = async (linkData, e) => {
+export const beginBridge = async (linkData, e, fromSidebar = false) => {
   copyTextToClipboard(linkData.text, e);
   API.resetLocalBridge()
   .then(() => {
     API.createLocalBridge(linkData)
     fetchLocalData()
   })
-  .then(showMsgAfterCreateBridge)
+  .then(!fromSidebar ? showMsgAfterCreateBridge: '')
   .catch(e => log.error(e.stack))
   resetLocalContentData();
   api_relations = (await apiCallBridgesNotes(1))[0];
