@@ -831,10 +831,9 @@ export const createContextMenus = ({
 
     if (isOnImage(e)) {
       e.preventDefault()
-
+      await fetchLocalData();
       return dataUrlOfImage(e.target)
       .then(({ dataUrl }) => {
-        fetchLocalData();
         const size = imageSize(e.target)
 
         return showContextMenus({
@@ -861,12 +860,12 @@ export const createContextMenus = ({
     }
 
     if (isOnSelection(e)) {
+      await fetchLocalData();
       e.preventDefault()
       setTimeout(async() => {
         let notes = await apiCallBridgesNotes(2); // Notes API CALL (Advanced to minimize response time of Notes Iframe )
         api_noteCategories = notes[0]
         api_categories = notes[1]
-        fetchLocalData();
       }, 1);
       
       return showContextMenus({
@@ -1985,11 +1984,12 @@ export const commonMenuOptions = {
 }
 
 export const beginBridge = async (linkData, e, fromSidebar = false) => {
-  copyTextToClipboard(linkData.text, e);
+
+  linkData.text && copyTextToClipboard(linkData.text, e);
   API.resetLocalBridge()
-  .then(() => {
+  .then(async () => {
     API.createLocalBridge(linkData)
-    fetchLocalData()
+    await fetchLocalData()
   })
   .then(!fromSidebar ? showMsgAfterCreateBridge: '')
   .catch(e => log.error(e.stack))
@@ -2138,9 +2138,9 @@ export const commonMenuItems = (getCurrentPage) => ({
   moveContentElements: ({showContentElements}) => ({
     text: i18n.t('moveContentElements'),
     key: 'moveContentElements',
-    onClick: (e, { linkData }) => {
+    onClick: async (e, { linkData }) => {
       API.storeElementIdInLocalBridge(linkData)
-      fetchLocalData();
+      await fetchLocalData();
     }
   }),
   movedContentElements: ({showContentElements, element_id}) => ({
@@ -2187,15 +2187,17 @@ export const commonMenuItems = (getCurrentPage) => ({
 
 export const fetchLocalData = async () => {
 
-  API.getLocalBridgeStatus()
+  return new Promise((resolve, reject) => {
+    API.getLocalBridgeStatus()
     .then(({ status, data }) => {
-      localBridgeStatus = status
-      localBridgeData = data
-  })
-
-  API.getElementIdStatus()
-    .then(({ data }) => {
-      contentElement = data;
+        localBridgeStatus = status
+        localBridgeData = data
+        contentElement = {element_id: data.element_id}
+        resolve(true);
+    })
+    .catch(ex => {
+      resetLocalContentData();
+    })
   })
 
 }
