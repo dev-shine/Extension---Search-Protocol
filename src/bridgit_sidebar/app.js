@@ -103,7 +103,8 @@ class App extends Component {
 
                 <div className="badge_section">
                     <img
-                        src={ SOURCE && source === SOURCE.LIST ? "./img/organize_active.png" : "./img/organize_inactive.png"}
+                        // src={ SOURCE && source === SOURCE.LIST ? "./img/organize_active.png" : "./img/organize_inactive.png"}
+                        src= "./img/list_sidebar.png"
                         className="bridge_style"
                         height="64"
                         width="64"
@@ -114,7 +115,8 @@ class App extends Component {
 
                 <div className="badge_section">
                     <img
-                        src={ SOURCE && source === SOURCE.BRIDGE ? "./img/bridge_active.png" : "./img/bridge_inactive.png"}
+                        // src={ SOURCE && source === SOURCE.BRIDGE ? "./img/bridge_active.png" : "./img/bridge_inactive.png"}
+                        src= "./img/bridge_sidebar.png"
                         className="bridge_style"
                         height="64"
                         width="64"
@@ -125,7 +127,8 @@ class App extends Component {
 
                 <div className="badge_section">
                     <img 
-                        src={ SOURCE && source === SOURCE.NOTES ? "./img/notes_active.png" : "./img/notes_inactive.png"}
+                        // src={ SOURCE && source === SOURCE.NOTES ? "./img/notes_active.png" : "./img/notes_inactive.png"}
+                        src= "./img/notes_sidebar.png"
                         className="bridge_style"
                         height="64"
                         width="64"

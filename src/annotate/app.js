@@ -163,13 +163,13 @@ class App extends Component {
 
   componentDidMount () {
     ipc.ask('INIT') 
-    .then(({ annotationData = {}, linkData, mode, noteCategories, categories, list }) => {
+    .then(({ annotationData = {}, linkData, mode, noteCategories, categories, defaultData }) => {
       log('init got annotation', linkData, annotationData, mode, noteCategories, categories)
-      if (list) {
-        annotationData.category = list.category
-        annotationData.sub_category = list.sub_category
-        annotationData.tags = list.tags
-        annotationData.privacy = list.privacy
+      if (defaultData) {
+        annotationData.category = defaultData.category
+        annotationData.sub_category = defaultData.sub_category
+        annotationData.tags = defaultData.tags
+        annotationData.privacy = defaultData.privacy
       }
       this.setState({
         linkData,
@@ -178,7 +178,7 @@ class App extends Component {
         noteCategories,
         categories,
         selectedCategory: annotationData.category || '',
-        listPrivacy: list.privacy || ''
+        listPrivacy: defaultData ? defaultData.privacy : ''
       })
 
       if (annotationData.category) this.bindTags(annotationData.category);

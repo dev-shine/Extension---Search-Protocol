@@ -1309,7 +1309,7 @@ export const openBridgitSidebarData = async (data, showContentElements) => {
 
 
           case 'SIDEBAR_ANNOTATE':
-            annotate({ linkData: args.element, onSuccess: showContentElements, list: args.list, fromList: true })
+            annotate({ linkData: args.element, onSuccess: showContentElements, defaultData: args.defaultData, fromList: true })
             activeSource = SOURCE.NOTES
             return true
 
@@ -1884,7 +1884,7 @@ export const widgetBridgeNotes = async () => {
 // }, 1000);
 
 
-export const annotate = async({ fromList = false, list = '', mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}, onSuccess } = {}) => {
+export const annotate = async({ fromList = false, defaultData = '', mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}, onSuccess } = {}) => {
 
   // Promise.all( [API.loadNoteCategories(), API.getCategories() ] )
   // .then(values => {
@@ -1918,7 +1918,7 @@ export const annotate = async({ fromList = false, list = '', mode = C.UPSERT_MOD
             linkData,
             noteCategories,
             categories,
-            list
+            defaultData
           }
 
         case 'DONE':

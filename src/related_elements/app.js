@@ -439,9 +439,19 @@ class App extends Component {
             <MenuItem key="2" >
               <Popconfirm
                 onConfirm={() => {
-                    ipc.ask('EDIT_LIST')
-                    
+                  API.deleteList(list.id)
+                  .then(() => {
+                    notifySuccess(t('successfullyDeleted'))
+                    ipc.ask('RELOAD_BRIDGES_AND_NOTES')
+                    this.setState({
+                      lists: this.state.lists.filter(item => item.id !== list.id)
+                    })
+                  })
+                  .catch(e => {
+                    notifyError(e.message)
+                  })
                 }}
+
                 title={t('relatedElements:sureToDeleteList')}
                 okText={t('delete')}
                 cancelText={t('cancel')}

@@ -110,8 +110,8 @@ class App extends Component {
         ipc.ask("SHARE_CONTENT_SIDEBAR",{shareContent, followers, source})
     }
 
-    annotate = (element, list) => {
-        ipc.ask("SIDEBAR_ANNOTATE",{element, list})
+    annotate = (element, defaultData) => {
+        ipc.ask("SIDEBAR_ANNOTATE",{element, defaultData})
     }
 
     listElement = (list, element_id) => {
@@ -175,11 +175,16 @@ class App extends Component {
                                 style={{backgroundColor: activeElements.includes(element.id) ? "#d4d4d4" : 'white'}}
                                 extra={
                                     <React.Fragment>
-                                        
+
                                         <img src="./img/list_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.listElement('', element.id)} />&nbsp;&nbsp;
+                                        { user && <img src="./img/notes_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.annotate(element)} />} &nbsp;&nbsp;
                                         <Icon type="share-alt" className="cursor-1" onClick={(e) => this.shareContent(e, element)} />
                                     </React.Fragment>
                                 }
+                                hoverable
+                                onDragStart = {() => this.onDragStart(element, '')}
+                                onDragOver = {(event) => event.preventDefault()}
+                                onDrop = {() => this.onDrop(element, '')}
                                 onClick={() => this.scrollElement(element)}
                                 >
                                 <p>{element.text}</p>
@@ -225,7 +230,15 @@ class App extends Component {
                             className="cursor"
                             style={{backgroundColor: activeElements.includes(bridge.from) || activeElements.includes(bridge.to) ? "#d4d4d4" : 'white'}}
                             draggable={true}
-                            extra={<Icon type="share-alt" className="cursor-1" onClick={(e) => this.shareContent(e, bridge)} />} 
+                            extra={
+                                <React.Fragment>
+                                    {user && <img src="./img/notes_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.annotate(bridge.fromElement ? bridge.fromElement : bridge.toElement , bridge)} />} &nbsp;&nbsp;
+                                    <Icon type="share-alt" className="cursor-1" onClick={(e) => this.shareContent(e, bridge)} />
+                                </React.Fragment>
+                            }
+                            onDragStart = {() => this.onDragStart(bridge.fromElement ? bridge.fromElement : bridge.toElement , bridge)}
+                            onDragOver = {(event) => event.preventDefault()}
+                            onDrop = {() => this.onDrop(bridge.fromElement ? bridge.fromElement : bridge.toElement, bridge)}
                             hoverable
                             onClick={() => this.scrollElement(bridge)}
                             >
@@ -243,8 +256,16 @@ class App extends Component {
                             title={note.title}
                             style={{backgroundColor: activeElements.includes(note.target) ? "#d4d4d4" : 'white'}}
                             draggable={true}
-                            extra={<Icon type="share-alt" className="cursor-1" onClick={(e) => this.shareContent(e, note)} />} 
+                            extra={
+                                <React.Fragment>
+                                    {user && <img src="./img/notes_sidebar.png" className="cursor-1" height="20" width="20" onClick={() => this.annotate(note.targetElement, note)} />} &nbsp;&nbsp;
+                                    <Icon type="share-alt" className="cursor-1" onClick={(e) => this.shareContent(e, note)} />
+                                </React.Fragment>
+                            }
                             hoverable
+                            onDragStart = {() => this.onDragStart(note.targetElement, note)}
+                            onDragOver = {(event) => event.preventDefault()}
+                            onDrop = {() => this.onDrop(note.targetElement, note)}
                             onClick={() => this.scrollElement(note)}>
                                 {/* <h4>{note.title}</h4> */}
                                 <p>{note.desc}</p>
