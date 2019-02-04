@@ -111,7 +111,7 @@ const init = ({ isLoggedIn = false }) => {
 
   bindEvents()
   bindReloadEvent(getCsAPI);
-  !eventBind && addSidebarEventListener(showContentElements);
+  // !eventBind && addSidebarEventListener(showContentElements);
   isLoggedIn // && bindSelectionEvent({ getCurrentPage })
   API.getUserSettings()
   .then(settings => {
@@ -315,6 +315,9 @@ const getLocalStoreFromExtension = () => {
 
 }
 
+/**
+ * Universal login (chrome extension and web).
+ */
 const listen_token_message = () => {
 
   window.addEventListener("message", event => {
@@ -360,6 +363,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 });
 
 
+/**
+ * setZindex if page contain inappropriate.
+ */
 function setPageZIndex() {
   const zIndex = getPageZindex();
   setState({zIndex:zIndex })

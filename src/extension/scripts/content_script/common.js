@@ -431,7 +431,24 @@ export const createOverlayForRange = ({ range, ...rest }) => {
   return createOverlayForRects({ rects, ...rest })
 }
 
-
+/**
+ * where to display upVote Overlay.
+ *
+ * Args:
+ *     rects (object):
+ *         coordination of content 
+ *     color (string):
+ *         which color should display
+ *     opacity (float):
+ *         how much opacity you want
+ *     zIndex (int):
+ *         zIndex of that upVote Overlay 
+ *     sx (int):
+ *         how much distance from left 
+ *     sy (int):
+ *         how much distance from top 
+ *
+ */
 export const getOverlaysForUpvoteBridge = (rects, color, opacity, zIndex, sx, sy) => {
   
   let width = 175, max_top = rects[0].top + rects[0].height , min_left = rects[0].left;
@@ -1180,6 +1197,10 @@ export const videoFrame = () => {
   })
 }
 
+/**
+ * get UserFollower of logginUser.
+ *
+ */
 let followers = [];
 export const getFollowers = () => {
   API.getUserFollowers()
@@ -1192,11 +1213,35 @@ export const getFollowers = () => {
 
 }
 
+/**
+ * append activeElements so we highlight in sidebar.
+ *
+ * Args:
+ *     element_id (int):
+ *         contain element_id which should be highlight 
+ *     showContentElements (function):
+ *         fetch latest data from backend
+ *
+ */
 export const appendActiveElements = ({element_id, showContentElements}) => {
   if (!activeElements.includes(element_id)) activeElements.push(element_id)
   if (sidebarIframeAPI) openBridgitSidebar(pageData, showContentElements, false);
 }
 
+/**
+ * It open bridgit sidebar (icon section).
+ *
+ * Args:
+ *     data (object):
+ *         Object which contain all the elements, bridges, notes, list 
+ *     showContentElements (function):
+ *         fetch latest data from backend
+ *     createIframe (boolean):
+ *         if it true then we have to create iFrame or else it already created so no need to create
+ *     list (object):
+ *         if we click edit from popup then itlist object contain value else it should be blank 
+ *
+ */
 let sidebarIframeAPI;
 export const openBridgitSidebar = async (data, showContentElements, createIframe, list = '') => {
 
@@ -1258,6 +1303,16 @@ export const openBridgitSidebar = async (data, showContentElements, createIframe
 
 }
 
+/**
+ * It open bridgit sidebar (data section).
+ *
+ * Args:
+ *     data (object):
+ *         Object which contain all the elements, bridges, notes, list 
+ *     showContentElements (function):
+ *         fetch latest data from backend 
+ *
+ */
 let sidebarDataIframeAPI;
 export const openBridgitSidebarData = async (data, showContentElements) => {
 
@@ -1402,6 +1457,18 @@ export const upsertRelation = ({ onSuccess = () => {} }) => {
   })
 }
 
+/**
+ * create SubCategory.
+ *
+ * Args:
+ *     onSuccess (function):
+ *         fetch latest data from backend 
+ *     selected_category (string):
+ *         pass selected category for which you have to create subCategory 
+ *     categories (array):
+ *         no.of categories 
+ *
+ */
 export const createSubCategory = ({onSuccess = () => {}, selected_category, categories }) => {
   if (!categories) return
 
@@ -1823,6 +1890,15 @@ export const selectImageArea = ({ $img, linkData, getCurrentPage, showContentEle
   })
 }
 
+/**
+ * copy content to clipboard.
+ *
+ * Args:
+ *     text (string):
+ *         pass text that you need to copy on cliboard 
+ *     e (object):
+ *         click event 
+*/
 export const copyTextToClipboard = (text, e) => {
   chrome.runtime.sendMessage({type: 'copy',text: text}, response => {
     const z_index = 1200002, msgTimeout = 400;
@@ -1831,6 +1907,9 @@ export const copyTextToClipboard = (text, e) => {
      
 }
 
+/**
+ * clear all result which we fetch when select text.
+ */
 export function clearAPIData() {
   api_categories = [];
   api_noteCategories = [];
@@ -1884,6 +1963,27 @@ export const widgetBridgeNotes = async () => {
 // }, 1000);
 
 
+
+/**
+ * create annotate(notes).
+ *
+ * Args:
+ *     fromList (boolean):
+ *         true means annotate called from list section in sidebar otherwise from content selection
+ *     defaultData (object):
+ *         if function called from sidebar then defaultData comes like category,sub_Cateogry_ tags etc otherwise it would be blank 
+ *     mode (string):
+ *         mode of the annotate (add or edit) 
+ *     list (object):
+ *         if created from list then it contain list object 
+ *     linkData (object):
+ *         linkData contain object which hold whole info about which part of page we select, id of element, snapshot
+ *      annotationData (object):
+ *         if edit mode then it contain annotation value
+ *      onSuccess (function):
+ *         fetch latest data from backend 
+ *
+ */
 export const annotate = async({ fromList = false, defaultData = '', mode = C.UPSERT_MODE.ADD, linkData = {}, annotationData = {}, onSuccess } = {}) => {
 
   // Promise.all( [API.loadNoteCategories(), API.getCategories() ] )
@@ -1983,6 +2083,21 @@ export const commonMenuOptions = {
   }
 }
 
+
+/**
+ * store bridge data in background.
+ *
+ * this function should store data in background so when we create other link we fetch from there 
+ *
+ * Args:
+ *     linkData (object):
+ *         linkData contain object which hold whole info about which part of page we select, id of element, snapshot 
+ *     e (object):
+ *         click event 
+ *     fromSidebar (boolean):
+ *         true means bridge created from sidebar section or from selection 
+ *
+ */
 export const beginBridge = async (linkData, e, fromSidebar = false) => {
 
   linkData.text && copyTextToClipboard(linkData.text, e);
@@ -1997,6 +2112,22 @@ export const beginBridge = async (linkData, e, fromSidebar = false) => {
   api_relations = (await apiCallBridgesNotes(1))[0];
 }
 
+/**
+ * create bridge.
+ *
+ * this function should create bridge 
+ *
+ * Args:
+ *     linkData (object):
+ *         linkData contain object which hold whole info about which part of page we select, id of element, snapshot 
+ *     showContentElements (function):
+ *         fetch latest data from background 
+ *     fromList (boolean):
+ *         true means bridge created from list section in sidebar as from selection 
+ *     list (object):
+ *         if created from list then it contain list object 
+ *
+ */
 export const bridgeCreated = (linkData, showContentElements, fromList = false, list = '') => {
   API.buildLocalBridge(linkData)
   .then(() => buildBridge({
@@ -2185,6 +2316,10 @@ export const commonMenuItems = (getCurrentPage) => ({
   })
 })
 
+
+/**
+ * fetch localData from background (This should be useful when we make bridge on different pages)
+ */
 export const fetchLocalData = async () => {
 
   return new Promise((resolve, reject) => {
@@ -2202,6 +2337,9 @@ export const fetchLocalData = async () => {
 
 }
 
+/**
+ * reset localData that we fetch from background
+ */
 export const resetLocalContentData = () => {
   localBridgeStatus = LOCAL_BRIDGE_STATUS.EMPTY;
   localBridgeData = null;
@@ -2503,6 +2641,13 @@ export const checkForPartialWord = ({ getCurrentPage }, e) => {
   // })
 }
 
+/**
+ * Filter Response data.
+ *
+ * Args:
+ *     data (object): no of bridge, notes, list, elements per page
+ *
+ */
 const fullfilBridgeAndAnnotation = (data) => {
   const findElement = (id) => data.elements.find(item => item.id === id)
 
@@ -2525,6 +2670,12 @@ const fullfilBridgeAndAnnotation = (data) => {
   }
 }
 
+/**
+ * Get Appropriate z-index for page.
+ *
+ * Appropriate z-index means which would be less then the header and greater then the content so highlight should be work properly
+ *
+ */
 export const getPageZindex = () => {
   const iFrameZindex = getGlobalValue().iFrameZindex;
   var elems = document.getElementsByTagName("*");
@@ -2616,10 +2767,21 @@ export const genShowContentElements = ({
   return fn
 })()
 
+/**
+ * Sidebar On/Off.
+ *
+ * this function should be used for sidebar on/off, press shortcut (let's say 1 now) which would on sidebar and again fire shortcut which off the sidebar
+ *
+ * Args:
+ *     showContentElements (function):
+ *         showContentElements contains every details of page needed, you can fetch every latest details from backend and then fill highlight section with 
+ *         latest content elements.
+ *
+ */
 export const addSidebarEventListener = (showContentElements) => {
   window.addEventListener("keypress", event => {
     eventBind = true;
-    if (event.key === "b") {
+    if (event.key === "1") {
       if (pageData) {
         if (!document.getElementById("bridgit_sidebar"))
           openBridgitSidebar(pageData, showContentElements, true);
