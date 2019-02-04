@@ -23,7 +23,14 @@ import {
 import { rectsPointPosition } from './position'
 import { setInterval, clearInterval } from 'timers';
 
-// 1 for bridge, 2 for notes
+/**
+ * Makes API call.
+ *
+ * Args:
+ *     call_for (string):
+ *        1. Bridge
+ *        2. Notes
+ */
 export const apiCallBridgesNotes = (call_for) => {
   
   return new Promise((resolve, reject) => {
@@ -132,6 +139,22 @@ const commonShowAPI = ({ rects }) => {
 //   )
 // }
 
+
+/**
+ * This function is for other URL reference purpose.
+ *
+ * If any page has some url and that url contain any bridge elements then this url has badge with total counts and by clicking it redirect to the page
+ * 
+ * Args:
+ *     totalCount (int):
+ *        no.of elements(bridge/notes/lists)
+ *      url(string):
+ *        url of page which contain other elements
+ *      $el(object):
+ *        ELements for the badge
+ *      globalLiveBuildAPI(object):
+ *        GLobal object which contain badge information
+ */
 export const showHyperLinkBadge = ({ totalCount, url, $el, globalLiveBuildAPI }) => {
   let timer
 
@@ -322,6 +345,17 @@ export const showImage = ({ zIndex, link, getLinksAPI, getCsAPI, color, opacity,
   return api
 }
 
+
+/**
+ * Track bridge cross (how many users open particular bridge).
+ *
+ * Args:
+ *     bridges (object):
+ *        bridges information         
+ *     link (object):
+ *        Contain information in which we hightlight it
+ *
+ */
 const bridgeCross = (bridges, link) => {
   API.fetchUserInfo().then(user => {
 
@@ -448,8 +482,29 @@ export const showSelection = ({ zIndex, link, getLinksAPI, getCsAPI, color, opac
   return api
 }
 
+
+/**
+ * Shows bridge count for every selected content(ex. if we created any bridges/notes/lists for content).
+ *
+ * Args:
+ *     zIndex (int):
+ *        It contain zINdex for the badge count         
+ *     position (object):
+ *        It contain position of that badge (left and top) 
+ *     text (int):
+ *        total count (this badge contain how many notes/bridges/lists)
+ *     onClick (function):
+ *        pass function, which executed when click on badge
+ *     style (int):
+ *        styling for that selection (content)
+ *     isHyperLinkBadge (boolean):
+ *        two type of badge
+ *           1. Simple badge, by clicking it would open popup which contain no.of lists/notes/bridges
+ *           2. Redirect badge, by clicking it would redirect to the page where we create bridge
+ *
+ */
 export const showBridgeCount = ({ zIndex, position, text, onClick, style = {}, isHyperLinkBadge = false }) => {
-  
+
   const className = isHyperLinkBadge ? "bridgit_bridge_count" : "bridgit_content_element";
 
   const size  = 40
@@ -514,6 +569,20 @@ export const showBridgeCount = ({ zIndex, position, text, onClick, style = {}, i
     }
   }
 }
+
+
+/**
+ * It would open sharing modal.
+ *
+ * Args:
+ *     shareContent (object):
+ *        information that may contain bridge/note/list data         
+ *     type (int):
+ *        specify which type should be share (ex. bridge/note/list)
+ *     followers (object):
+ *        no.of followers that follow current user
+ *
+ */
 export const showShareContent = ({ shareContent, type, followers }) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('share_content.html'),
@@ -578,6 +647,10 @@ export const showFlagContent = ({ content }) => {
     })
 }
 
+
+/**
+ * this function popup message if user in not login and try to open any badge.
+ */
 const loginMessage = () => {
 
   API.getLoginMessage()
@@ -599,6 +672,24 @@ const loginMessage = () => {
   .catch(err => console.log(err))
 }
 
+/**
+ * Shows modal when user click on badge(upper part of highlight section).
+ *
+ * Args:
+ *     getCsAPI (object):
+ *        It contain multiple values like fetch latest data from backend, fetch annotate or bridge value         
+ *     bridges (object):
+ *        It contain bridges information if there 
+ *     annotations (object):
+ *        It contain notes(annotations) information if there
+ *     lists (object):
+ *        It contain lists information if there
+ *     elementId (int):
+ *        unique elementId for that content
+ *     element (object):
+ *        It contain element information like page identification, element identification
+ *
+ */
 export const showBridgesModal = ({ getCsAPI, bridges, annotations, lists, elementId, element }) => {
   const iframeAPI = createIframeWithMask({
     url:    Ext.extension.getURL('related_elements.html'),
